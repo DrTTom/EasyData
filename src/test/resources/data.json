@@ -1,0 +1,9 @@
+{
+   "Name" : "Horst",
+   "Address": {
+      "Street" : "Schloßalle",
+      "City" : "Wolkenkuckuksheim"
+   },
+   "Hobbies" : [ "Tanzen", "Schlafen", "Feuerschlucken"], 
+   "index": "2"
+}
