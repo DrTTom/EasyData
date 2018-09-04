@@ -1,5 +1,6 @@
 package de.tautenhahn.easydata;
 
+import java.io.IOException;
 import java.io.Writer;
 
 
@@ -18,7 +19,8 @@ public interface Resolver
    * @param data all data available within the current context, namely original data plus some attributes
    *          defined in surrounding tags.
    * @param output
+   * @throws IOException
    */
-  void resolve(Token start, Object data, Writer output);
+  void resolve(Token start, Object data, Writer output) throws IOException;
 
 }

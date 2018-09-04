@@ -8,7 +8,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-
-
 
 
 /**
@@ -41,6 +41,11 @@ public class TestDataIntoTemplate
 
   private static Map<String, Object> exampleData = new HashMap<>();
 
+  /**
+   * Provides some data to create documents with.
+   *
+   * @throws IOException
+   */
   @SuppressWarnings("unchecked")
   @BeforeClass
   public static void getData() throws IOException
@@ -95,10 +100,13 @@ public class TestDataIntoTemplate
   private String doExpand(String template) throws IOException
   {
     try (InputStream ins = new ByteArrayInputStream(template.getBytes(StandardCharsets.UTF_8));
-      ByteArrayOutputStream out = new ByteArrayOutputStream())
+      Reader reader = new InputStreamReader(ins, StandardCharsets.UTF_8);
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
     {
-      DataIntoTemplate systemUnderTest = new DataIntoTemplate(exampleData, StandardCharsets.UTF_8, MARKER);
-      systemUnderTest.fillData(ins, out);
+      DataIntoTemplate systemUnderTest = new DataIntoTemplate(exampleData, MARKER);
+      systemUnderTest.fillData(reader, writer);
+      writer.flush();
       return new String(out.toByteArray(), StandardCharsets.UTF_8);
     }
   }

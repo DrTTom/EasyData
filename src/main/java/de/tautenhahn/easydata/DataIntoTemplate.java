@@ -1,8 +1,7 @@
 package de.tautenhahn.easydata;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Map;
 
 
@@ -17,11 +16,10 @@ public class DataIntoTemplate
   /**
    * Creates an instance filled with some data.
    * 
-   * @param data Map as parsed without type restrictions by GSON.
-   * @param encoding
+   * @param data Map containing Maps, Arrays and Strings (as parsed without type restrictions by GSON).
    * @param marker character to recognize the special tags by.
    */
-  public DataIntoTemplate(Map<String, Object> data, Charset encoding, char marker)
+  public DataIntoTemplate(Map<String, Object> data, char marker)
   {
     // TODO Auto-generated constructor stub
   }
@@ -32,7 +30,7 @@ public class DataIntoTemplate
    * @param template
    * @param out where the output is written to.
    */
-  public void fillData(InputStream template, ByteArrayOutputStream out)
+  public void fillData(Reader template, Writer out)
   {
     // TODO Auto-generated method stub
 
