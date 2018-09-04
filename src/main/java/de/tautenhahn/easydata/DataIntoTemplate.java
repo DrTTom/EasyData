@@ -1,8 +1,10 @@
 package de.tautenhahn.easydata;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
+import java.util.Scanner;
 
 
 /**
@@ -13,6 +15,8 @@ import java.util.Map;
 public class DataIntoTemplate
 {
 
+  private final Object data;
+
   /**
    * Creates an instance filled with some data.
    * 
@@ -21,7 +25,7 @@ public class DataIntoTemplate
    */
   public DataIntoTemplate(Map<String, Object> data, char marker)
   {
-    // TODO Auto-generated constructor stub
+    this.data = data;
   }
 
   /**
@@ -29,10 +33,19 @@ public class DataIntoTemplate
    * 
    * @param template
    * @param out where the output is written to.
+   * @throws IOException
    */
-  public void fillData(Reader template, Writer out)
+  public void fillData(Reader template, Writer out) throws IOException
   {
-    // TODO Auto-generated method stub
+    ResolverFactory factory = new EasyTagFactory();
+    try (Scanner s = new Scanner(template).useDelimiter("\n"))
+    {
+      for ( Tokenizer tokens = new Tokenizer(s) ; tokens.hasNext() ; )
+      {
+        Token start = tokens.next();
+        factory.getResolver(start, tokens).resolve(start, data, out);
+      }
+    }
 
   }
 

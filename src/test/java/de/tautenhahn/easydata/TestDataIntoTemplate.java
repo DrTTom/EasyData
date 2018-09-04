@@ -72,8 +72,8 @@ public class TestDataIntoTemplate
   @Test
   public void insertSingleValues() throws IOException
   {
-    String result = doExpand("[@=Name] wohnt in [@=Adress.City]");
-    assertThat("created document", result, equalTo("Horst wohnt in Wolkenkuckuksheim."));
+    String result = doExpand("[@=Name] wohnt in [@=Address.City].");
+    assertThat("created document", result, equalTo("Horst wohnt in Wolkenkuckuksheim.\n"));
   }
 
   /**
