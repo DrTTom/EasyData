@@ -5,5 +5,10 @@
       "City" : "Wolkenkuckuksheim"
    },
    "Hobbies" : [ "Tanzen", "Schlafen", "Feuerschlucken"], 
-   "index": "2"
+   "index": "2",
+   "friends" : {
+      "Emil": { "city": "Gera"},
+      "Oskar": { "city": "Rom"},
+      "Heinz": { "city": "Berlin"}
+   }
 }

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * Why do I not use a stream? Object streams are bad at iterating things, they tend to create new Spliterator
  * objects at each non-trivial manipulation. An old-fashioned Iterator can be passed between consumers much
  * more elegantly.
- * 
+ *
  * @author TT
  */
 public class Tokenizer implements Iterator<Token>
@@ -26,13 +26,13 @@ public class Tokenizer implements Iterator<Token>
 
   private int row;
 
-  private static final Pattern PATTERN = Pattern.compile("([^\\[]+)|(\\[[^\\[\\]]*\\])|\\[", Pattern.DOTALL);
+  private static final Pattern PATTERN = Pattern.compile("([^\\[]+)|(\\[[^\\[\\]]+\\])|\\[", Pattern.DOTALL);
 
 
 
   /**
    * Creates instance.
-   * 
+   *
    * @param data must use an delimiter matching a fixed line ending ("\n" or "\r\n")so we can re-insert it.
    */
   Tokenizer(Scanner data)

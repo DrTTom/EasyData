@@ -5,6 +5,11 @@ import java.io.Writer;
 import java.util.Iterator;
 
 
+/**
+ * A factory for all the tag resolvers defined in this project.
+ *
+ * @author TT
+ */
 public final class EasyTagFactory implements ResolverFactory
 {
 
@@ -29,6 +34,10 @@ public final class EasyTagFactory implements ResolverFactory
     if (token.getContent().matches("\\[@=.*\\]"))
     {
       return new EqualsTag(token);
+    }
+    if (token.getContent().matches("\\[@FOR.*\\]"))
+    {
+      return new ForTag(token, remaining, this);
     }
     return IDENTITY;
   }

@@ -32,10 +32,10 @@ public class DataIntoTemplate
    * Reads input and expands all the special tags using data.
    * 
    * @param template
-   * @param out where the output is written to.
+   * @param output where the output is written to.
    * @throws IOException
    */
-  public void fillData(Reader template, Writer out) throws IOException
+  public void fillData(Reader template, Writer output) throws IOException
   {
     ResolverFactory factory = new EasyTagFactory();
     try (Scanner s = new Scanner(template).useDelimiter("\n"))
@@ -43,7 +43,7 @@ public class DataIntoTemplate
       for ( Tokenizer tokens = new Tokenizer(s) ; tokens.hasNext() ; )
       {
         Token start = tokens.next();
-        factory.getResolver(start, tokens).resolve(start, data, out);
+        factory.getResolver(start, tokens).resolve(start, data, output);
       }
     }
 

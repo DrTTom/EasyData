@@ -27,7 +27,7 @@ import com.google.gson.Gson;
  * Just how much functionality do we need to create a useful document? What do we have to assume about the
  * target language? How complicated will it get?<br>
  * This is a simple example which targets creation of arbitrary documents using data from a JSON file.
- * 
+ *
  * @author TT
  */
 public class TestDataIntoTemplate
@@ -66,7 +66,7 @@ public class TestDataIntoTemplate
    * <li>For sake of simplicity, we treat a lists as maps with keys "0", "1" and so on.</li>
    * <ul>
    * Introduce the [@=...] tag here.
-   * 
+   *
    * @throws IOException
    */
   @Test
@@ -74,28 +74,41 @@ public class TestDataIntoTemplate
   {
     String result = doExpand("[@=Name] wohnt in [@=Address.City].");
     assertThat("created document", result, equalTo("Horst wohnt in Wolkenkuckuksheim.\n"));
+    result = doExpand("Erstes Hobby ist [@=Hobbies.0].");
+    assertThat("created document", result, equalTo("Erstes Hobby ist Tanzen.\n"));
   }
 
   /**
    * To freely access data, we need to use one expression to qualify another one. Use ${...} to de-reference
    * inside an expression. Do not worry about mixing up syntax, we are i a marked tag here.
-   * 
+   *
    * @throws IOException
    */
   @Test
   public void useReference() throws IOException
   {
-    String result = doExpand("Sein liebstes Hobby ist [@=Hobbies.${index}]");
-    assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken."));
+    String result = doExpand("Sein liebstes Hobby ist [@=Hobbies.${index}].");
+    assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
 
   /**
-   * Need an iteration, in best case over keys and values of a map (or array treated as map).
+   * Need an iteration, in best case over keys and values of a map (or array treated as map).<br>
+   * Introducing tags [@FOR :] [@DELIM] [@END]
    */
+  @Test
+  public void repeatElement() throws IOException
+  {
+    String result = doExpand("Seine Freunde sind [@FOR name:friends.keys][@=name][@DELIM], [@END].");
+    assertThat("created document", result, equalTo("Seine Freunde sind Emil, Oskar, Heinz.\n"));
+    // TODO:
+    // result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@delim], [@END].");
+    // assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
+  }
 
   /**
-   * Need conditional parts.
+   * Need conditional parts. What kind of conditions do we need?
    */
+
 
   private String doExpand(String template) throws IOException
   {

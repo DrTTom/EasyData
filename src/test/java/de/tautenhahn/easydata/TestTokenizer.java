@@ -11,7 +11,7 @@ import org.junit.Test;
 
 /**
  * Unit test for splitting input into handy tokens.
- * 
+ *
  * @author TT
  */
 public class TestTokenizer
