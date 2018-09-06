@@ -100,14 +100,25 @@ public class TestDataIntoTemplate
   {
     String result = doExpand("Seine Freunde sind [@FOR name:friends.keys][@=name][@DELIM], [@END].");
     assertThat("created document", result, equalTo("Seine Freunde sind Emil, Oskar, Heinz.\n"));
-    // TODO:
-    // result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@delim], [@END].");
-    // assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
+
+    result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@DELIM], [@END].");
+    assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
   }
 
   /**
    * Need conditional parts. What kind of conditions do we need?
    */
+  @Test
+  public void conditional() throws IOException
+  {
+    String result = doExpand("[@IF index==\"2\"]Index ist 2.[@ELSE]Index ist anders.[@END]");
+    assertThat("equals to constant", result, equalTo("Index ist 2.\n"));
+    result = doExpand("Es ist [@IF Name==\"Franz\"][@ELSE]nicht [@END]Franz.");
+    assertThat("equals to constant", result, equalTo("Es ist nicht Franz.\n"));
+
+    result = doExpand("Der Exot ist [@FOR name:friends.keys][@IF friends.${name}.city==\"Rom\"][@=name][@END][@END].");
+    assertThat("nested tags", result, equalTo("Der Exot ist Oskar.\n"));
+  }
 
 
   private String doExpand(String template) throws IOException
@@ -117,7 +128,7 @@ public class TestDataIntoTemplate
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
     {
-      DataIntoTemplate systemUnderTest = new DataIntoTemplate(exampleData, MARKER);
+      DataIntoTemplate systemUnderTest = new DataIntoTemplate(exampleData, '[', MARKER, ']');
       systemUnderTest.fillData(reader, writer);
       writer.flush();
       return new String(out.toByteArray(), StandardCharsets.UTF_8);

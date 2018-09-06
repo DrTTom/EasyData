@@ -2,9 +2,10 @@ package de.tautenhahn.easydata;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 
 /**
@@ -15,34 +16,78 @@ import java.util.Map;
 public class ForTag extends ComplexTag
 {
 
+  private final Matcher start;
+
+  /**
+   * just because we need a three-valued type.
+   */
+  private enum ListPreferrence
+  {
+    BY_TYPE, KEYS, VALUES;
+  }
+
   /**
    * Creates new instance.
    *
-   * @param token
+   * @param start
    * @param remaining
    * @param factory
    */
-  public ForTag(Token token, Iterator<Token> remaining, ResolverFactory factory)
+  public ForTag(Matcher start, Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
   {
-    super(remaining, "[@DELIM]", factory);
+    super(remaining, delim, end, factory);
+    this.start = start;
   }
 
   @Override
-  public void resolve(Token start, Object data, Writer output) throws IOException
+  public void resolve(Token startTag, Object data, Writer output) throws IOException
   {
-    // Quick implementation without parsing the start tag (wrong) to check base class and get a feel for what
-    // is needed.
-    Map<String, Object> subData = (Map<String, Object>)EqualsTag.getAttribute("friends", data);
-    Map<String, Object> allData = new HashMap<>((Map)data);
-    for ( Iterator iter = subData.keySet().iterator() ; iter.hasNext() ; )
+    String addressedCollection = start.group(2);
+    ListPreferrence mode = ListPreferrence.BY_TYPE;
+    if (addressedCollection.endsWith(".keys"))
     {
-      allData.put("name", iter.next());
-      resolveContent(content.iterator(), allData, output);
+      addressedCollection = addressedCollection.substring(0, addressedCollection.length() - ".keys".length());
+      mode = ListPreferrence.KEYS;
+    }
+    else if (addressedCollection.endsWith(".values"))
+    {
+      addressedCollection = addressedCollection.substring(0,
+                                                          addressedCollection.length() - ".values".length());
+      mode = ListPreferrence.VALUES;
+    }
+
+    Object subData = EqualsTag.getAttribute(startTag, addressedCollection, data);
+    if (subData == null)
+    {
+      throw EqualsTag.createDataRefException(null, startTag, addressedCollection);
+    }
+    Map<String, Object> allData = (Map)data; // overall object is always a map
+    String definedName = start.group(1);
+    for ( Iterator<Object> iter = iterate(startTag, subData, mode) ; iter.hasNext() ; )
+    {
+      allData.put(definedName, iter.next());
+      resolveContent(content, allData, output);
       if (iter.hasNext())
       {
-        resolveContent(otherContent.iterator(), allData, output);
+        resolveContent(otherContent, allData, output);
       }
     }
   }
+
+  private Iterator<Object> iterate(Token tag, Object subData, ListPreferrence mode)
+  {
+    if (subData instanceof Map)
+    {
+      return mode == ListPreferrence.VALUES ? ((Map)subData).values().iterator()
+        : ((Map)subData).keySet().iterator();
+    }
+    if (subData instanceof List)
+    {
+      return mode == ListPreferrence.KEYS ? null : ((List)subData).iterator(); // TODO
+    }
+    throw new IllegalArgumentException("No object or array found at line " + tag.getRow() + ", col."
+                                       + tag.getCol());
+  }
+
 
 }

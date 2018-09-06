@@ -2,7 +2,7 @@ package de.tautenhahn.easydata;
 
 /**
  * Wraps some part of the template file together with its position in the original template.
- * 
+ *
  * @author TT
  */
 public class Token
@@ -16,7 +16,7 @@ public class Token
 
   /**
    * Creates immutable instance
-   * 
+   *
    * @param content
    * @param row
    * @param col
@@ -50,5 +50,11 @@ public class Token
   public int getCol()
   {
     return col;
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format("%3d:%3d %s", row, col, content);
   }
 }

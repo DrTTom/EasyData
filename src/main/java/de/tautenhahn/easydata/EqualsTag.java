@@ -20,20 +20,15 @@ public class EqualsTag implements Resolver
 
   private final String name;
 
-  /**
-   * Creates instance
-   *
-   * @param start
-   */
-  public EqualsTag(Token start)
+  EqualsTag(Matcher start)
   {
-    name = start.getContent().substring(3, start.getContent().length() - 1).trim();
+    name = start.group(1).trim();
   }
 
   @Override
   public void resolve(Token start, Object data, Writer output) throws IOException
   {
-    output.write((String)getAttribute(name, data));
+    output.write((String)getAttribute(start, name, data));
   }
 
   /**
@@ -42,9 +37,29 @@ public class EqualsTag implements Resolver
    * @param attrName
    * @param data
    */
-  public static Object getAttribute(String attrName, Object data)
+  public static Object getAttribute(Token source, String attrName, Object data)
   {
-    return get(resolveInnerExpressions(attrName, data), data);
+    try
+    {
+      return get(resolveInnerExpressions(attrName, data), data);
+    }
+    catch (RuntimeException e)
+    {
+      throw createDataRefException(e, source, attrName);
+    }
+  }
+
+  /**
+   * Creates an exception stating that there is a wrong reference in the input.
+   *
+   * @param e
+   * @param source
+   * @param attrName
+   */
+  public static IllegalArgumentException createDataRefException(Throwable e, Token source, String attrName)
+  {
+    return new IllegalArgumentException("Invalid data reference \"" + attrName + "\" at line "
+                                        + source.getRow() + ", col. " + source.getCol(), e);
   }
 
   /**

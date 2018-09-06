@@ -2,9 +2,10 @@ package de.tautenhahn.easydata;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -18,27 +19,24 @@ public abstract class ComplexTag implements Resolver
   /**
    * Main content.
    */
-  protected List<Token> content = new ArrayList<>();
+  protected Map<Token, Resolver> content = new LinkedHashMap<>();
 
   /**
    * Alternative content.
    */
-  protected List<Token> otherContent = new ArrayList<>();
-
-
-  private final ResolverFactory factory;
+  protected Map<Token, Resolver> otherContent = new LinkedHashMap<>();
 
   /**
    * Creates new instance
    *
    * @param remaining
    * @param delim content of tag starting the alternative content.
+   * @param end
    * @param factory
    */
-  protected ComplexTag(Iterator<Token> remaining, String delim, ResolverFactory factory)
+  protected ComplexTag(Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
   {
-    this.factory = factory;
-    List<Token> tokens = content;
+    Map<Token, Resolver> tokens = content;
 
     while (remaining.hasNext())
     {
@@ -48,28 +46,27 @@ public abstract class ComplexTag implements Resolver
         tokens = otherContent;
         continue;
       }
-      if ("[@END]".equals(token.getContent()))
+      if (end.equals(token.getContent()))
       {
         return;
       }
-      tokens.add(token);
+      tokens.put(token, factory.getResolver(token, remaining));
     }
   }
 
   /**
    * Resolves the content.
    *
-   * @param subTemplate
+   * @param subTags
    * @param data original data enhanced by attributes defined in start tag
    * @param output
    * @throws IOException
    */
-  protected void resolveContent(Iterator<Token> subTemplate, Object data, Writer output) throws IOException
+  protected void resolveContent(Map<Token, Resolver> subTags, Object data, Writer output) throws IOException
   {
-    while (subTemplate.hasNext())
+    for ( Entry<Token, Resolver> entry : subTags.entrySet() )
     {
-      Token start = subTemplate.next();
-      factory.getResolver(start, subTemplate).resolve(start, data, output);
+      entry.getValue().resolve(entry.getKey(), data, output);
     }
   }
 }
