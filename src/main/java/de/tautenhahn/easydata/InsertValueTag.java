@@ -13,14 +13,14 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class EqualsTag implements Resolver
+public class InsertValueTag implements Resolver
 {
 
   private static final Pattern DEREF = Pattern.compile("\\$\\{([^}]+)}");
 
   private final String name;
 
-  EqualsTag(Matcher start)
+  InsertValueTag(Matcher start)
   {
     name = start.group(1).trim();
   }

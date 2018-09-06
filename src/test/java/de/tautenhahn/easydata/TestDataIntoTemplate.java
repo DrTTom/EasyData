@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.google.gson.Gson;
 
@@ -32,7 +34,11 @@ import com.google.gson.Gson;
  */
 public class TestDataIntoTemplate
 {
-
+  /**
+   * for checking error cases.
+   */
+ @Rule
+ public ExpectedException expected = ExpectedException.none();
   /**
    * Because there is no assumption made about the target document, we need to mark our special syntax with at
    * least one character which must be freely chosen in order not to interfere with the target syntax.
@@ -90,7 +96,19 @@ public class TestDataIntoTemplate
     String result = doExpand("Sein liebstes Hobby ist [@=Hobbies.${index}].");
     assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
-
+  
+  /**
+   * Asserts that wrong attribute references are reported.
+   * @throws IOException 
+   */
+@Test
+public void wrongAttribute() throws IOException
+{
+  expected.expect(IllegalArgumentException.class);
+  expected.expectMessage("Invalid data reference \"Hobies.wrongAttribute\" at line 1, col. 16");
+    doExpand("Wrong reference [@=Hobies.wrongAttribute]");
+}
+  
   /**
    * Need an iteration, in best case over keys and values of a map (or array treated as map).<br>
    * Introducing tags [@FOR :] [@DELIM] [@END]
@@ -103,6 +121,9 @@ public class TestDataIntoTemplate
 
     result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@DELIM], [@END].");
     assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
+    
+    //result = doExpand("Sein liebstes Hobby ist [@=FOR h:Hobbies.keys][@IF h==${index}][@=Hobbies.h][@END][@END].");
+    //assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
 
   /**
@@ -120,6 +141,7 @@ public class TestDataIntoTemplate
     assertThat("nested tags", result, equalTo("Der Exot ist Oskar.\n"));
   }
 
+  
 
   private String doExpand(String template) throws IOException
   {

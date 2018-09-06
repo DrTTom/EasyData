@@ -52,7 +52,7 @@ public class IfTag extends ComplexTag
     {
       return name.substring(1, name.length() - 1);
     }
-    return EqualsTag.getAttribute(startTag, name, data);
+    return InsertValueTag.getAttribute(startTag, name, data);
   }
 
 

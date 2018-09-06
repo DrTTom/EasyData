@@ -56,10 +56,10 @@ public class ForTag extends ComplexTag
       mode = ListPreferrence.VALUES;
     }
 
-    Object subData = EqualsTag.getAttribute(startTag, addressedCollection, data);
+    Object subData = InsertValueTag.getAttribute(startTag, addressedCollection, data);
     if (subData == null)
     {
-      throw EqualsTag.createDataRefException(null, startTag, addressedCollection);
+      throw InsertValueTag.createDataRefException(null, startTag, addressedCollection);
     }
     Map<String, Object> allData = (Map)data; // overall object is always a map
     String definedName = start.group(1);
