@@ -1,0 +1,111 @@
+{
+  "info": {
+    "firstName": "Franz",
+    "lastName": "Mustermann",
+    "dateOfBirth": "15.03.1983",
+    "placeOfBirth": "Berlin",
+    "familyStatus": "geschieden, 2 Kinder",
+    "spokenLanguages": [
+      "Deutsch (Muttersprache)",
+      "Japanisch (fließend in Wort und Schrift)"
+    ],
+    "personalInterests": [
+      "Programmierung",
+      "Briefmarken sammeln",
+      "Walzer tanzen"
+    ]
+  },
+  "contact":{
+    "address":"Franz-Friedrich von Hallmackenreutherstraße 34 b, 01234 Prötlitz",
+    "phone":"0987 654321"
+  },
+  "career": {
+    "educationalCareer": [
+      {
+        "from": "1989",
+        "until": "1998",
+        "description": "Grundschule \"Sümpfe der Finsternis\", Rohdorf"
+      },
+      {
+        "from": "1998",
+        "until": "1999",
+        "description": "Hochschule für angeswandte Esoterik, Kulahari\n Abschluss als Prof. der Swarnetik"
+      }
+    ],
+    "professionalCareer": [
+      {
+        "from": "2001",
+        "until": "2003",
+        "job": "Sündenbock",
+        "company": "VW",
+        "description": "einer muss ja schuld sein\nauch internationale Einsätze"
+      },
+      {
+        "from": "2003",
+        "until": "2012",
+        "job": "Schornsteinfeger",
+        "company": "selbständig",
+        "description": "one Singen, Tanzen und anderen Marry-Poppins-Kram"
+      },
+      {
+        "from": "2012",
+        "until": "heute",
+        "job": "Superstar",
+        "company": "wird noch gesucht",
+        "description": "keine"
+      }
+    ],
+    "misc": [
+      {
+        "from": "1994",
+        "until": "1997",
+        "description": "ehrenamtl. irgendwas"
+      },
+      {
+        "from": "1997",
+        "until": "1998",
+        "description": "Weltreise"
+      }
+    ]
+  },
+  "skills": {
+    "hard": [
+      {
+        "description": "Hellsehen",
+        "rating": "0",
+        "category":"Esotherik"
+      },
+      {
+        "description": "Singen",
+        "rating": "2",
+        "category": "Showgeschäft"
+      }
+    ],
+    "soft": [
+        "Kreativität",
+        "Sauberkeit",
+        "Kreativität (sehr)",
+    ]
+  },
+  "projects": [
+    {
+      "from": "2008",
+      "until": "heute",
+      "summary": "Mathe-Grundkurs",
+      "description": "der is aber auch schwierig, da muß man ja hingehen, um den Schein für Anwesenheit zu kriegen",
+      "position": "Interessent",
+      "tools": {
+        "languages": [
+          "deutsch"
+        ],
+        "frameworks": [
+          "Zettel",
+          "Bleistift"
+        ],
+        "other": [
+          "Mit Zahlen un so"
+        ]
+      }
+    }
+  ]
+}

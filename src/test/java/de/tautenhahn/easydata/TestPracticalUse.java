@@ -1,0 +1,45 @@
+package de.tautenhahn.easydata;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import org.junit.Test;
+
+import com.google.gson.Gson;
+
+/**
+ * These are not tests for the classes but for the usability of the concept. 
+ * @author TT
+ *
+ */
+public class TestPracticalUse
+{
+  /**
+   * Create a LaTeX document with practical relevant data. Test data are faked or not checked in , obviously.
+   * @throws IOException 
+   */
+  @Test
+  public void cvAsLatex() throws IOException
+  {
+    Map<String, Object> cv=null;
+    try (InputStream json = TestPracticalUse.class.getResourceAsStream("/cv.json");
+      Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
+    {
+      cv= new Gson().fromJson(reader, Map.class);
+    }
+    try (InputStream ti= TestPracticalUse.class.getResourceAsStream("/cv_template.tex");
+      Reader template = new InputStreamReader(ti, StandardCharsets.UTF_8);
+      Writer document = new FileWriter("cv.tex"))    
+    {
+      DataIntoTemplate systemUnderTest = new DataIntoTemplate(cv, '<', '@', '>');
+      systemUnderTest.fillData(template, document);
+    } 
+    
+  }
+}
