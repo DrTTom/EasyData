@@ -32,19 +32,14 @@ public final class EasyTagFactory implements ResolverFactory
    */
   public EasyTagFactory(char opening, char marker, char closing)
   {
-    String open = mask(opening) + mask(marker);
-    String close = mask(closing);
+    String open = RegexHelper.mask(opening) + RegexHelper.mask(marker);
+    String close = RegexHelper.mask(closing);
     String op = String.valueOf(new char[]{opening, marker});
     resolvers.put(Pattern.compile(open + "=(.*)" + close), (s, r) -> new InsertValueTag(s));
-    resolvers.put(Pattern.compile(open + "FOR +(\\w+):([^\\]]+)" + close),
+    resolvers.put(Pattern.compile(open + "FOR +(\\w+):([^" + close + "]+)" + close),
                   (s, r) -> new ForTag(s, r, op + "DELIM" + closing, op + "END" + closing, this));
-    resolvers.put(Pattern.compile(open + "IF +(.+)(==)([^\\]]+)" + close),
+    resolvers.put(Pattern.compile(open + "IF +(.+)(==)([^" + close + "]+)" + close),
                   (s, r) -> new IfTag(s, r, op + "ELSE" + closing, op + "END" + closing, this));
-  }
-
-  private String mask(char value)
-  {
-    return ("\\.[]{}()<>*+-=?^$|".indexOf(value) >= 0 ? "\\" : "") + value;
   }
 
   /**

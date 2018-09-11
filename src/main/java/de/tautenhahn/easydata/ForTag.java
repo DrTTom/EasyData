@@ -2,6 +2,7 @@ package de.tautenhahn.easydata;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +84,23 @@ public class ForTag extends ComplexTag
     }
     if (subData instanceof List)
     {
-      return mode == ListPreferrence.KEYS ? null : ((List)subData).iterator(); // TODO
+      List list = (List)subData;
+      return (mode == ListPreferrence.KEYS ? indexList(list.size()) : list).iterator();
     }
+
     throw new IllegalArgumentException("No object or array found at line " + tag.getRow() + ", col."
                                        + tag.getCol());
+  }
+
+
+  private List indexList(int size)
+  {
+    List<String> result = new ArrayList<>(size);
+    for ( int i = 0 ; i < size ; i++ )
+    {
+      result.add(Integer.toString(i));
+    }
+    return result;
   }
 
 

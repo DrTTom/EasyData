@@ -26,23 +26,26 @@ public class Tokenizer implements Iterator<Token>
 
   private int row;
 
-  private static final Pattern PATTERN = Pattern.compile("([^\\[]+)|(\\[[^\\[\\]]+\\])|\\[", Pattern.DOTALL);
-
-
+  private final Pattern pattern;
 
   /**
    * Creates instance.
    *
    * @param data must use an delimiter matching a fixed line ending ("\n" or "\r\n")so we can re-insert it.
    */
-  Tokenizer(Scanner data)
+  Tokenizer(Scanner data, char opening, char closing)
   {
     this.data = data;
     delimiter = data.delimiter().toString();
-    if (!"\n".equals(delimiter) && !"\r\n".equals(delimiter))
+    if (!RegexHelper.isLineBreak(delimiter))
     {
       throw new IllegalArgumentException("Scanners delimiter must be a specified line break.");
     }
+    String open = RegexHelper.mask(opening);
+    String close = RegexHelper.mask(closing);
+    pattern = Pattern.compile("([^" + open + "]+)|" + //
+                              "(" + open + "[^" + open + close + "]+" + close + ")|" + //
+                              open, Pattern.DOTALL);
     pending = getMatcher();
   }
 
@@ -67,7 +70,7 @@ public class Tokenizer implements Iterator<Token>
   {
     if (data.hasNext())
     {
-      Matcher result = PATTERN.matcher(data.next() + delimiter);
+      Matcher result = pattern.matcher(data.next() + delimiter);
       row++;
       result.find(); // this special pattern will always match
       return result;

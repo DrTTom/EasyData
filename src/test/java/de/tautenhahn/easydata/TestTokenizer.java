@@ -30,7 +30,7 @@ public class TestTokenizer
     try (Scanner s = new Scanner(source); Scanner input = s.useDelimiter("\n"))
     {
       StringBuilder copy = new StringBuilder();
-      for ( Tokenizer systemUnderTest = new Tokenizer(input) ; systemUnderTest.hasNext() ; )
+      for ( Tokenizer systemUnderTest = new Tokenizer(input, '[', ']') ; systemUnderTest.hasNext() ; )
       {
         Token token = systemUnderTest.next();
         if (tag.equals(token.getContent()))
@@ -55,7 +55,7 @@ public class TestTokenizer
   {
     try (Scanner s = new Scanner("whatever"))
     {
-      new Tokenizer(s);
+      new Tokenizer(s, '[', ']');
     }
   }
 

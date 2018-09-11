@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,7 @@ public class InsertValueTag implements Resolver
   @Override
   public void resolve(Token start, Object data, Writer output) throws IOException
   {
-    output.write((String)getAttribute(start, name, data));
+    output.write(Optional.ofNullable((String)getAttribute(start, name, data)).orElse("(" + name + "=NULL)"));
   }
 
   /**

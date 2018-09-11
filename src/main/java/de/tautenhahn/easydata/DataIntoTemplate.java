@@ -19,6 +19,10 @@ public class DataIntoTemplate
 
   private final ResolverFactory factory;
 
+  private final char opening;
+
+  private final char closing;
+
   /**
    * Creates an instance filled with some data.
    *
@@ -28,6 +32,8 @@ public class DataIntoTemplate
   public DataIntoTemplate(Map<String, Object> data, char opening, char marker, char closing)
   {
     this.data = data;
+    this.opening = opening;
+    this.closing = closing;
     factory = new EasyTagFactory(opening, marker, closing);
   }
 
@@ -42,7 +48,7 @@ public class DataIntoTemplate
   {
     try (Scanner scanner = new Scanner(template); Scanner s = scanner.useDelimiter("\n"))
     {
-      for ( Tokenizer tokens = new Tokenizer(s) ; tokens.hasNext() ; )
+      for ( Tokenizer tokens = new Tokenizer(s, opening, closing) ; tokens.hasNext() ; )
       {
         Token start = tokens.next();
         factory.getResolver(start, tokens).resolve(start, data, output);

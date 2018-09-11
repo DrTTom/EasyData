@@ -34,11 +34,13 @@ import com.google.gson.Gson;
  */
 public class TestDataIntoTemplate
 {
+
   /**
    * for checking error cases.
    */
- @Rule
- public ExpectedException expected = ExpectedException.none();
+  @Rule
+  public ExpectedException expected = ExpectedException.none();
+
   /**
    * Because there is no assumption made about the target document, we need to mark our special syntax with at
    * least one character which must be freely chosen in order not to interfere with the target syntax.
@@ -79,9 +81,9 @@ public class TestDataIntoTemplate
   public void insertSingleValues() throws IOException
   {
     String result = doExpand("[@=Name] wohnt in [@=Address.City].");
-    assertThat("created document", result, equalTo("Horst wohnt in Wolkenkuckuksheim.\n"));
+    assertThat("text with inserted attribute", result, equalTo("Horst wohnt in Wolkenkuckuksheim.\n"));
     result = doExpand("Erstes Hobby ist [@=Hobbies.0].");
-    assertThat("created document", result, equalTo("Erstes Hobby ist Tanzen.\n"));
+    assertThat("text with inserted array element", result, equalTo("Erstes Hobby ist Tanzen.\n"));
   }
 
   /**
@@ -94,36 +96,38 @@ public class TestDataIntoTemplate
   public void useReference() throws IOException
   {
     String result = doExpand("Sein liebstes Hobby ist [@=Hobbies.${index}].");
-    assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
+    assertThat("text with resolved reference", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
-  
+
   /**
    * Asserts that wrong attribute references are reported.
-   * @throws IOException 
+   *
+   * @throws IOException
    */
-@Test
-public void wrongAttribute() throws IOException
-{
-  expected.expect(IllegalArgumentException.class);
-  expected.expectMessage("Invalid data reference \"Hobies.wrongAttribute\" at line 1, col. 16");
+  @Test
+  public void wrongAttribute() throws IOException
+  {
+    expected.expect(IllegalArgumentException.class);
+    expected.expectMessage("Invalid data reference \"Hobies.wrongAttribute\" at line 1, col. 16");
     doExpand("Wrong reference [@=Hobies.wrongAttribute]");
-}
-  
+  }
+
   /**
-   * Need an iteration, in best case over keys and values of a map (or array treated as map).<br>
+   * Need an iteration, in best case over keys and values of a map (or array treated as map). Furthermore,
+   * check whether nested tags work.<br>
    * Introducing tags [@FOR :] [@DELIM] [@END]
    */
   @Test
-  public void repeatElement() throws IOException
+  public void repeatElements() throws IOException
   {
     String result = doExpand("Seine Freunde sind [@FOR name:friends.keys][@=name][@DELIM], [@END].");
-    assertThat("created document", result, equalTo("Seine Freunde sind Emil, Oskar, Heinz.\n"));
+    assertThat("text with repeated element", result, equalTo("Seine Freunde sind Emil, Oskar, Heinz.\n"));
 
     result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@DELIM], [@END].");
     assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
-    
-    //result = doExpand("Sein liebstes Hobby ist [@=FOR h:Hobbies.keys][@IF h==${index}][@=Hobbies.h][@END][@END].");
-    //assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
+
+    result = doExpand("Sein liebstes Hobby ist [@FOR h:Hobbies.keys][@IF h==index][@=Hobbies.${h}][@END][@END].");
+    assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
 
   /**
@@ -141,7 +145,7 @@ public void wrongAttribute() throws IOException
     assertThat("nested tags", result, equalTo("Der Exot ist Oskar.\n"));
   }
 
-  
+
 
   private String doExpand(String template) throws IOException
   {
