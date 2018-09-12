@@ -1,7 +1,14 @@
 \documentclass[12pt]{article}
 \setlength{\textwidth}{150mm}
 \usepackage{ngerman}
-\pagestyle{empty}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headheight}{15pt}
+\lfoot{ein eigener text für unten}
+\rhead{und für oben}
+\renewcommand{\footrulewidth}{\headrulewidth}
 
 \begin{document}
 
