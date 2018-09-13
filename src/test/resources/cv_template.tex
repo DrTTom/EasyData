@@ -1,16 +1,30 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \setlength{\textwidth}{150mm}
-\usepackage{ngerman}
+\usepackage[utf8]{inputenc}
+\setlength{\parindent}{0mm}
+\addtolength{\hoffset}{-1.5cm}
+\addtolength{\voffset}{-1.5cm}
 \pagestyle{empty}
 
 \begin{document}
+{\Large \bf Lebenslauf <@=info.firstName> <@=info.lastName>}\rule[-.3\baselineskip]{0pt}{\baselineskip}
+\hrule
 
-\begin{center}
-{\large Lebenslauf <@=info.firstName> <@=info.lastName>}
-\end{center}
 \begin{tabular}{ll}
-Geboren: &  <@=info.dateOfBirth> in <@=info.placeOfBirth> \\
+\rule{0pt}{7mm}Geboren: &  <@=info.dateOfBirth> in <@=info.placeOfBirth> \\
 Familienstatus: & <@=info.familyStatus>\\
 Sprachkenntnisse: & <@FOR lan:info.spokenLanguages><@=lan><@DELIM>, <@END>
 \end{tabular}
+\subsection*{Ausbildung}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{2,5cm}p{12.3cm}}
+<@FOR item:career.educationalCareer><@=item.from>--<@=item.until>& \begin{minipage}[t]{12cm}<@=item.description>\end{minipage} \\<@END>
+\end{tabular}
+\subsection*{Berufliche Laufbahn}
+\renewcommand{\arraystretch}{1.7}
+\begin{tabular}{p{2,5cm}p{12.3cm}}
+<@FOR item:career.professionalCareer><@=item.from>--<@=item.until>& \begin{minipage}[t]{12cm}{\bf <@=item.job>} \\{\it <@=item.company>}\\<@=item.description>\end{minipage} \\<@END>
+\end{tabular}
+\newpage
+Hello!
 \end{document}

@@ -29,7 +29,7 @@
       {
         "from": "1998",
         "until": "1999",
-        "description": "Hochschule für angeswandte Esoterik, Kulahari\n Abschluss als Prof. der Swarnetik"
+        "description": "Hochschule für angewandte Esoterik, Kulahari \\\\ Abschluss als Prof. der Swarnetik"
       }
     ],
     "professionalCareer": [
@@ -45,7 +45,7 @@
         "until": "2012",
         "job": "Schornsteinfeger",
         "company": "selbständig",
-        "description": "one Singen, Tanzen und anderen Marry-Poppins-Kram"
+        "description": "ohne Singen, Tanzen und anderen Marry-Poppins-Kram"
       },
       {
         "from": "2012",
@@ -84,7 +84,7 @@
     "soft": [
         "Kreativität",
         "Sauberkeit",
-        "Kreativität (sehr)",
+        "Kreativität (sehr)"
     ]
   },
   "projects": [

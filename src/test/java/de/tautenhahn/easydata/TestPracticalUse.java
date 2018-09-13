@@ -17,7 +17,12 @@ import com.google.gson.Gson;
 
 
 /**
- * These are not tests for the classes but for the usability of the concept.
+ * These are not tests for the classes but for the usability of the concept.<br>
+ * TODOS:
+ * <ul>
+ * <li>add a filtering for supporting newlines in different target formats</li>
+ * <li>add a sort function to the FOR-tag</li>
+ * </ul>
  *
  * @author TT
  */
