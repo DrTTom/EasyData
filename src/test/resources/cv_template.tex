@@ -5,6 +5,15 @@
 \addtolength{\hoffset}{-1.5cm}
 \addtolength{\voffset}{-1.5cm}
 \pagestyle{empty}
+\usepackage{ngerman}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headheight}{15pt}
+\lfoot{ein eigener text für unten}
+\rhead{und für oben}
+\renewcommand{\footrulewidth}{\headrulewidth}
 
 \begin{document}
 {\Large \bf Lebenslauf <@=info.firstName> <@=info.lastName>}\rule[-.3\baselineskip]{0pt}{\baselineskip}
