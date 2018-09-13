@@ -1,29 +1,44 @@
-\documentclass[11pt]{article}
-\setlength{\textwidth}{150mm}
+\documentclass[11pt, a4paper]{article}
+\setlength{\textwidth}{155mm}
+\setlength{\textheight}{240mm}
 \usepackage[utf8]{inputenc}
 \setlength{\parindent}{0mm}
+\setlength{\parskip}{1ex}
 \addtolength{\hoffset}{-1.5cm}
 \addtolength{\voffset}{-1.5cm}
-\pagestyle{empty}
-\usepackage{ngerman}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headheight}{15pt}
-\lfoot{ein eigener text für unten}
-\rhead{und für oben}
+\lfoot{\small{<@=contact.address>, Tel. <@=contact.phone>}}
+\rfoot{\small{Seite \thepage\ von \pageref{LastPage}}}
+\rhead{<@=info.firstName> <@=info.lastName>}
 \renewcommand{\footrulewidth}{\headrulewidth}
+\fancypagestyle{plain}{%
+\fancyhf{}
+\lfoot{\small{<@=contact.address>, Tel. <@=contact.phone>}}
+\rfoot{\small{Seite \thepage\ von \pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.3pt}
+}
+
+\usepackage{graphicx}
 
 \begin{document}
-{\Large \bf Lebenslauf <@=info.firstName> <@=info.lastName>}\rule[-.3\baselineskip]{0pt}{\baselineskip}
-\hrule
+\thispagestyle{plain}
+\begin{minipage}[t][][t]{12cm}
+{\LARGE \sc \bf <@=info.firstName> <@=info.lastName>}\rule[-2mm]{0pt}{1pt}\hrule
 
-\begin{tabular}{ll}
-\rule{0pt}{7mm}Geboren: &  <@=info.dateOfBirth> in <@=info.placeOfBirth> \\
+\begin{tabular}{@{}lp{8.7cm}}
+\rule{0pt}{2em}Geboren: &  <@=info.dateOfBirth> in <@=info.placeOfBirth> \\
 Familienstatus: & <@=info.familyStatus>\\
-Sprachkenntnisse: & <@FOR lan:info.spokenLanguages><@=lan><@DELIM>, <@END>
+Sprachkenntnisse: & \begin{minipage}[t]{8.7cm}<@FOR lan:info.spokenLanguages><@=lan><@DELIM>, <@END>\end{minipage}
 \end{tabular}
+\end{minipage}
+\hfill
+\raisebox{-3.5cm}{\includegraphics[width=3cm, keepaspectratio]{<@=info.lastName>}}
+
 \subsection*{Ausbildung}
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{p{2,5cm}p{12.3cm}}
@@ -34,6 +49,16 @@ Sprachkenntnisse: & <@FOR lan:info.spokenLanguages><@=lan><@DELIM>, <@END>
 \begin{tabular}{p{2,5cm}p{12.3cm}}
 <@FOR item:career.professionalCareer><@=item.from>--<@=item.until>& \begin{minipage}[t]{12cm}{\bf <@=item.job>} \\{\it <@=item.company>}\\<@=item.description>\end{minipage} \\<@END>
 \end{tabular}
+\subsection*{Persönliche Interessen}
+
 \newpage
-Hello!
+\subsection*{Skill-Profil}
+Originaldaten haben unpassendes Format. Wahrscheinlich keine Aufgabe für einen Macro-Expander.
+\subsection*{Projekte}
+\begin{tabular}{p{2,5cm}p{12.3cm}}
+<@FOR item:projects><@=item.from>--<@=item.until>& \begin{minipage}[t]{12cm}{\bf <@=item.summary>}\\
+{\it <@=item.position>}\\
+<@=item.description>\end{minipage} \\<@END>
+\end{tabular}
+\label{LastPage}
 \end{document}

@@ -22,6 +22,8 @@ import com.google.gson.Gson;
  * <ul>
  * <li>add a filtering for supporting newlines in different target formats</li>
  * <li>add a sort function to the FOR-tag</li>
+ * <li>add a main class</li>
+ * <li>decide whether to support creating artificial collections as "skills.values.category".
  * </ul>
  *
  * @author TT
@@ -30,7 +32,7 @@ public class TestPracticalUse
 {
 
   /**
-   * Create a LaTeX document with practical relevant data. Test data is all fake stuff, obviously.
+   * Prove that the tool is suitable for creating a LaTeX document. Test data is all fake stuff, obviously.
    *
    * @throws IOException
    */
