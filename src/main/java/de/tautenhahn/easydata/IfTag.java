@@ -3,6 +3,7 @@ package de.tautenhahn.easydata;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 
@@ -30,13 +31,13 @@ public class IfTag extends ComplexTag
   }
 
   @Override
-  public void resolve(Token startTag, Object data, Writer output) throws IOException
+  public void resolve(Token startTag, AccessableData data, Writer output) throws IOException
   {
     String leftSide = start.group(1); // TODO: support some recursion here too!
     // String operator = start.group(2);
     String rightSide = start.group(3);
 
-    if (get(startTag, data, leftSide).equals(get(startTag, data, rightSide)))
+    if (Objects.equals(data.get(leftSide), data.get(rightSide)))
     {
       resolveContent(content, data, output);
     }
@@ -45,15 +46,4 @@ public class IfTag extends ComplexTag
       resolveContent(otherContent, data, output);
     }
   }
-
-  private Object get(Token startTag, Object data, String name)
-  {
-    if (name.matches("\"[^\"]*\""))
-    {
-      return name.substring(1, name.length() - 1);
-    }
-    return InsertValueTag.getAttribute(startTag, name, data);
-  }
-
-
 }

@@ -62,7 +62,8 @@ public abstract class ComplexTag implements Resolver
    * @param output
    * @throws IOException
    */
-  protected void resolveContent(Map<Token, Resolver> subTags, Object data, Writer output) throws IOException
+  protected void resolveContent(Map<Token, Resolver> subTags, AccessableData data, Writer output)
+    throws IOException
   {
     for ( Entry<Token, Resolver> entry : subTags.entrySet() )
     {

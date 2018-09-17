@@ -1,5 +1,6 @@
 package de.tautenhahn.easydata;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -12,7 +13,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
@@ -47,7 +47,7 @@ public class TestDataIntoTemplate
    */
   private static final char MARKER = '@';
 
-  private static Map<String, Object> exampleData = new HashMap<>();
+  private static AccessableData exampleData;
 
   /**
    * Provides some data to create documents with.
@@ -61,7 +61,7 @@ public class TestDataIntoTemplate
     try (InputStream json = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
       Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
     {
-      exampleData = new Gson().fromJson(reader, Map.class);
+      exampleData = new AccessableData(new Gson().fromJson(reader, Map.class));
     }
   }
 
@@ -108,7 +108,7 @@ public class TestDataIntoTemplate
   public void wrongAttribute() throws IOException
   {
     expected.expect(IllegalArgumentException.class);
-    expected.expectMessage("Invalid data reference \"Hobies.wrongAttribute\" at line 1, col. 16");
+    expected.expectMessage(containsString("no object to resolve wrongAttribute with"));
     doExpand("Wrong reference [@=Hobies.wrongAttribute]");
   }
 

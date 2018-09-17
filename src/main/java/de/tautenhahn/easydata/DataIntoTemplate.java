@@ -3,7 +3,6 @@ package de.tautenhahn.easydata;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -15,7 +14,7 @@ import java.util.Scanner;
 public class DataIntoTemplate
 {
 
-  private final Object data;
+  private final AccessableData data;
 
   private final ResolverFactory factory;
 
@@ -26,10 +25,10 @@ public class DataIntoTemplate
   /**
    * Creates an instance filled with some data.
    *
-   * @param data Map containing Maps, Arrays and Strings (as parsed without type restrictions by GSON).
+   * @param data data to insert
    * @param marker character to recognize the special tags by.
    */
-  public DataIntoTemplate(Map<String, Object> data, char opening, char marker, char closing)
+  public DataIntoTemplate(AccessableData data, char opening, char marker, char closing)
   {
     this.data = data;
     this.opening = opening;

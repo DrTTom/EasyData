@@ -2,11 +2,11 @@ package de.tautenhahn.easydata;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
+
+import de.tautenhahn.easydata.AccessableData.ListMode;
+import de.tautenhahn.easydata.AccessableData.SortMode;
 
 
 /**
@@ -18,14 +18,6 @@ public class ForTag extends ComplexTag
 {
 
   private final Matcher start;
-
-  /**
-   * just because we need a three-valued type.
-   */
-  private enum ListPreferrence
-  {
-    BY_TYPE, KEYS, VALUES;
-  }
 
   /**
    * Creates new instance.
@@ -41,67 +33,36 @@ public class ForTag extends ComplexTag
   }
 
   @Override
-  public void resolve(Token startTag, Object data, Writer output) throws IOException
+  public void resolve(Token startTag, AccessableData data, Writer output) throws IOException
   {
     String addressedCollection = start.group(2);
-    ListPreferrence mode = ListPreferrence.BY_TYPE;
+    ListMode mode = ListMode.DEFAULT;
     if (addressedCollection.endsWith(".keys"))
     {
       addressedCollection = addressedCollection.substring(0, addressedCollection.length() - ".keys".length());
-      mode = ListPreferrence.KEYS;
+      mode = ListMode.KEYS;
     }
     else if (addressedCollection.endsWith(".values"))
     {
       addressedCollection = addressedCollection.substring(0,
                                                           addressedCollection.length() - ".values".length());
-      mode = ListPreferrence.VALUES;
+      mode = ListMode.VALUES;
     }
-
-    Object subData = InsertValueTag.getAttribute(startTag, addressedCollection, data);
-    if (subData == null)
-    {
-      throw InsertValueTag.createDataRefException(null, startTag, addressedCollection);
-    }
-    Map<String, Object> allData = (Map)data; // overall object is always a map
     String definedName = start.group(1);
-    for ( Iterator<Object> iter = iterate(startTag, subData, mode) ; iter.hasNext() ; )
+
+    for ( Iterator<Object> iter = data.getIterator(addressedCollection,
+                                                   mode,
+                                                   SortMode.NONE,
+                                                   null) ; iter.hasNext() ; )
     {
-      allData.put(definedName, iter.next());
-      resolveContent(content, allData, output);
+      data.define(definedName, iter.next());
+      resolveContent(content, data, output);
       if (iter.hasNext())
       {
-        resolveContent(otherContent, allData, output);
+        resolveContent(otherContent, data, output);
       }
+      data.undefine(definedName);
     }
   }
-
-  private Iterator<Object> iterate(Token tag, Object subData, ListPreferrence mode)
-  {
-    if (subData instanceof Map)
-    {
-      return mode == ListPreferrence.VALUES ? ((Map)subData).values().iterator()
-        : ((Map)subData).keySet().iterator();
-    }
-    if (subData instanceof List)
-    {
-      List list = (List)subData;
-      return (mode == ListPreferrence.KEYS ? indexList(list.size()) : list).iterator();
-    }
-
-    throw new IllegalArgumentException("No object or array found at line " + tag.getRow() + ", col."
-                                       + tag.getCol());
-  }
-
-
-  private List indexList(int size)
-  {
-    List<String> result = new ArrayList<>(size);
-    for ( int i = 0 ; i < size ; i++ )
-    {
-      result.add(Integer.toString(i));
-    }
-    return result;
-  }
-
 
 }

@@ -6,3 +6,5 @@
 .classpath
 *~
 /cv.*
+Mustermann.png
+*.tex.swp

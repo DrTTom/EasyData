@@ -39,11 +39,11 @@ public class TestPracticalUse
   @Test
   public void cvAsLatex() throws IOException
   {
-    Map<String, Object> cv = null;
+    AccessableData cv = null;
     try (InputStream json = TestPracticalUse.class.getResourceAsStream("/cv.json");
       Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
     {
-      cv = new Gson().fromJson(reader, Map.class);
+      cv = new AccessableData(new Gson().fromJson(reader, Map.class));
     }
     try (InputStream ti = TestPracticalUse.class.getResourceAsStream("/cv_template.tex");
       Reader template = new InputStreamReader(ti, StandardCharsets.UTF_8);
