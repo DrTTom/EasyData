@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -16,6 +17,8 @@ public class IfTag extends ComplexTag
 {
 
   private final Matcher start;
+
+  public static final Pattern PATTERN = Pattern.compile("IF +(.+)(==)(.+)");
 
   /**
    * Creates new instance.
@@ -33,9 +36,9 @@ public class IfTag extends ComplexTag
   @Override
   public void resolve(Token startTag, AccessableData data, Writer output) throws IOException
   {
-    String leftSide = start.group(1); // TODO: support some recursion here too!
+    String leftSide = start.group(1).trim(); // TODO: support some recursion here too!
     // String operator = start.group(2);
-    String rightSide = start.group(3);
+    String rightSide = start.group(3).trim();
 
     if (Objects.equals(data.get(leftSide), data.get(rightSide)))
     {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.tautenhahn.easydata.AccessableData.ListMode;
 import de.tautenhahn.easydata.AccessableData.SortMode;
@@ -16,6 +17,8 @@ import de.tautenhahn.easydata.AccessableData.SortMode;
  */
 public class ForTag extends ComplexTag
 {
+
+  public static final Pattern PATTERN = Pattern.compile("FOR +(\\w+) *: *([^ ]+) *");
 
   private final Matcher start;
 

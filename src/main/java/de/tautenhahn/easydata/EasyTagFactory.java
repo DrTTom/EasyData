@@ -23,6 +23,8 @@ public final class EasyTagFactory implements ResolverFactory
 
   private final Map<Pattern, BiFunction<Matcher, Iterator<Token>, Resolver>> resolvers = new HashMap<>();
 
+  private final Pattern specialTag;
+
   /**
    * Creates a factory with specified tag syntax.
    *
@@ -32,14 +34,21 @@ public final class EasyTagFactory implements ResolverFactory
    */
   public EasyTagFactory(char opening, char marker, char closing)
   {
-    String open = RegexHelper.mask(opening) + RegexHelper.mask(marker);
+
+    String open = RegexHelper.mask(opening);
     String close = RegexHelper.mask(closing);
+    String mmarker = RegexHelper.mask(marker);
+    // easy because input is already a token:
+    specialTag = Pattern.compile(open + mmarker + " *(.*) *" + close);
+
+
     String op = String.valueOf(new char[]{opening, marker});
-    resolvers.put(Pattern.compile(open + "=(.*)" + close), (s, r) -> new InsertValueTag(s));
-    resolvers.put(Pattern.compile(open + "FOR +(\\w+):([^" + close + "]+)" + close),
+    resolvers.put(InsertValueTag.PATTERN, (s, r) -> new InsertValueTag(s));
+    resolvers.put(ForTag.PATTERN,
                   (s, r) -> new ForTag(s, r, op + "DELIM" + closing, op + "END" + closing, this));
-    resolvers.put(Pattern.compile(open + "IF +(.+)(==)([^" + close + "]+)" + close),
+    resolvers.put(IfTag.PATTERN,
                   (s, r) -> new IfTag(s, r, op + "ELSE" + closing, op + "END" + closing, this));
+
   }
 
   /**
@@ -58,13 +67,18 @@ public final class EasyTagFactory implements ResolverFactory
   @Override
   public Resolver getResolver(Token token, Iterator<Token> remaining)
   {
-    for ( Entry<Pattern, BiFunction<Matcher, Iterator<Token>, Resolver>> entry : resolvers.entrySet() )
+    Matcher tagMatcher = specialTag.matcher(token.getContent());
+    if (tagMatcher.matches())
     {
-      Matcher m = entry.getKey().matcher(token.getContent());
-      if (m.matches())
+      for ( Entry<Pattern, BiFunction<Matcher, Iterator<Token>, Resolver>> entry : resolvers.entrySet() )
       {
-        return entry.getValue().apply(m, remaining);
+        Matcher contentMatcher = entry.getKey().matcher(tagMatcher.group(1));
+        if (contentMatcher.matches())
+        {
+          return entry.getValue().apply(contentMatcher, remaining);
+        }
       }
+      throw new IllegalArgumentException("unrecognized token " + token);
     }
     return IDENTITY;
   }

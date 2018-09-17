@@ -3,6 +3,7 @@ package de.tautenhahn.easydata;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -13,11 +14,16 @@ import java.util.regex.Matcher;
 public class InsertValueTag implements Resolver
 {
 
+  /**
+   * Pattern to define this tag type, matches complete content.
+   */
+  public static final Pattern PATTERN = Pattern.compile("= *([\\w\\${}\\.]+) *");
+
   private final String name;
 
   InsertValueTag(Matcher start)
   {
-    name = start.group(1).trim();
+    name = start.group(1);
   }
 
   @Override

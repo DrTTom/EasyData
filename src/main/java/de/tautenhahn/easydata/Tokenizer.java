@@ -33,7 +33,7 @@ public class Tokenizer implements Iterator<Token>
    *
    * @param data must use an delimiter matching a fixed line ending ("\n" or "\r\n")so we can re-insert it.
    */
-  Tokenizer(Scanner data, char opening, char closing)
+  Tokenizer(Scanner data, char opening, char marker, char closing)
   {
     this.data = data;
     delimiter = data.delimiter().toString();
@@ -43,9 +43,10 @@ public class Tokenizer implements Iterator<Token>
     }
     String open = RegexHelper.mask(opening);
     String close = RegexHelper.mask(closing);
-    pattern = Pattern.compile("([^" + open + "]+)|" + //
-                              "(" + open + "[^" + open + close + "]+" + close + ")|" + //
-                              open, Pattern.DOTALL);
+    String mmarker = RegexHelper.mask(marker);
+    String regexTag = open + mmarker + "(([^" + open + close + "]|(" + open + "[^" + mmarker + "].*?" + close
+                      + "))*)" + close;
+    pattern = Pattern.compile("([^" + open + "]+)|(" + regexTag + ")|(" + open + ")", Pattern.DOTALL);
     pending = getMatcher();
   }
 
