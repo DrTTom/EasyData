@@ -4,7 +4,7 @@
       "Street" : "Schloßalle",
       "City" : "Wolkenkuckuksheim"
    },
-   "Hobbies" : [ "Tanzen", "Schlafen", "Feuerschlucken"], 
+   "Hobbys" : [ "Tanzen", "Schlafen", "Feuerschlucken"], 
    "index": "2",
    "friends" : {
       "Emil": { "city": "Gera"},

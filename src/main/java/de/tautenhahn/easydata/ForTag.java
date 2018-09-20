@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.tautenhahn.easydata.AccessableData.ListMode;
-import de.tautenhahn.easydata.AccessableData.SortMode;
+import de.tautenhahn.easydata.AccessibleData.ListMode;
+import de.tautenhahn.easydata.AccessibleData.SortMode;
 
 
 /**
@@ -36,7 +36,7 @@ public class ForTag extends ComplexTag
   }
 
   @Override
-  public void resolve(Token startTag, AccessableData data, Writer output) throws IOException
+  public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
   {
     String addressedCollection = start.group(2);
     ListMode mode = ListMode.DEFAULT;

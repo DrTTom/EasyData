@@ -18,8 +18,8 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import de.tautenhahn.easydata.AccessableData.ListMode;
-import de.tautenhahn.easydata.AccessableData.SortMode;
+import de.tautenhahn.easydata.AccessibleData.ListMode;
+import de.tautenhahn.easydata.AccessibleData.SortMode;
 
 
 /**
@@ -27,10 +27,10 @@ import de.tautenhahn.easydata.AccessableData.SortMode;
  *
  * @author TT
  */
-public class TestAccessableData
+public class TestAccessibleData
 {
 
-  private static AccessableData systemunderTest;
+  private static AccessibleData systemunderTest;
 
   /**
    * Provides some data to create documents with.
@@ -43,7 +43,7 @@ public class TestAccessableData
     try (InputStream json = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
       Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
     {
-      systemunderTest = new AccessableData(new Gson().fromJson(reader, Map.class));
+      systemunderTest = new AccessibleData(new Gson().fromJson(reader, Map.class));
     }
   }
 
@@ -54,7 +54,7 @@ public class TestAccessableData
   public void sort()
   {
     List<String> result = new ArrayList<>();
-    for ( Iterator<Object> iter = systemunderTest.getIterator("Hobbies", // NOPMD
+    for ( Iterator<Object> iter = systemunderTest.getIterator("Hobbys", // NOPMD
                                                               ListMode.DEFAULT,
                                                               SortMode.ASCENDING,
                                                               null) ; iter.hasNext() ; )
@@ -63,7 +63,7 @@ public class TestAccessableData
     }
     assertThat("sorted", result, contains("Feuerschlucken", "Schlafen", "Tanzen"));
     result.clear();
-    for ( Iterator<Object> iter = systemunderTest.getIterator("Hobbies", // NOPMD
+    for ( Iterator<Object> iter = systemunderTest.getIterator("Hobbys", // NOPMD
                                                               ListMode.KEYS,
                                                               SortMode.DECENDING,
                                                               null) ; iter.hasNext() ; )

@@ -34,7 +34,7 @@ public class IfTag extends ComplexTag
   }
 
   @Override
-  public void resolve(Token startTag, AccessableData data, Writer output) throws IOException
+  public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
   {
     String leftSide = start.group(1).trim(); // TODO: support some recursion here too!
     // String operator = start.group(2);

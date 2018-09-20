@@ -27,7 +27,7 @@ public class InsertValueTag implements Resolver
   }
 
   @Override
-  public void resolve(Token start, AccessableData data, Writer output) throws IOException
+  public void resolve(Token start, AccessibleData data, Writer output) throws IOException
   {
     output.write(data.getString(name));
   }

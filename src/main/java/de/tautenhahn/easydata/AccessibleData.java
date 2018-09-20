@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class AccessableData
+public class AccessibleData
 {
 
   private static final Pattern DEREF = Pattern.compile("\\$\\{([^}]+)}");
@@ -55,7 +55,7 @@ public class AccessableData
   /**
    * Constructs an instance. This constructor will be replaced as son as the object works.
    */
-  public AccessableData(Map<String, Object> data)
+  public AccessibleData(Map<String, Object> data)
   {
     this.data = data;
   }

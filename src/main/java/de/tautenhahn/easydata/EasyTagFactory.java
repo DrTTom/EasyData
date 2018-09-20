@@ -58,7 +58,7 @@ public final class EasyTagFactory implements ResolverFactory
   {
 
     @Override
-    public void resolve(Token start, AccessableData data, Writer output) throws IOException
+    public void resolve(Token start, AccessibleData data, Writer output) throws IOException
     {
       output.write(start.getContent());
     }

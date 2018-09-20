@@ -47,7 +47,7 @@ public class TestDataIntoTemplate
    */
   private static final char MARKER = '@';
 
-  private static AccessableData exampleData;
+  private static AccessibleData exampleData;
 
   /**
    * Provides some data to create documents with.
@@ -61,7 +61,7 @@ public class TestDataIntoTemplate
     try (InputStream json = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
       Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
     {
-      exampleData = new AccessableData(new Gson().fromJson(reader, Map.class));
+      exampleData = new AccessibleData(new Gson().fromJson(reader, Map.class));
     }
   }
 
@@ -82,7 +82,7 @@ public class TestDataIntoTemplate
   {
     String result = doExpand("[@=Name] wohnt in [@=Address.City].");
     assertThat("text with inserted attribute", result, equalTo("Horst wohnt in Wolkenkuckuksheim.\n"));
-    result = doExpand("Erstes Hobby ist [@=Hobbies.0].");
+    result = doExpand("Erstes Hobby ist [@=Hobbys.0].");
     assertThat("text with inserted array element", result, equalTo("Erstes Hobby ist Tanzen.\n"));
   }
 
@@ -95,7 +95,7 @@ public class TestDataIntoTemplate
   @Test
   public void useReference() throws IOException
   {
-    String result = doExpand("Sein liebstes Hobby ist [@=Hobbies.${index}].");
+    String result = doExpand("Sein liebstes Hobby ist [@=Hobbys.${index}].");
     assertThat("text with resolved reference", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
 
@@ -126,7 +126,7 @@ public class TestDataIntoTemplate
     result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@DELIM], [@END].");
     assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
 
-    result = doExpand("Sein liebstes Hobby ist [@FOR h:Hobbies.keys][@IF h==index][@=Hobbies.${h}][@END][@END].");
+    result = doExpand("Sein liebstes Hobby ist [@FOR h:Hobbys.keys][@IF h==index][@=Hobbys.${h}][@END][@END].");
     assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
   }
 

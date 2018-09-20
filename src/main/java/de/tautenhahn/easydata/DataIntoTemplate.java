@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class DataIntoTemplate
 {
 
-  private final AccessableData data;
+  private final AccessibleData data;
 
   private final ResolverFactory factory;
 
@@ -31,7 +31,7 @@ public class DataIntoTemplate
    * @param data data to insert
    * @param marker character to recognize the special tags by.
    */
-  public DataIntoTemplate(AccessableData data, char opening, char marker, char closing)
+  public DataIntoTemplate(AccessibleData data, char opening, char marker, char closing)
   {
     this.data = data;
     this.opening = opening;

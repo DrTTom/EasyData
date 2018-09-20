@@ -21,6 +21,6 @@ public interface Resolver
    * @param output
    * @throws IOException
    */
-  void resolve(Token start, AccessableData data, Writer output) throws IOException;
+  void resolve(Token start, AccessibleData data, Writer output) throws IOException;
 
 }
