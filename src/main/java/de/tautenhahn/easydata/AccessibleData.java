@@ -3,11 +3,11 @@ package de.tautenhahn.easydata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -93,37 +93,30 @@ public class AccessibleData
   }
 
   /**
-   * Returns an iterator over sub-elements.
-   *
-   * @param attrName must target some complex attribute
-   * @param mode chooses keys or values to iterate
-   * @param sort may request sorting the elements
-   * @param sortAttribute attribute to sort by (relative to iterated element), optional
+   * Replaces each object by its addresses attribute.
+   * 
+   * @param original
+   * @param attrName
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public Iterator<Object> getIterator(String attrName, ListMode mode, SortMode sort, String sortAttribute)
+  public Collection<Object> map(Collection<Object> original, String attrName)
   {
-    Object target = get(attrName);
-    Collection<Object> results = null;
-    if (target instanceof Map)
+    return original.stream().map(o -> get(attrName, o)).collect(Collectors.toList());
+  }
+
+  /**
+   * Replaces each object by its addresses attribute.
+   * 
+   * @param original
+   * @param attrName
+   * @param ascending
+   */
+  public void sort(Collection<Object> original, String attrName, boolean ascending)
+  {
+    if (original instanceof List)
     {
-      results = mode == ListMode.VALUES ? ((Map)target).values() : ((Map)target).keySet();
+      Collections.sort((List<Object>)original,
+                       (a, b) -> compare(a, b, ascending ? SortMode.ASCENDING : SortMode.DECENDING));
     }
-    else if (target instanceof List)
-    {
-      results = mode == ListMode.KEYS ? indexList(((List<?>)target).size()) : (List)target;
-    }
-    else
-    {
-      throw new IllegalArgumentException("expected complex object but " + attrName + " is a "
-                                         + target.getClass().getName());
-    }
-    if (sort != SortMode.NONE)
-    {
-      results = new ArrayList<>(results);
-      Collections.sort((List<?>)results, (a, b) -> compare(a, b, sort));
-    }
-    return results.iterator();
   }
 
   /**
@@ -225,5 +218,29 @@ public class AccessibleData
       result.add(Integer.toString(i));
     }
     return result;
+  }
+
+  /**
+   * Returns a collection of sub-elements.
+   * 
+   * @param attrName
+   * @param mode
+   */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public Collection<Object> getCollection(String attrName, ListMode mode)
+  {
+    Object target = get(attrName);
+
+    if (target instanceof Map)
+    {
+      return mode == ListMode.VALUES ? ((Map)target).values() : ((Map)target).keySet();
+    }
+    if (target instanceof List)
+    {
+      return mode == ListMode.KEYS ? indexList(((List<?>)target).size()) : (List)target;
+    }
+
+    throw new IllegalArgumentException("expected complex object but " + attrName + " is a "
+                                       + target.getClass().getName());
   }
 }
