@@ -7,8 +7,9 @@
    "Hobbys" : [ "Tanzen", "Schlafen", "Feuerschlucken"], 
    "index": "2",
    "friends" : {
-      "Emil": { "city": "Gera"},
-      "Oskar": { "city": "Rom"},
-      "Heinz": { "city": "Berlin"}
+      "Emil": { "city": "Gera", "distance" : "90"},
+      "Oskar": { "city": "Rom", "distance" : "400"},
+      "Heinz": { "city": "Berlin", "distance" : "120"},
+      "Franz": { "city": "Berlin", "distance" : "120"}
    }
 }

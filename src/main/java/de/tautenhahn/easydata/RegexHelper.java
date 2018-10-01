@@ -27,23 +27,6 @@ public final class RegexHelper
   }
 
   /**
-   * Returns true if given regex matches only to a string equal to the regex String.
-   *
-   * @param regex
-   */
-  public static boolean isUniqueMatch(String regex)
-  {
-    for ( char c : regex.toCharArray() )
-    {
-      if (SPECIAL_CHARS.indexOf(c) != -1)
-      {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
    * Return true if regex matches a unique line break
    *
    * @param regex

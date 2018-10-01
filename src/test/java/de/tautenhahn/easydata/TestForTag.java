@@ -14,7 +14,7 @@ import org.junit.Test;
 /**
  * Unit tests for the ForTag which shall be able to sort and map collections so data pre-processing will be
  * obsolete in several applications.
- * 
+ *
  * @author TT
  */
 public class TestForTag

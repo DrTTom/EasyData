@@ -21,7 +21,7 @@ import de.tautenhahn.easydata.AccessibleData.ListMode;
  * <li>UNIQUE - skips all repeated elements</li>
  * </ul>
  * Additionally, we support inserting some content between the iterated resolved text.
- * 
+ *
  * @author TT
  */
 public class ForTag extends ComplexTag
@@ -102,7 +102,7 @@ public class ForTag extends ComplexTag
     String orderOperator = start.group(GROUP_ORDER);
     if (orderOperator != null)
     {
-      data.sort(col, start.group(GROUP_ORDERATTR), "ASCENDING".equals(orderOperator));
+      col = data.sort(col, start.group(GROUP_ORDERATTR), "ASCENDING".equals(orderOperator));
     }
     if (start.group(GROUP_UNIQUE) != null)
     {

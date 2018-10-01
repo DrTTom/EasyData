@@ -11,7 +11,13 @@ import org.junit.Test;
 
 
 /**
- * Unit test for splitting input into handy tokens.
+ * Unit test for splitting input into handy tokens. Those tokens must have the following properties:
+ * <ul>
+ * <li>concatenating all the tokens yields the original input</li>
+ * <li>each special tag '[#some content]' is returned in a separate token</li>
+ * <li>characters marking the special tag can be chosen freely</li>
+ * <ul>
+ * Handling of huge inputs should be done streaming. We assume the input is handled line by line.
  *
  * @author TT
  */
@@ -19,7 +25,7 @@ public class TestTokenizer
 {
 
   /**
-   * Checks that targeted tokens will be found.
+   * Checks that targeted tokens will be found and that input can be restored.
    */
   @SuppressWarnings("boxing")
   @Test

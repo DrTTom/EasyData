@@ -94,7 +94,7 @@ public class AccessibleData
 
   /**
    * Replaces each object by its addresses attribute.
-   * 
+   *
    * @param original
    * @param attrName
    */
@@ -104,19 +104,21 @@ public class AccessibleData
   }
 
   /**
-   * Replaces each object by its addresses attribute.
-   * 
+   * Returns a list of sorted elements. This method calls {@link #get(String, Object)} too frequently,
+   * optimize in case of performance problems.
+   *
    * @param original
    * @param attrName
    * @param ascending
    */
-  public void sort(Collection<Object> original, String attrName, boolean ascending)
+  public List<Object> sort(Collection<Object> original, String attrName, boolean ascending)
   {
-    if (original instanceof List)
-    {
-      Collections.sort((List<Object>)original,
-                       (a, b) -> compare(a, b, ascending ? SortMode.ASCENDING : SortMode.DECENDING));
-    }
+    List<Object> result = new ArrayList<>(original);
+    Collections.sort(result,
+                     (a, b) -> compare(get(attrName, a),
+                                       get(attrName, b),
+                                       ascending ? SortMode.ASCENDING : SortMode.DECENDING));
+    return result;
   }
 
   /**
@@ -173,9 +175,23 @@ public class AccessibleData
       first = attrName.substring(0, pos);
       remaining = attrName.substring(pos + 1);
     }
-    Object attr = element instanceof Map ? ((Map<?, ?>)element).get(first)
-      : ((List<?>)element).get(Integer.parseInt(first));
+    Object attr = getAttribute(element, first);
     return remaining == null ? attr : get(remaining, attr);
+  }
+
+  /** By the way, this is the method to be changed if you want to support arbitrary Java beans. */
+  private Object getAttribute(Object element, String first)
+  {
+    if (element instanceof Map)
+    {
+      return ((Map<?, ?>)element).get(first);
+    }
+    if (element instanceof List)
+    {
+      return ((List<?>)element).get(Integer.parseInt(first));
+    }
+    throw new IllegalArgumentException("No property '" + first + "' supported for element of type "
+                                       + element.getClass().getName());
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -222,7 +238,7 @@ public class AccessibleData
 
   /**
    * Returns a collection of sub-elements.
-   * 
+   *
    * @param attrName
    * @param mode
    */

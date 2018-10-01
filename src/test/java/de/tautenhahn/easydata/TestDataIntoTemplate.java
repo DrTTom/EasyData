@@ -121,10 +121,12 @@ public class TestDataIntoTemplate
   public void repeatElements() throws IOException
   {
     String result = doExpand("Seine Freunde sind [@FOR name:friends.keys][@=name][@DELIM], [@END].");
-    assertThat("text with repeated element", result, equalTo("Seine Freunde sind Emil, Oskar, Heinz.\n"));
+    assertThat("text with repeated element",
+               result,
+               equalTo("Seine Freunde sind Emil, Oskar, Heinz, Franz.\n"));
 
     result = doExpand("Die wohnen in [@FOR friend:friends.values][@=friend.city][@DELIM], [@END].");
-    assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin.\n"));
+    assertThat("created document", result, equalTo("Die wohnen in Gera, Rom, Berlin, Berlin.\n"));
 
     result = doExpand("Sein liebstes Hobby ist [@FOR h:Hobbys.keys][@IF h==index][@=Hobbys.${h}][@END][@END].");
     assertThat("created document", result, equalTo("Sein liebstes Hobby ist Feuerschlucken.\n"));
@@ -145,7 +147,34 @@ public class TestDataIntoTemplate
     assertThat("nested tags", result, equalTo("Der Exot ist Oskar.\n"));
   }
 
+  /**
+   * Advanced level of FOR-tags: sort elements by some attribute.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void sortElementsByAttribute() throws IOException
+  {
+    String result = doExpand("Städte alphabetisch: [@FOR friend:friends.values UNIQUE DESCENDING city][@= friend.city] [@END]");
+    assertThat("result sorted by name", result, equalTo("Städte alphabetisch: Rom Gera Berlin \n"));
+    result = doExpand("Städte nach Abstand: [@FOR friend:friends.values UNIQUE ASCENDING distance][@= friend.city] [@END]");
+    assertThat("result sorted by distance", result, equalTo("Städte nach Abstand: Gera Berlin Rom \n"));
+  }
 
+  /**
+   * Advanced level of FOR-tags: group elements.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void groupElementsByAttribute() throws IOException
+  {
+    String result = doExpand("Freunde nach Stadt: [@FOR city:friends.values SELECT city UNIQUE] [@= city]:"
+                             + "[@FOR name:friends][@IF city==friends.${name}.city] [@=name][@END][@END][@DELIM], [@END]");
+    assertThat("Freunde gruppirt nach Stadt: ",
+               result,
+               equalTo("Freunde nach Stadt:  Gera: Emil,  Rom: Oskar,  Berlin: Heinz Franz\n"));
+  }
 
   private String doExpand(String template) throws IOException
   {
