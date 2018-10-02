@@ -18,7 +18,7 @@ public class IfTag extends ComplexTag
 
   private final Matcher start;
 
-  public static final Pattern PATTERN = Pattern.compile("IF +(.+)(==)(.+)");
+  public static final Pattern PATTERN = Pattern.compile("IF +(.+) *(==|>|<) *(.+)");
 
   /**
    * Creates new instance.
@@ -36,11 +36,15 @@ public class IfTag extends ComplexTag
   @Override
   public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
   {
-    String leftSide = start.group(1).trim(); // TODO: support some recursion here too!
-    // String operator = start.group(2);
+    String leftSide = start.group(1).trim();
+    String operator = start.group(2);
     String rightSide = start.group(3).trim();
+    Object left = data.get(leftSide);
+    Object right = data.get(rightSide);
 
-    if (Objects.equals(data.get(leftSide), data.get(rightSide)))
+    if ("==".equals(operator) && Objects.equals(left, right)
+        || "<".equals(operator) && left.toString().compareTo(right.toString()) < 0
+        || ">".equals(operator) && left.toString().compareTo(right.toString()) > 0)
     {
       resolveContent(content, data, output);
     }

@@ -17,7 +17,7 @@ public class InsertValueTag implements Resolver
   /**
    * Pattern to define this tag type, matches complete content.
    */
-  public static final Pattern PATTERN = Pattern.compile("= *([\\w\\${}\\.]+) *");
+  public static final Pattern PATTERN = Pattern.compile("= *([\\w\\${}\\.\\(\\)]+) *");
 
   private final String name;
 

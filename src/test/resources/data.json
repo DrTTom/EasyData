@@ -11,5 +11,6 @@
       "Oskar": { "city": "Rom", "distance" : "400"},
       "Heinz": { "city": "Berlin", "distance" : "120"},
       "Franz": { "city": "Berlin", "distance" : "120"}
-   }
+   },
+   "children" : []
 }

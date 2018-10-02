@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,6 +25,10 @@ public class AccessibleData
 
   private static final Pattern DEREF = Pattern.compile("\\$\\{([^}]+)}");
 
+  private static final Pattern SIZE = Pattern.compile("SIZE\\(([^\\)]+)\\)");
+
+  private static final Pattern LITERAL = Pattern.compile("\"[^\"]*\"");
+
   private final Map<String, Object> data;
 
   /**
@@ -40,20 +45,7 @@ public class AccessibleData
   }
 
   /**
-   * Defines how to sort iterated elements.
-   */
-  public enum SortMode
-  {
-    /** use elements of lists or arrays, keys for maps or other complex objects */
-    NONE,
-    /** use map keys, attribute names or numeric strings for arrays and lists */
-    ASCENDING,
-    /** use values always */
-    DECENDING;
-  }
-
-  /**
-   * Constructs an instance. This constructor will be replaced as son as the object works.
+   * Constructs an instance. TODO: replace this constructor with one which takes a JSON content.
    */
   public AccessibleData(Map<String, Object> data)
   {
@@ -69,10 +61,20 @@ public class AccessibleData
    */
   public Object get(String attrName)
   {
-    if (attrName.matches("\"[^\"]*\""))
+    if (LITERAL.matcher(attrName).matches())
     {
       return attrName.substring(1, attrName.length() - 1);
     }
+    if (attrName.matches("\\d+"))
+    {
+      return attrName;
+    }
+    Matcher m = SIZE.matcher(attrName);
+    if (m.matches())
+    {
+      return Integer.toString(getCollection(m.group(1), ListMode.DEFAULT).size());
+    }
+
     return get(resolveInnerExpressions(attrName), data);
   }
 
@@ -89,7 +91,7 @@ public class AccessibleData
       throw new IllegalArgumentException("expected String but " + attrName + " is of type "
                                          + result.getClass().getName());
     }
-    return result.toString();
+    return Optional.ofNullable(result).map(Object::toString).orElse("null");
   }
 
   /**
@@ -114,10 +116,7 @@ public class AccessibleData
   public List<Object> sort(Collection<Object> original, String attrName, boolean ascending)
   {
     List<Object> result = new ArrayList<>(original);
-    Collections.sort(result,
-                     (a, b) -> compare(get(attrName, a),
-                                       get(attrName, b),
-                                       ascending ? SortMode.ASCENDING : SortMode.DECENDING));
+    Collections.sort(result, (a, b) -> compare(get(attrName, a), get(attrName, b), ascending));
     return result;
   }
 
@@ -195,9 +194,9 @@ public class AccessibleData
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private int compare(Object a, Object b, SortMode sort)
+  private int compare(Object a, Object b, boolean ascending)
   {
-    int direction = sort == SortMode.DECENDING ? -1 : 1;
+    int direction = ascending ? 1 : -1;
     if (isNumeric(a) && isNumeric(b))
     {
       return Double.valueOf((String)a).compareTo(Double.valueOf((String)b)) * direction;

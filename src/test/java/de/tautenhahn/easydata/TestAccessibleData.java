@@ -1,6 +1,7 @@
 package de.tautenhahn.easydata;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -65,6 +66,16 @@ public class TestAccessibleData
     result = systemUnderTest.getCollection("Hobbys", ListMode.KEYS);
     result = systemUnderTest.sort(result, null, false);
     assertThat("sorted", result, contains("2", "1", "0"));
+  }
+
+  /**
+   * Asserts that the size of collections can be obtained. Because all data is treated as String, the size
+   * comes as String as well.
+   */
+  @Test
+  public void size()
+  {
+    assertThat("size", systemUnderTest.getString("SIZE(Hobbys)"), equalTo("3"));
   }
 
   /**
