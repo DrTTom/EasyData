@@ -52,6 +52,7 @@ public abstract class ComplexTag implements Resolver
       }
       tokens.put(token, factory.getResolver(token, remaining));
     }
+    throw new IllegalArgumentException("unexpected end of input, missing " + end);
   }
 
   /**

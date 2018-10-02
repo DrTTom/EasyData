@@ -113,6 +113,32 @@ public class TestDataIntoTemplate
   }
 
   /**
+   * Asserts that misspelled special tag produces a comprehensive error message.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void unsupportedTag() throws IOException
+  {
+    expected.expect(IllegalArgumentException.class);
+    expected.expectMessage("unrecognized token   1: 12 [@WHILE true]");
+    doExpand("no such Tag [@WHILE true] haha [@END]");
+  }
+
+  /**
+   * Asserts that missing end tag produces a comprehensive error message.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void missingEnd() throws IOException
+  {
+    expected.expect(IllegalArgumentException.class);
+    expected.expectMessage("unexpected end of input, missing [@END]");
+    doExpand("no such Tag [@IF Name==\"Friedbert\"] Was für ein altmodischer Name!");
+  }
+
+  /**
    * Need an iteration, in best case over keys and values of a map (or array treated as map). Furthermore,
    * check whether nested tags work.<br>
    * Introducing tags [@FOR :] [@DELIM] [@END]

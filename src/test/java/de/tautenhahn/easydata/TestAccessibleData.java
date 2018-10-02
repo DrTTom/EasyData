@@ -78,6 +78,26 @@ public class TestAccessibleData
   }
 
   /**
+   * Assert that path selecting wrong target type produces a comprehensive error message.
+   */
+  @Test
+  public void wrongTarget2()
+  {
+    expected.expectMessage("expected complex object but Hobbys.0 is a java.lang.String");
+    systemUnderTest.getCollection("Hobbys.0", ListMode.DEFAULT);
+  }
+
+  /**
+   * Assert that path selecting wrong target type produces a comprehensive error message.
+   */
+  @Test
+  public void attributeOfPrimitive()
+  {
+    expected.expectMessage("No property 'shortName' supported for element of type java.lang.String");
+    systemUnderTest.getString("Name.shortName");
+  }
+
+  /**
    * Assert that overwriting an existing attribute produces a comprehensive error message.
    */
   @Test
@@ -86,5 +106,6 @@ public class TestAccessibleData
     expected.expectMessage("cannot re-define existing key Name");
     systemUnderTest.define("Name", "Ludmilla");
   }
+
 
 }
