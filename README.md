@@ -33,7 +33,7 @@ An experienced programmer should be able to develop a good idea how to do that i
 Discuss the task of accessing parts of a data structure to include into a document. The student shall
 
 - define which data types to support
-- write appropriate unit tests in class 'de.tautenhahn.easydata.TestAccessableData'
+- write appropriate unit tests in class 'de.tautenhahn.easydata.TestAccessibleData'
 - write a class which is able to access collections and String values by attribute path in a complex data structure
 
 **Parsing (reading source code, design pattern, class hierarchy)**

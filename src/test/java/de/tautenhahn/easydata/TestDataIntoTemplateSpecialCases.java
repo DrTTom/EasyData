@@ -35,7 +35,7 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
    * @throws IOException
    */
   @BeforeClass
-  public static void getData() throws IOException
+  public static void provideData() throws IOException
   {
     exampleData = getData("/data.json");
   }

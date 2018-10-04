@@ -45,7 +45,7 @@ public class TestAccessibleData
    * @throws IOException
    */
   @BeforeClass
-  public static void getData() throws IOException
+  public static void provideData() throws IOException
   {
     try (InputStream json = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
       Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
