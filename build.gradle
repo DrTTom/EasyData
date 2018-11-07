@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-  id 'java'
+  id 'application'
   id 'com.github.spotbugs' version '1.6.4'
   id 'com.github.ben-manes.versions' version '0.20.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
@@ -22,11 +22,11 @@ repositories {
    mavenCentral()
 }
 
-version = '0.1'
+version = '1.0'
 group = 'de.tautenhahn.easydata'
+mainClassName = 'de.tautenhahn.easydata.Main'
 
 check.dependsOn jacocoTestReport
-
 
 dependencies {
    compile "com.google.code.gson:gson:2.8.5"
