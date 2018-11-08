@@ -98,7 +98,9 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
 
   /**
    * One step further: data elements should appear in groups defined by some attribute. Instead of iterating
-   * over the data elements, the document needs to iterate the values of that attribute.
+   * over the data elements, the document needs to iterate the values of that attribute. <br>
+   * Furthermore, developers might be inclined to write "friends[name]" instead of the implemented
+   * "friends.${name}", so allow that form as well.
    *
    * @throws IOException
    */
@@ -106,7 +108,7 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
   public void groupElementsByAttribute() throws IOException
   {
     String result = doExpand("Freunde nach Stadt: [@FOR city:friends.values SELECT city UNIQUE] [@= city]:"
-                             + "[@FOR name:friends][@IF city==friends.${name}.city] [@=name][@END][@END][@DELIM], [@END]");
+                             + "[@FOR name:friends][@IF city==friends[name].city] [@=name][@END][@END][@DELIM], [@END]");
     assertThat("Freunde gruppiert nach Stadt: ",
                result,
                equalTo("Freunde nach Stadt:  Gera: Emil,  Rom: Oskar,  Berlin: Heinz Franz\n"));
@@ -122,7 +124,7 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
   {
     String result = doExpand("Kinder: [@IF SIZE(children)>0]JA![@ELSE]nein.[@END]");
     assertThat("result", result, equalTo("Kinder: nein.\n"));
-    result = doExpand("Hobbys: [@IF SIZE(Hobbys)<5][@=SIZE(Hobbys)][@ELSE]viele[@END]");
+    result = doExpand("Hobbys: [@IF SIZE(Hobbys)<10][@=SIZE(Hobbys)][@ELSE]viele[@END]");
     assertThat("result", result, equalTo("Hobbys: 3\n"));
   }
 

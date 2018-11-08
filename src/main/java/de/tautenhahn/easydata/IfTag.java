@@ -18,6 +18,9 @@ public class IfTag extends ComplexTag
 
   private final Matcher start;
 
+  /**
+   * How to recognize this tag.
+   */
   public static final Pattern PATTERN = Pattern.compile("IF +(.+) *(==|>|<) *(.+)");
 
   /**
@@ -43,8 +46,8 @@ public class IfTag extends ComplexTag
     Object right = data.get(rightSide);
 
     if ("==".equals(operator) && Objects.equals(left, right)
-        || "<".equals(operator) && left.toString().compareTo(right.toString()) < 0
-        || ">".equals(operator) && left.toString().compareTo(right.toString()) > 0)
+        || "<".equals(operator) && data.compare(left.toString(), right.toString(), true) < 0
+        || ">".equals(operator) && data.compare(left.toString(), right.toString(), true) > 0)
     {
       resolveContent(content, data, output);
     }

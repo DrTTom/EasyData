@@ -55,6 +55,6 @@ public class Token
   @Override
   public String toString()
   {
-    return String.format("%3d:%3d %s", row, col, content);
+    return String.format("%3d:%3d %s", Integer.valueOf(row), Integer.valueOf(col), content);
   }
 }

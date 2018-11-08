@@ -15,10 +15,17 @@ public class InsertValueTag implements Resolver
 {
 
   /**
+   * Value expression. The regex matches invalid expressions too but is needed here only to recognize the tag
+   * type.
+   */
+  public static final String REGEX_SIMPLE_EXPRESSION = "\\w[\\w\\${}\\.\\)\\(\\[\\]]*[\\w})]+";
+
+  /**
    * Pattern to define this tag type, matches complete content.
    */
-  public static final Pattern PATTERN = Pattern.compile("= *([\\w\\${}\\.\\(\\)]+) *");
+  public static final Pattern PATTERN = Pattern.compile("= *(" + REGEX_SIMPLE_EXPRESSION + ") *");
 
+  // Pattern.compile("= *" + REGEX_EXPRESSION + " *");
   private final String name;
 
   InsertValueTag(Matcher start)

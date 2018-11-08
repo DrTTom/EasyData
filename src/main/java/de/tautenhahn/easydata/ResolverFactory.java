@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 /**
  * Just to avoid a cyclic dependency.
- * 
+ *
  * @author TT
  */
 public interface ResolverFactory
@@ -13,9 +13,9 @@ public interface ResolverFactory
 
   /**
    * Returns a resolver suitable for given token.
-   * 
+   *
    * @param startToken
-   * @param data data object to fill in
+   * @param remaining contains next tokens which may relate to the current tag.
    */
   Resolver getResolver(Token startToken, Iterator<Token> remaining);
 }

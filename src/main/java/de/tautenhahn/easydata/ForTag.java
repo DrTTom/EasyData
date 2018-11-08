@@ -27,8 +27,11 @@ import de.tautenhahn.easydata.AccessibleData.ListMode;
 public class ForTag extends ComplexTag
 {
 
-  private static final String PATH_REGEX = "(\\w[\\w\\.\\$\\{\\}]+[\\w\\}])*";
+  private static final String PATH_REGEX = "(" + InsertValueTag.REGEX_SIMPLE_EXPRESSION + ")";
 
+  /**
+   * How to recognize this tag.
+   */
   public static final Pattern PATTERN = Pattern.compile("FOR +(\\w+) *: *" + PATH_REGEX + "( +SELECT +"
                                                         + PATH_REGEX
                                                         + ")?( +UNIQUE)?( +(ASCENDING|DESCENDING)( +"

@@ -193,8 +193,15 @@ public class AccessibleData
                                        + element.getClass().getName());
   }
 
+  /**
+   * Compares two values, considering the case that both are numeric.
+   *
+   * @param a
+   * @param b
+   * @param ascending
+   */
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private int compare(Object a, Object b, boolean ascending)
+  public int compare(Object a, Object b, boolean ascending)
   {
     int direction = ascending ? 1 : -1;
     if (isNumeric(a) && isNumeric(b))
@@ -216,10 +223,11 @@ public class AccessibleData
   private String resolveInnerExpressions(String attrName)
   {
     String result = attrName;
+    result = result.replaceAll("\\[([^\\]]+)\\]", ".\\${$1}");
     Matcher resolveFirst = DEREF.matcher(result);
     while (resolveFirst.find())
     {
-      result = attrName.replace(resolveFirst.group(0), getString(resolveFirst.group(1)));
+      result = result.replace(resolveFirst.group(0), getString(resolveFirst.group(1)));
       resolveFirst = DEREF.matcher(result);
     }
     return result;
