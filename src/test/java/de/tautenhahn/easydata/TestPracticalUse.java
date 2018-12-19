@@ -40,15 +40,15 @@ public class TestPracticalUse
   public void cvAsLatex() throws IOException
   {
     AccessibleData cv = null;
-    try (InputStream json = TestPracticalUse.class.getResourceAsStream("/cv.json");
-      Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
+    try (InputStream jsonRes = TestPracticalUse.class.getResourceAsStream("/cv.json");
+      Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
       cv = new AccessibleData(new Gson().fromJson(reader, Map.class));
     }
-    try (InputStream ti = TestPracticalUse.class.getResourceAsStream("/cv_template.tex");
-      Reader template = new InputStreamReader(ti, StandardCharsets.UTF_8);
-      OutputStream out = new FileOutputStream("cv.tex");
-      Writer document = new OutputStreamWriter(out, StandardCharsets.UTF_8))
+    try (InputStream tiRes = TestPracticalUse.class.getResourceAsStream("/cv_template.tex");
+      Reader template = new InputStreamReader(tiRes, StandardCharsets.UTF_8);
+      OutputStream outRes = new FileOutputStream("cv.tex");
+      Writer document = new OutputStreamWriter(outRes, StandardCharsets.UTF_8))
     {
       DataIntoTemplate systemUnderTest = new DataIntoTemplate(cv, '<', '@', '>');
       systemUnderTest.fillData(template, document);

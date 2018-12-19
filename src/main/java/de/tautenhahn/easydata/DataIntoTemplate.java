@@ -49,9 +49,9 @@ public class DataIntoTemplate
    */
   public void fillData(Reader template, Writer output) throws IOException
   {
-    try (Scanner scanner = new Scanner(template); Scanner s = scanner.useDelimiter("\n"))
+    try (Scanner scanner = new Scanner(template); Scanner sRes = scanner.useDelimiter("\n"))
     {
-      for ( Tokenizer tokens = new Tokenizer(s, opening, marker, closing) ; tokens.hasNext() ; )
+      for ( Tokenizer tokens = new Tokenizer(sRes, opening, marker, closing) ; tokens.hasNext() ; )
       {
         Token start = tokens.next();
         factory.getResolver(start, tokens).resolve(start, data, output);

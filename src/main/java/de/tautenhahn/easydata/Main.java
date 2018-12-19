@@ -86,7 +86,7 @@ public final class Main
     throw new IllegalArgumentException("markers must have 3 characters: opening, marking, closing");
   }
 
-  private static AccessibleData getData(String name) throws FileNotFoundException, IOException
+  private static AccessibleData getData(String name) throws  IOException
   {
     try (InputStream json = new FileInputStream(name);
       Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))

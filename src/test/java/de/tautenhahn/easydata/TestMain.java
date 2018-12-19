@@ -3,6 +3,7 @@ package de.tautenhahn.easydata;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,7 +28,7 @@ public class TestMain
   @Test
   public void createDocx() throws Exception
   {
-    try (PrintStream out = new PrintStream(new ByteArrayOutputStream(), true, "UTF-8"))
+    try (PrintStream out = new PrintStream(new ByteArrayOutputStream(), true, StandardCharsets.UTF_8))
     {
       setOut(out);
       Main.main(sourceDir.resolve("data.json").toString(),

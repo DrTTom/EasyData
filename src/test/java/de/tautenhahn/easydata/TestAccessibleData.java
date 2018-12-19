@@ -35,7 +35,7 @@ public class TestAccessibleData
    * for checking error cases.
    */
   @Rule
-  public ExpectedException expected = ExpectedException.none();
+  public  ExpectedException expected = ExpectedException.none();
 
   private static AccessibleData systemUnderTest;
 
@@ -47,8 +47,8 @@ public class TestAccessibleData
   @BeforeClass
   public static void provideData() throws IOException
   {
-    try (InputStream json = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
-      Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
+    try (InputStream jsonRes = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
+      Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
       systemUnderTest = new AccessibleData(new Gson().fromJson(reader, Map.class));
     }

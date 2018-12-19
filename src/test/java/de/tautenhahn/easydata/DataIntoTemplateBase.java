@@ -29,8 +29,8 @@ public class DataIntoTemplateBase
    */
   protected static AccessibleData getData(String path) throws IOException
   {
-    try (InputStream json = DataIntoTemplateBase.class.getResourceAsStream(path);
-      Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
+    try (InputStream jsonRes = DataIntoTemplateBase.class.getResourceAsStream(path);
+      Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
       return new AccessibleData(new Gson().fromJson(reader, Map.class));
     }
@@ -49,8 +49,8 @@ public class DataIntoTemplateBase
   protected String doExpand(String template, AccessibleData data, char beginning, char marker, char ending)
     throws IOException
   {
-    try (InputStream ins = new ByteArrayInputStream(template.getBytes(StandardCharsets.UTF_8));
-      Reader reader = new InputStreamReader(ins, StandardCharsets.UTF_8);
+    try (InputStream insRes = new ByteArrayInputStream(template.getBytes(StandardCharsets.UTF_8));
+      Reader reader = new InputStreamReader(insRes, StandardCharsets.UTF_8);
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
     {

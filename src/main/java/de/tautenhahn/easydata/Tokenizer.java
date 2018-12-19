@@ -1,6 +1,7 @@
 package de.tautenhahn.easydata;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +60,10 @@ public class Tokenizer implements Iterator<Token>
   @Override
   public Token next()
   {
+    if (pending==null)
+    {
+      throw new NoSuchElementException();
+    }
     Token result = new Token(pending.group(0), row, pending.start());
     if (!pending.find())
     {

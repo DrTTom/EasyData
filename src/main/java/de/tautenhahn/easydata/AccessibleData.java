@@ -2,7 +2,6 @@ package de.tautenhahn.easydata;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class AccessibleData
     /** use map keys, attribute names or numeric strings for arrays and lists */
     KEYS,
     /** use values always */
-    VALUES;
+    VALUES
   }
 
   /**
@@ -116,7 +115,7 @@ public class AccessibleData
   public List<Object> sort(Collection<Object> original, String attrName, boolean ascending)
   {
     List<Object> result = new ArrayList<>(original);
-    Collections.sort(result, (a, b) -> compare(get(attrName, a), get(attrName, b), ascending));
+    result.sort((a, b) -> compare(get(attrName, a), get(attrName, b), ascending));
     return result;
   }
 

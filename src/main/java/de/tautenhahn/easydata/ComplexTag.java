@@ -19,12 +19,12 @@ public abstract class ComplexTag implements Resolver
   /**
    * Main content.
    */
-  protected Map<Token, Resolver> content = new LinkedHashMap<>();
+  protected final Map<Token, Resolver> content = new LinkedHashMap<>();
 
   /**
    * Alternative content.
    */
-  protected Map<Token, Resolver> otherContent = new LinkedHashMap<>();
+  protected final Map<Token, Resolver> otherContent = new LinkedHashMap<>();
 
   /**
    * Creates new instance

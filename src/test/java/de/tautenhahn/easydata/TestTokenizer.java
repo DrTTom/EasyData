@@ -34,10 +34,10 @@ public class TestTokenizer
     String tag = "[#=Name]";
     boolean found = false;
     String source = "example [][][[" + tag + "[]]\n\n]\n";
-    try (Scanner s = new Scanner(source); Scanner input = s.useDelimiter("\n"))
+    try (Scanner sRes = new Scanner(source); Scanner inputRes = sRes.useDelimiter("\n"))
     {
       StringBuilder copy = new StringBuilder();
-      for ( Tokenizer systemUnderTest = new Tokenizer(input, '[', '#', ']') ; systemUnderTest.hasNext() ; )
+      for ( Tokenizer systemUnderTest = new Tokenizer(inputRes, '[', '#', ']') ; systemUnderTest.hasNext() ; )
       {
         Token token = systemUnderTest.next();
         if (tag.equals(token.getContent()))
@@ -62,9 +62,9 @@ public class TestTokenizer
   {
     String tag = "{$= element.${i} }";
     String source = "i-th element is " + tag + ".\n";
-    try (Scanner s = new Scanner(source); Scanner input = s.useDelimiter("\n"))
+    try (Scanner sRes = new Scanner(source); Scanner inputRes = sRes.useDelimiter("\n"))
     {
-      Tokenizer systemUnderTest = new Tokenizer(s, '{', '$', '}');
+      Tokenizer systemUnderTest = new Tokenizer(inputRes, '{', '$', '}');
       systemUnderTest.next();
       String content = systemUnderTest.next().getContent();
       assertThat("found token", content, equalTo(tag));

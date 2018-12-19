@@ -5,7 +5,7 @@ package de.tautenhahn.easydata;
  *
  * @author TT
  */
-public final class RegexHelper
+final class RegexHelper
 {
 
   private static final String SPECIAL_CHARS = "\\.[]{}()<>*+-=?^$|";
