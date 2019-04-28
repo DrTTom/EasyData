@@ -9,9 +9,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-import com.google.gson.Gson;
 
 
 /**
@@ -32,7 +29,7 @@ public class DataIntoTemplateBase
     try (InputStream jsonRes = DataIntoTemplateBase.class.getResourceAsStream(path);
       Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
-      return new AccessibleData(new Gson().fromJson(reader, Map.class));
+      return AccessibleData.byJsonReader(reader);
     }
   }
 

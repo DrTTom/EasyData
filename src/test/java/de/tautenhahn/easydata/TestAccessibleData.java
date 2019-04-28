@@ -1,23 +1,23 @@
 package de.tautenhahn.easydata;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.google.gson.Gson;
 
 import de.tautenhahn.easydata.AccessibleData.ListMode;
 
@@ -30,12 +30,6 @@ import de.tautenhahn.easydata.AccessibleData.ListMode;
  */
 public class TestAccessibleData
 {
-
-  /**
-   * for checking error cases.
-   */
-  @Rule
-  public  ExpectedException expected = ExpectedException.none();
 
   private static AccessibleData systemUnderTest;
 
@@ -50,7 +44,7 @@ public class TestAccessibleData
     try (InputStream jsonRes = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
       Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
-      systemUnderTest = new AccessibleData(new Gson().fromJson(reader, Map.class));
+      systemUnderTest = AccessibleData.byJsonReader(reader);
     }
   }
 
@@ -69,6 +63,17 @@ public class TestAccessibleData
   }
 
   /**
+   * Assert that bean attributes can be accessed.
+   */
+  @Test
+  public void bean()
+  {
+    AccessibleData byBean = AccessibleData.byBean(Map.of("bean", Calendar.getInstance()));
+    assertThat("bean keys", byBean.getCollection("bean", ListMode.KEYS), hasItem("timeZone"));
+    assertThat("bean value", byBean.getString("bean.timeZone"), notNullValue());
+  }
+
+  /**
    * Asserts that the size of collections can be obtained. Because all data is treated as String, the size
    * comes as String as well.
    */
@@ -84,8 +89,9 @@ public class TestAccessibleData
   @Test
   public void wrongTarget()
   {
-    expected.expectMessage("expected String but Hobbys is of type java.util.ArrayList");
-    systemUnderTest.getString("Hobbys");
+    assertThrows("expected String but Hobbys is of type java.util.ArrayList",
+                 IllegalArgumentException.class,
+                 () -> systemUnderTest.getString("Hobbys"));
   }
 
   /**
@@ -94,8 +100,9 @@ public class TestAccessibleData
   @Test
   public void wrongTarget2()
   {
-    expected.expectMessage("expected complex object but Hobbys.0 is a java.lang.String");
-    systemUnderTest.getCollection("Hobbys.0", ListMode.DEFAULT);
+    assertThrows("expected complex object but Hobbys.0 is a java.lang.String",
+                 IllegalArgumentException.class,
+                 () -> systemUnderTest.getCollection("Hobbys.0", ListMode.DEFAULT));
   }
 
   /**
@@ -104,8 +111,9 @@ public class TestAccessibleData
   @Test
   public void attributeOfPrimitive()
   {
-    expected.expectMessage("No property 'shortName' supported for element of type java.lang.String");
-    systemUnderTest.getString("Name.shortName");
+    assertThrows("No property 'shortName' supported for element of type java.lang.String",
+                 IllegalArgumentException.class,
+                 () -> systemUnderTest.getString("Name.shortName"));
   }
 
   /**
@@ -114,8 +122,9 @@ public class TestAccessibleData
   @Test
   public void duplicateDefinition()
   {
-    expected.expectMessage("cannot re-define existing key Name");
-    systemUnderTest.define("Name", "Ludmilla");
+    assertThrows("cannot re-define existing key Name",
+                 IllegalArgumentException.class,
+                 () -> systemUnderTest.define("Name", "Ludmilla"));
   }
 
 

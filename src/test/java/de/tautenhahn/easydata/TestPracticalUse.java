@@ -9,11 +9,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import org.junit.Test;
-
-import com.google.gson.Gson;
 
 
 /**
@@ -43,7 +40,7 @@ public class TestPracticalUse
     try (InputStream jsonRes = TestPracticalUse.class.getResourceAsStream("/cv.json");
       Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
-      cv = new AccessibleData(new Gson().fromJson(reader, Map.class));
+      cv = AccessibleData.byJsonReader(reader);
     }
     try (InputStream tiRes = TestPracticalUse.class.getResourceAsStream("/cv_template.tex");
       Reader template = new InputStreamReader(tiRes, StandardCharsets.UTF_8);

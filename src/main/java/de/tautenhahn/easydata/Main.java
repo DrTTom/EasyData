@@ -12,9 +12,6 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-import com.google.gson.Gson;
 
 import de.tautenhahn.easydata.docx.DocxAdapter;
 
@@ -52,20 +49,20 @@ public final class Main
                   + "\n   markers consists of 3 characters marking the special tags, for instance \"<@>\"");
       return;
     }
-    AccessibleData data = getData(args[0]);
+    AccessibleData data = AccessibleData.byJsonPath(args[0]);
     String marker = getMarker(args);
     DataIntoTemplate expander = new DataIntoTemplate(data, marker.charAt(0), marker.charAt(1),
                                                      marker.charAt(2));
-    try (InputStream src = new FileInputStream(args[1]); OutputStream dest = new FileOutputStream(args[2]))
+    try (InputStream src = new FileInputStream(args[1]); OutputStream destRes = new FileOutputStream(args[2]))
     {
       if (args[1].endsWith(".docx"))
       {
-        new DocxAdapter(expander).convert(src, dest);
+        new DocxAdapter(expander).convert(src, destRes);
       }
       else
       {
         try (Reader template = new InputStreamReader(src, StandardCharsets.UTF_8);
-          Writer output = new OutputStreamWriter(dest, StandardCharsets.UTF_8))
+          Writer output = new OutputStreamWriter(destRes, StandardCharsets.UTF_8))
         {
           expander.fillData(template, output);
         }
@@ -84,15 +81,6 @@ public final class Main
       return args[3];
     }
     throw new IllegalArgumentException("markers must have 3 characters: opening, marking, closing");
-  }
-
-  private static AccessibleData getData(String name) throws  IOException
-  {
-    try (InputStream json = new FileInputStream(name);
-      Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8))
-    {
-      return new AccessibleData(new Gson().fromJson(reader, Map.class));
-    }
   }
 
 }
