@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'application'
-  id 'com.github.spotbugs' version '1.7.1'
+  id 'com.github.spotbugs' version '2.0.0'
   id 'com.github.ben-manes.versions' version '0.21.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'
@@ -14,7 +14,7 @@ plugins {
 }
 
 pmd {
-    toolVersion = '6.10.0'
+    toolVersion = '6.16.0'
     ruleSets = []
     ruleSetFiles = files("pmd_config.xml")
 }
@@ -38,7 +38,7 @@ check.dependsOn jacocoTestReport
 dependencies {
    compile "com.google.code.gson:gson:2.8.5"
    testCompile 'org.slf4j:slf4j-simple:1.8.0-beta4'
-   testCompile ("junit:junit:4.13-beta-2")
+   testCompile ("junit:junit:4.13-beta-3")
    {
       exclude module: "hamcrest-core"
    }
