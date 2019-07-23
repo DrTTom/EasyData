@@ -1,7 +1,7 @@
 # EasyData
 
 Creating some kind of document by inserting data into an appropriate template is a recurring task. There
-are many implementations, for instance XSLT for XML, latex for LaTeX, lots of frameworks for HTML.
+are many implementations, for instance XSLT for XML, luatex for LaTeX, lots of frameworks for HTML.
 
 Just how much functionality do we need to create a useful document? What do we have to assume about the
 target language? How complicated will it get?
@@ -19,7 +19,42 @@ To be of practical use, the tool should be able to
 Although this project has been created as example for teaching,
 first tests show that creation of LaTeX or DOCX documents already works well enough to be of practical use.
 
-## Separate programming tasks
+## Usage as application
+The application can handle any kind of text based files (for instance HTML, XML, LateX source codes) as well as DOCX documents.
+It will not work with documents using lots of internal references (Excel files) or relying on length of elements (ASN.1). Call script
+specifying data file, template file and output file.
+
+Data must be provided as JSON.
+
+Freely choose beginning, ending and marking character for the special tags to include into the document template. For instance, '(', ')' and '@' will work inside most documents. In that case, all special tags are of form "(@&lt;content&gt;)" which are used in the following explanations. The following special tags are supported:
+
+**(@= &lt;expression&gt;)**
+
+Is replaced by the value specified by expression, where expression may be
+
+- an attribute name, attributes of attributes are written as names separated by dot. Arrays are handled like objects with attribute names "0", "1" and so on.
+- expressions containing inner expressions, i.e. if `name` resolves to "Franz", then `element.Franz` can be addressed as `element.${name}` or `element[name]`, alternatively.
+- the function `SIZE(&lt;expression&gt;)` is supported as well 
+
+**(@IF &lt;expression1&gt; &lt;operator&gt; &lt;expression2&gt;)&lt;content&gt;(@ELSE)&lt;alternativeContent&gt;(@END)** 
+
+Is replaced by content or alternative content, respectively. Operators may be `==`,`!=`, `&lt;` or `&gt;`, expressions may be as
+above or literals surrounded by `"`. The ELSE tag is optional.
+ 
+**(@FOR &lt;name&gt; : &lt;expression&gt; &lt;modifiers&gt; )&lt;content&gt;(@DELIM)&lt;alternativeContent&gt;(@END)**
+
+Is replaced by one copy of content for each value in expression where attribute name is set to that value. Between these contents, alternativeContent 
+is inserted. DELIM tag is optional. Expression is as in the "=" tag but must resolve to some array or object and supports the pseudo-attributes `values` and `keys`. Both are optional. For arrays, by default the elements are iterated, for objects by default the keys.
+The following modifiers are supported:
+- ASCENDING / DESCENDING sort the iterated elements
+- UNIQUE removes duplicate elements
+- SELECT &lt;expression&gt; replaces each iterated element by some attribute of it.
+
+## Usage as library
+
+Read JavaDoc of class `de.tautenhahn.easydata.DataIntoTemplate`.
+
+## Separate programming tasks for teaching
 
 Following tasks can be given to students or applicants as exercise or test. Do not give the example implementation, obviously.
 
@@ -44,36 +79,5 @@ possible classes, do not expect an implemented working solution in a few hours.
 
 **DOCX (ZIP handling, integration, DOCX specification)**
 
-Provide whole project except DocxAdapter. The student shall find out what file inside the DOCX must be handled and how to unpack and pack the ZIP.
-Discuss security issues with ZIP handling. 
-
-## Usage as application
-The application can handle any kind of text based files (for instance HTML, XML, LateX source codes) as well as DOCX documents.
-It will not work with documents using lots of internal references (Excel files) or relying on length of elements (ASN.1). Call script
-specifying data file, template file and output file.
-
-Data must be provided as JSON.
-
-Freely choose beginning, ending and marking character for the special tags to include into the document template. For instance, '(', ')' and '@' will work inside most documents. In that case, all special tags are of form "(@&lt;content&gt;)" which are used in the following explanations. The following special tags are supported:
-
-**(@= &lt;expression&gt;)**
-
-Is replaced by the value specified by expression, where expression may be
-
-- an attribute name, attributes of attributes are written as names separated by dot. Arrays are handled like objects with attribute names "0", "1" and so on.
-- expressions containing inner expressions, i.e. if `name` resolves to "Franz", then `element.Franz` can be addressed as `element.${name}` or `element[name]`, alternatively.
-- the function `SIZE(&lt;expression&gt;)` is supported as well 
-
-**(@IF &lt;expression1&gt; &lt;operator&gt; &lt;expression2&gt;)&lt;content&gt;(@ELSE)&lt;alternativeContent&gt;(@END)** 
-
-Is replaced by content or alternative content, respectively. Operators may be `==`, `&lt;` or `&gt;`, expressions may be as above or 
-literals surrounded by `"`. The ELSE tag is optional.
- 
-**(@FOR &lt;name&gt; : &lt;expression&gt; &lt;modifiers&gt; )&lt;content&gt;(@DELIM)&lt;alternativeContent&gt;(@END)**
-
-Is replaced by one copy of content for each value in expression where attribute name is set to that value. Between these contents, alternativeContent 
-is inserted. DELIM tag is optional. Expression is as in the "=" tag but must resolve to some array or object and supports the pseudo-attributes `values` and `keys`. Both are optional. For arrays, by default the elements are iterated, for objects by default the keys.
-The following modifiers are supported:
-- ASCENDING / DESCENDING sort the iterated elements
-- UNIQUE removes duplicate elements
-- SELECT &lt;expression&gt; replaces each iterated element by some attribute of it.
+Provide whole project except DocxAdapter. The student shall find out what file inside the DOCX must be handled and how to
+unpack and pack the ZIP. Discuss security issues with ZIP handling. 
