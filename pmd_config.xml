@@ -22,6 +22,7 @@
 
    <rule ref="category/java/codestyle.xml">
       <exclude name="DefaultPackage" />
+      <exclude name="UnnecessaryFullyQualifiedName" /> <!-- lots of false positives for inner classes -->
       <exclude name="CommentDefaultAccessModifier" />
       <exclude name="MethodArgumentCouldBeFinal" />
       <exclude name="LocalVariableCouldBeFinal" />

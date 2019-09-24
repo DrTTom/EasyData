@@ -7,14 +7,14 @@ buildscript {
 plugins {
   id 'application'
   id 'com.github.spotbugs' version '2.0.0'
-  id 'com.github.ben-manes.versions' version '0.21.0'
+  id 'com.github.ben-manes.versions' version '0.25.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'
   id 'jacoco'
 }
 
 pmd {
-    toolVersion = '6.16.0'
+    toolVersion = '6.18.0'
     ruleSets = []
     ruleSetFiles = files("pmd_config.xml")
 }
