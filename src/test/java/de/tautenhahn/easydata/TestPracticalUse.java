@@ -9,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -50,5 +52,18 @@ public class TestPracticalUse
       systemUnderTest.fillData(template, document);
     }
 
+  }
+
+  /**
+   * Check that in case of data mismatch helpful error messages appear which enable the user to correct a
+   * template. This time, use data from a java object.
+   */
+  @Test
+  public void errors()
+  {
+    Object data = List.of(Map.of("header", "first block", "lines", List.of("bla", "bla")),
+                          Map.of("header", "second block", "lines", List.of("one", "two")));
+    AccessibleData.byBean(data);
+    // TODO: define wrong template and observe errors
   }
 }
