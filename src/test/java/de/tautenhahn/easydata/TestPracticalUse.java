@@ -19,7 +19,6 @@ import org.junit.Test;
  * <ul>
  * <li>add a filtering for supporting newlines in different target formats</li>
  * <li>add a sort function to the FOR-tag</li>
- * <li>add a main class</li>
  * <li>decide whether to support creating artificial collections as "skills.values.category".
  * </ul>
  *
