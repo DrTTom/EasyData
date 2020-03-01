@@ -239,11 +239,11 @@ public final class AccessibleData
     }
     if (element instanceof List)
     {
-      return ((List<?>)element).get(Integer.parseInt(first));
+      return ((List<?>)element).get(getIndex(first, ((List<?>)element).size()));
     }
     if (element.getClass().isArray())
     {
-      return Array.get(element, Integer.parseInt(first));
+      return Array.get(element, getIndex(first, Array.getLength(element)));
     }
     try
     {
@@ -255,6 +255,24 @@ public final class AccessibleData
       throw new IllegalArgumentException("No property '" + first + "' supported for element of type "
                                          + element.getClass().getName(), e);
     }
+  }
+
+  private int getIndex(String index, int length)
+  {
+    try
+    {
+      int result = Integer.parseInt(index);
+      if (result >= 0 || result < length)
+      {
+        return result;
+      }
+    }
+    catch (NumberFormatException e) // NOPMD same handling needed as in case without Exception
+    {
+      // error handling below
+    }
+    throw new IllegalArgumentException("Invalid index '" + index + "', adressed object has elements 0-"
+                                       + length);
   }
 
   /**

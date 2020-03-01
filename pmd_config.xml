@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
+<ruleset name="Default rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
 >
    <description>
-      Shall become bos default rule set.
+      some hopefully sensible rule set
    </description>
 
    <rule ref="category/java/bestpractices.xml">
@@ -82,11 +82,6 @@
          <property name="classReportLevel" value="600" />
       </properties>
    </rule>
-   <rule ref="category/java/design.xml/ExcessiveImports">
-      <properties>
-         <property name="minimum" value="60" /> <!-- handling JAXB stuff -->
-      </properties>
-   </rule>
    <rule ref="category/java/design.xml/TooManyMethods">
       <properties>
          <property name="maxmethods" value="30" />
@@ -96,11 +91,6 @@
       <properties>
          <property name="methodReportLevel" value="12" />
          <property name="classReportLevel" value="100" />
-      </properties>
-   </rule>
-   <rule ref="category/java/design.xml/ExcessiveMethodLength">
-      <properties>
-         <property name="minimum" value="100" /> <!-- generous because we have NCSS count -->
       </properties>
    </rule>
    <rule ref="category/java/design.xml/NPathComplexity">
