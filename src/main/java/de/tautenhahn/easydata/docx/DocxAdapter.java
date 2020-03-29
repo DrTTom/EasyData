@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -35,9 +36,13 @@ public class DocxAdapter
 
   private static final String SPECIAL_ENTRY_NAME = "word/document.xml";
 
+  private static final String RELATIONS_ENTRY_NAME = "word/_rels/document.xml.rels";
+
   private static final int LIMIT = 1024 * 1024 * 1024;
 
   private final DataIntoTemplate expander;
+
+  private final MediaProvider media;
 
   /**
    * Creates new instance.
@@ -46,7 +51,18 @@ public class DocxAdapter
    */
   public DocxAdapter(DataIntoTemplate expander)
   {
+    this(expander, null);
+  }
+
+  /**
+   * Creates new instance.
+   *
+   * @param expander must use special characters allowed within XML content (do not use &lt; and &gt;)
+   */
+  public DocxAdapter(DataIntoTemplate expander, MediaProvider media)
+  {
     this.expander = expander;
+    this.media = media;
   }
 
   /**
@@ -66,13 +82,18 @@ public class DocxAdapter
         ZipEntry entry = ins.getNextEntry();
         if (entry == null)
         {
-          return;
+          break;
         }
-        out.putNextEntry(entry);
+        // TODO: change only if necessary
+        out.putNextEntry(new ZipEntry(entry.getName()));
         if (!entry.isDirectory())
         {
           copyContent(ins, out, entry.getName());
         }
+      }
+      if (media != null)
+      {
+        media.writeContentsTo(out);
       }
     }
   }
@@ -89,10 +110,23 @@ public class DocxAdapter
         expander.fillData(reader, writer);
       }
     }
+    else if (media != null && RELATIONS_ENTRY_NAME.equals(name))
+    {
+      addReferences(ins, out);
+    }
     else
     {
       copy(ins, out);
     }
+  }
+
+  private void addReferences(InputStream ins, OutputStream out) throws IOException
+  {
+    Charset encoding = StandardCharsets.UTF_8;
+    String content = new String(ins.readAllBytes(), encoding);
+    out.write(content.substring(0, content.indexOf("</Relationships>")).getBytes(encoding));
+    media.writeRefsTo(out);
+    out.write("</Relationships>".getBytes(encoding));
   }
 
   private void copy(InputStream ins, OutputStream out) throws IOException
