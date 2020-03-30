@@ -68,7 +68,8 @@ public class TestAccessibleData
   @Test
   public void bean()
   {
-    AccessibleData byBean = AccessibleData.byBean(Map.of("bean", Calendar.getInstance()));
+    Map<String, Calendar> bean = Map.of("bean", Calendar.getInstance());
+    AccessibleData byBean = AccessibleData.byBean(bean);
     assertThat("bean keys", byBean.getCollection("bean", ListMode.KEYS), hasItem("timeZone"));
     assertThat("bean value", byBean.getString("bean.timeZone"), notNullValue());
   }

@@ -28,13 +28,12 @@ public final class EasyTagFactory implements ResolverFactory
   /**
    * Creates a factory with specified tag syntax.
    *
-   * @param opening
-   * @param marker
-   * @param closing
+   * @param opening marks the beginning of a tag
+   * @param marker first char in the tag to be sure that this is special tag
+   * @param closing marks the end of a tag
    */
   public EasyTagFactory(char opening, char marker, char closing)
   {
-
     String open = RegexHelper.mask(opening);
     String close = RegexHelper.mask(closing);
     String mmarker = RegexHelper.mask(marker);

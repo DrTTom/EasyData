@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import com.google.gson.Gson;
  *
  * @author TT
  */
-public final class AccessibleData
+public class AccessibleData
 {
 
   private static final Pattern DEREF = Pattern.compile("\\$\\{([^}]+)}");
@@ -88,7 +89,7 @@ public final class AccessibleData
    *
    * @param data given data
    * @return new instance
-   * @throws IOException
+   * @throws IOException in case of streaming problems
    */
   public static AccessibleData byJsonPath(String data) throws IOException
   {
@@ -104,24 +105,27 @@ public final class AccessibleData
    *
    * @param data given data
    * @return new instance
-   * @throws IOException
+   * @throws IOException in case of streaming problems
    */
   public static AccessibleData byJsonReader(Reader data) throws IOException
   {
     return new AccessibleData(new Gson().fromJson(data, Map.class));
   }
 
-
-  private AccessibleData(Object data)
+  /**
+   * Creates new instance wrapping a Map or Java Bean.
+   * 
+   * @param data given data
+   */
+  public AccessibleData(Object data)
   {
     this.data = data;
   }
 
   /**
-   * Returns the attribute of specified name, of whatever type. May return null if the attribute does not
-   * exist but parent object does. Accepts constants if surrounded by quotes.
-   *
-   * @param attrName
+   * @return the attribute of specified name, of whatever type. May return null if the attribute does not
+   *         exist but parent object does. Accepts constants if surrounded by quotes.
+   * @param attrName dot notation and literals supported
    * @throws IllegalArgumentException in case an intermediate object is null or primitive.
    */
   public Object get(String attrName)
@@ -152,7 +156,8 @@ public final class AccessibleData
   /**
    * Same as {@link #get(String)} but returns String and throws Exception if target is complex.
    *
-   * @param attrName
+   * @param attrName see {@link #get(String)}
+   * @return string value
    */
   public String getString(String attrName)
   {
@@ -166,10 +171,11 @@ public final class AccessibleData
   }
 
   /**
-   * Replaces each object by its addresses attribute.
+   * Replaces each object by its addressed attribute.
    *
-   * @param original
-   * @param attrName
+   * @param original input data
+   * @param attrName attribute to select
+   * @return new collection
    */
   public Collection<Object> map(Collection<Object> original, String attrName)
   {
@@ -180,9 +186,10 @@ public final class AccessibleData
    * Returns a list of sorted elements. This method calls {@link #get(String, Object)} too frequently,
    * optimize in case of performance problems.
    *
-   * @param original
-   * @param attrName
-   * @param ascending
+   * @param original content to sort
+   * @param attrName specifies attribute to sort by
+   * @param ascending specifies order
+   * @return sorted list
    */
   public List<Object> sort(Collection<Object> original, String attrName, boolean ascending)
   {
@@ -209,11 +216,19 @@ public final class AccessibleData
   /**
    * Removes named attribute.
    *
-   * @param name
+   * @param name specifies the attribute to remove
    */
   public void undefine(String name)
   {
     additionals.remove(name);
+  }
+
+  /**
+   * @return original wrapped data
+   */
+  public Object getData()
+  {
+    return data;
   }
 
   private Object get(String attrName, Object element)
@@ -278,9 +293,10 @@ public final class AccessibleData
   /**
    * Compares two values, considering the case that both are numeric.
    *
-   * @param a
-   * @param b
-   * @param ascending
+   * @param a one value
+   * @param b other value
+   * @param ascending true for natural order, false to reverse
+   * @return see {@link Comparator}
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   public int compare(Object a, Object b, boolean ascending)
@@ -326,10 +342,9 @@ public final class AccessibleData
   }
 
   /**
-   * Returns a collection of sub-elements.
-   *
-   * @param attrName
-   * @param mode
+   * @return a collection of sub-elements.
+   * @param attrName see {@link #get(String)}
+   * @param mode specifies in case of maps whether keys or values are used.
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
   public Collection<Object> getCollection(String attrName, ListMode mode)

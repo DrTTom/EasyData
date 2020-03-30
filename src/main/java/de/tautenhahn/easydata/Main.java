@@ -34,10 +34,10 @@ public final class Main
   /**
    * Command line call.
    *
-   * @param args data file (JSON), template file, output file, markers (3 characters, defaults to "(@)" for
-   *          DOCX and "<@>" otherwise.
-   * @throws IOException
-   * @throws FileNotFoundException
+   * @param args data file (JSON), template file, output file, markers (3 characters, namely opening,
+   *          expression start, closing)
+   * @throws IOException in case of IO problems
+   * @throws FileNotFoundException if specified file does not exist
    */
   public static void main(String... args) throws FileNotFoundException, IOException
   {
@@ -51,19 +51,23 @@ public final class Main
     }
     AccessibleData data = AccessibleData.byJsonPath(args[0]);
     String marker = getMarker(args);
-    DataIntoTemplate expander = new DataIntoTemplate(data, marker.charAt(0), marker.charAt(1),
-                                                     marker.charAt(2));
     try (InputStream src = new FileInputStream(args[1]); OutputStream destRes = new FileOutputStream(args[2]))
     {
       if (args[1].endsWith(".docx"))
       {
-        new DocxAdapter(expander).convert(src, destRes);
+        if (!"(@)".equals(marker))
+        {
+          throw new IllegalArgumentException("for DOCX format only marker (@) is supported");
+        }
+        new DocxAdapter(data).convert(src, destRes);
       }
       else
       {
         try (Reader template = new InputStreamReader(src, StandardCharsets.UTF_8);
           Writer output = new OutputStreamWriter(destRes, StandardCharsets.UTF_8))
         {
+          DataIntoTemplate expander = new DataIntoTemplate(data, marker.charAt(0), marker.charAt(1),
+                                                           marker.charAt(2));
           expander.fillData(template, output);
         }
       }

@@ -15,6 +15,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import de.tautenhahn.easydata.AccessibleData;
 import de.tautenhahn.easydata.DataIntoTemplate;
 
 
@@ -47,30 +48,31 @@ public class DocxAdapter
   /**
    * Creates new instance.
    *
-   * @param expander must use special characters allowed within XML content (do not use &lt; and &gt;)
+   * @param data data to fill into the template
    */
-  public DocxAdapter(DataIntoTemplate expander)
+  public DocxAdapter(AccessibleData data)
   {
-    this(expander, null);
+    this(data, null);
   }
 
   /**
    * Creates new instance.
    *
-   * @param expander must use special characters allowed within XML content (do not use &lt; and &gt;)
+   * @param data data to fill into the template
+   * @param media provides additional images to embed into the DOCX
    */
-  public DocxAdapter(DataIntoTemplate expander, MediaProvider media)
+  public DocxAdapter(AccessibleData data, MediaProvider media)
   {
-    this.expander = expander;
+    this.expander = new DataIntoTemplate(new SanitizingData(data), '(', '@', ')');
     this.media = media;
   }
 
   /**
    * Creates the document expanding any special tags in the template.
    *
-   * @param source
-   * @param destination
-   * @throws IOException
+   * @param source contains the template
+   * @param destination to write the result into
+   * @throws IOException in case of streaming problems
    */
   public void convert(InputStream source, OutputStream destination) throws IOException
   {
@@ -84,8 +86,7 @@ public class DocxAdapter
         {
           break;
         }
-        // TODO: change only if necessary
-        out.putNextEntry(new ZipEntry(entry.getName()));
+        out.putNextEntry(targetEntry(entry));
         if (!entry.isDirectory())
         {
           copyContent(ins, out, entry.getName());
@@ -96,6 +97,16 @@ public class DocxAdapter
         media.writeContentsTo(out);
       }
     }
+  }
+
+  private ZipEntry targetEntry(ZipEntry entry)
+  {
+    String name = entry.getName();
+    if (SPECIAL_ENTRY_NAME.equals(name) || media != null && RELATIONS_ENTRY_NAME.equals(name))
+    {
+      return new ZipEntry(name);
+    }
+    return entry;
   }
 
   private void copyContent(InputStream ins, OutputStream out, String name) throws IOException
@@ -192,6 +203,24 @@ public class DocxAdapter
     public void close()
     {
       // not closing on purpose
+    }
+  }
+
+  /**
+   * Masks a few characters to avoid destroying internal XML syntax of the DOCX.
+   */
+  private static class SanitizingData extends AccessibleData
+  {
+
+    SanitizingData(AccessibleData original)
+    {
+      super(original.getData());
+    }
+
+    @Override
+    public String getString(String attrName)
+    {
+      return super.getString(attrName).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
   }
 }

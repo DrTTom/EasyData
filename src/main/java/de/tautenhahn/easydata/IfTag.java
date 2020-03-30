@@ -26,9 +26,11 @@ public class IfTag extends ComplexTag
   /**
    * Creates new instance.
    *
-   * @param start
-   * @param remaining
-   * @param factory
+   * @param start matched first token
+   * @param remaining remaining tokens, should be read until end tag is found
+   * @param delim content of the else tag
+   * @param end content of the end tag
+   * @param factory provides the objects to resolve nested tags with
    */
   public IfTag(Matcher start, Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
   {

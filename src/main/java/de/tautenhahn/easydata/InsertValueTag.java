@@ -25,7 +25,6 @@ public class InsertValueTag implements Resolver
    */
   public static final Pattern PATTERN = Pattern.compile("= *(" + REGEX_SIMPLE_EXPRESSION + ") *");
 
-  // Pattern.compile("= *" + REGEX_EXPRESSION + " *");
   private final String name;
 
   InsertValueTag(Matcher start)

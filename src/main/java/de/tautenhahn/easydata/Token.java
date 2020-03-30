@@ -17,9 +17,9 @@ public class Token
   /**
    * Creates immutable instance
    *
-   * @param content
-   * @param row
-   * @param col
+   * @param content wrapped text part
+   * @param row location of that part
+   * @param col location of that part
    */
   public Token(String content, int row, int col)
   {
@@ -37,7 +37,7 @@ public class Token
   }
 
   /**
-   * Returns original row.
+   * @return original row number
    */
   public int getRow()
   {
@@ -45,7 +45,7 @@ public class Token
   }
 
   /**
-   * Returns original column.
+   * @return original column number of token start
    */
   public int getCol()
   {

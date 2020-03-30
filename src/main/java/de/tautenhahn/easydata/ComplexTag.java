@@ -29,10 +29,10 @@ public abstract class ComplexTag implements Resolver
   /**
    * Creates new instance
    *
-   * @param remaining
+   * @param remaining further text to read until end tag is found
    * @param delim content of tag starting the alternative content.
-   * @param end
-   * @param factory
+   * @param end content of end tag
+   * @param factory provides the resolvers for nested tags
    */
   protected ComplexTag(Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
   {
@@ -61,7 +61,7 @@ public abstract class ComplexTag implements Resolver
    * @param subTags
    * @param data original data enhanced by attributes defined in start tag
    * @param output
-   * @throws IOException
+   * @throws IOException in case of streaming problems
    */
   protected void resolveContent(Map<Token, Resolver> subTags, AccessibleData data, Writer output)
     throws IOException

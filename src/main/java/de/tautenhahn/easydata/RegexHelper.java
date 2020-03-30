@@ -16,9 +16,8 @@ final class RegexHelper
   }
 
   /**
-   * Returns a regex matching the char literally.
-   *
-   * @param value
+   * @return a regex matching the char literally.
+   * @param value input
    */
   public static String mask(char value)
   {
@@ -27,9 +26,8 @@ final class RegexHelper
   }
 
   /**
-   * Return true if regex matches a unique line break
-   *
-   * @param regex
+   * @return true if regex matches a unique line break
+   * @param regex input
    */
   public static boolean isLineBreak(String regex)
   {

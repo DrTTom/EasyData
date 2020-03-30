@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 
 import de.tautenhahn.easydata.AccessibleData;
-import de.tautenhahn.easydata.DataIntoTemplate;
 import de.tautenhahn.easydata.DataIntoTemplateBase;
 
 
@@ -39,8 +38,7 @@ public class TestDocxAdapter extends DataIntoTemplateBase
     try (InputStream source = getRes("/example.docx");
       OutputStream destination = new FileOutputStream(Paths.get("build", "example.docx").toFile()))
     {
-      DataIntoTemplate expander = new DataIntoTemplate(getData("/data.json"), '(', '@', ')');
-      DocxAdapter systemUnderTest = new DocxAdapter(expander);
+      DocxAdapter systemUnderTest = new DocxAdapter(getData("/data.json"));
       systemUnderTest.convert(source, destination);
     }
   }
@@ -69,8 +67,7 @@ public class TestDocxAdapter extends DataIntoTemplateBase
     try (InputStream source = getRes("/images.docx");
       OutputStream destination = new FileOutputStream(Paths.get("build", "images.docx").toFile()))
     {
-      DataIntoTemplate expander = new DataIntoTemplate(ad, '(', '@', ')');
-      DocxAdapter systemUnderTest = new DocxAdapter(expander, media);
+      DocxAdapter systemUnderTest = new DocxAdapter(ad, media);
       systemUnderTest.convert(source, destination);
     }
   }
@@ -85,5 +82,4 @@ public class TestDocxAdapter extends DataIntoTemplateBase
   {
     return TestDocxAdapter.class.getResourceAsStream(path);
   }
-
 }
