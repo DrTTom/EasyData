@@ -33,7 +33,8 @@
 \begin{tabular}{@{}lp{8.7cm}}
 \rule{0pt}{2em}Geboren: &  <@=info.dateOfBirth> in <@=info.placeOfBirth> \\
 Familienstatus: & <@=info.familyStatus>\\
-Sprachkenntnisse: & \begin{minipage}[t]{8.7cm}<@FOR lan:info.spokenLanguages><@=lan><@DELIM>, <@END>\end{minipage}
+Sprachkenntnisse: & \begin{minipage}[t]{8.7cm}<@FOR lan:info.spokenLanguages><@=lan><@DELIM>, <@END> \end{minipage} \\
+Hobbies: & <@FOR item: info.personalInterests><@=item><@DELIM>, <@END>
 \end{tabular}
 \end{minipage}
 \hfill
@@ -49,16 +50,24 @@ Sprachkenntnisse: & \begin{minipage}[t]{8.7cm}<@FOR lan:info.spokenLanguages><@=
 \begin{tabular}{p{2,5cm}p{12.3cm}}
 <@FOR item:career.professionalCareer><@=item.from>--<@=item.until>& \begin{minipage}[t]{12cm}{\bf <@=item.job>} \\{\it <@=item.company>}\\<@=item.description>\end{minipage} \\<@END>
 \end{tabular}
-\subsection*{Persönliche Interessen}
 
 \newpage
-\subsection*{Skill-Profil}
-Originaldaten haben unpassendes Format. Wahrscheinlich keine Aufgabe für einen Macro-Expander.
 \subsection*{Projekte}
 \begin{tabular}{p{2,5cm}p{12.3cm}}
 <@FOR item:projects><@=item.from>--<@=item.until>& \begin{minipage}[t]{12cm}{\bf <@=item.summary>}\\
-{\it <@=item.position>}\\
+{\it <@=item.position>} \\
 <@=item.description>\end{minipage} \\<@END>
 \end{tabular}
+\newpage
+\subsection*{Skill-Profil}
+<@FOR group:skills.hard>
+\subsubsection*{<@=group.category>}
+\begin{itemize}
+<@FOR item:group.content>
+\item <@=item.description>
+<@END>
+\end{itemize}
+<@END> 
+
 \label{LastPage}
 \end{document}

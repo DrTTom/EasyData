@@ -43,7 +43,8 @@ public final class Main
   {
     if (args.length < 3)
     {
-      out.println("Usage: Main <data> <template> <output> [markers] \nwhere\n   data is path of a JSON file"
+      out.println("Usage: Main <data> <template> <output> [markers] \nwhere"
+                  + "\n   data is path of a JSON file"
                   + "\n   template is a document template file containing special tags to be replaced"
                   + "\n   output is the destination file name"
                   + "\n   markers consists of 3 characters marking the special tags, for instance \"<@>\"");
@@ -60,6 +61,14 @@ public final class Main
           throw new IllegalArgumentException("for DOCX format only marker (@) is supported");
         }
         new DocxAdapter(data).convert(src, destRes);
+      }
+      if (args[1].endsWith(".tex"))
+      {
+        if (!"<@>".equals(marker))
+        {
+          throw new IllegalArgumentException("for TeX format only marker <@> is supported");
+        }
+        new LatexAdapter(data).convert(src, destRes);
       }
       else
       {
