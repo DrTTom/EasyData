@@ -130,6 +130,10 @@ public class AccessibleData
    */
   public Object get(String attrName)
   {
+    if ("NULL".equals(attrName))
+    {
+      return null;
+    }
     if (LITERAL.matcher(attrName).matches())
     {
       return attrName.substring(1, attrName.length() - 1);
@@ -310,7 +314,7 @@ public class AccessibleData
     {
       return ((Comparable)a).compareTo(b) * direction;
     }
-    throw new IllegalArgumentException("expected comparable but got " + a.getClass().getName());
+    return a.toString().compareTo(b.toString()) * direction;
   }
 
   private static boolean isNumericString(Object value)
