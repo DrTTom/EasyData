@@ -29,7 +29,7 @@ public class Token
   }
 
   /**
-   * Returns represented template part.
+   * @return represented template part.
    */
   public String getContent()
   {

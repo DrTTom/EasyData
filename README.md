@@ -15,6 +15,7 @@ To be of practical use, the tool should be able to
 - insert data elements at specified positions
 - create recurring elements by expanding a FOR-expression
 - support conditional elements.
+- support definition of macros and values to keep the structure complex templates simple 
 
 Although this project has been created as example for teaching,
 first tests show that creation of LaTeX or DOCX documents already works well enough to be of practical use.
@@ -50,6 +51,23 @@ The following modifiers are supported:
 - UNIQUE removes duplicate elements
 - SELECT &lt;expression&gt; replaces each iterated element by some attribute of it.
 
+**(@DEFINE &lt;name&gt; (&lt;params&gt;))&lt;content&gt;(@END)**
+
+Defines a macro of specified name for later use. Params is the comma-separated list of parameter names which should not collide with the data keys. Content may be an arbitrary but well-formed template which can access the global data keys as well as the given parameters.
+
+**(@&lt;name&gt; &lt;params&gt;)**
+
+Is replaced by the resolved content of the macro defined by name. Params is the blank-separated list of expressions which are resolved to the parameter values. That list must have same length as defined in @DEFINE tag.
+
+**(@USE &lt;name&gt; &lt;params&gt;)**
+
+Same as above but name is an expression which is resolved to the macro name.
+
+**(@SET &lt;name&gt;=&lt;expression&gt;)**
+
+Defines an additional data object addressed by name. Make sure name does not collide whith any existing data key.
+
+ 
 ## Usage as library
 
 Read JavaDoc of class `de.tautenhahn.easydata.DataIntoTemplate`.

@@ -39,15 +39,18 @@ public final class EasyTagFactory implements ResolverFactory
     String mmarker = RegexHelper.mask(marker);
     // easy because input is already a token:
     specialTag = Pattern.compile(open + mmarker + " *(.*) *" + close);
-
-
     String op = String.valueOf(new char[]{opening, marker});
+
     resolvers.put(InsertValueTag.PATTERN, (s, r) -> new InsertValueTag(s));
     resolvers.put(ForTag.PATTERN,
                   (s, r) -> new ForTag(s, r, op + "DELIM" + closing, op + "END" + closing, this));
     resolvers.put(IfTag.PATTERN,
                   (s, r) -> new IfTag(s, r, op + "ELSE" + closing, op + "END" + closing, this));
-
+    resolvers.put(DefineTag.PATTERN,
+                  (s, r) -> new DefineTag(s, r, op + "COMMENT" + closing, op + "END" + closing, this));
+    Resolver useTag = new UseTag(opening, marker, closing, this);
+    resolvers.put(UseTag.PATTERN, (s, r) -> useTag);
+    resolvers.put(SetTag.PATTERN, (s, r) -> new SetTag(s));
   }
 
   /**
@@ -80,5 +83,11 @@ public final class EasyTagFactory implements ResolverFactory
       throw new IllegalArgumentException("unrecognized token " + token);
     }
     return IDENTITY;
+  }
+
+  @Override
+  public void register(Pattern pattern, Resolver tag)
+  {
+    resolvers.put(pattern, (r, s) -> tag);
   }
 }

@@ -58,9 +58,9 @@ public abstract class ComplexTag implements Resolver
   /**
    * Resolves the content.
    *
-   * @param subTags
+   * @param subTags content with respective resolvers
    * @param data original data enhanced by attributes defined in start tag
-   * @param output
+   * @param output where the result is written to
    * @throws IOException in case of streaming problems
    */
   protected void resolveContent(Map<Token, Resolver> subTags, AccessibleData data, Writer output)

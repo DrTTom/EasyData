@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'application'
-  id 'com.github.spotbugs' version '4.0.1'
+  id 'com.github.spotbugs' version '4.0.8'
   id 'com.github.ben-manes.versions' version '0.28.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'
@@ -14,13 +14,13 @@ plugins {
 }
 
 pmd {
-    toolVersion = '6.21.0'
+    toolVersion = '6.23.0'
     ruleSets = []
     ruleSetFiles = files("pmd_config.xml")
 }
 
 spotbugs {
-   toolVersion ='4.0.0'
+   toolVersion ='4.0.2'
    effort = "max"
    reportLevel = "low"
    excludeFilter = file("findbugs-exclude.xml")
