@@ -34,7 +34,7 @@ public class DefineTag extends ComplexTag
             String end,
             ResolverFactory factory)
   {
-    super(remaining, delim, end, factory);
+    super(startMatcher, remaining, delim, end, factory);
     this.startMatcher = startMatcher;
     this.factory = factory;
   }

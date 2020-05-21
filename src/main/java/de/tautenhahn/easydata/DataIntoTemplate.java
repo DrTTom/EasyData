@@ -16,7 +16,7 @@ public class DataIntoTemplate
 
   private final AccessibleData data;
 
-  private final ResolverFactory factory;
+  private ResolverFactory factory;
 
   private final char opening;
 
@@ -39,6 +39,15 @@ public class DataIntoTemplate
     this.opening = opening;
     this.closing = closing;
     this.marker = marker;
+    resetFactory();
+  }
+
+  /**
+   * Re-create resolver factory so that only default tags are supported. More precisely, all tags defined by @DEFINE
+   * are forgotten.
+   */
+  public final void resetFactory()
+  {
     factory = new EasyTagFactory(opening, marker, closing);
   }
 

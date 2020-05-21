@@ -35,7 +35,14 @@ public class InsertValueTag implements Resolver
   @Override
   public void resolve(Token start, AccessibleData data, Writer output) throws IOException
   {
-    output.write(data.getString(name));
+    try
+    {
+      output.write(data.getString(name));
+    } catch (ResolverException e)
+    {
+      e.addLocation(start);
+      throw e;
+    }
   }
 
 }

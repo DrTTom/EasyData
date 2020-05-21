@@ -34,14 +34,15 @@ public class IfTag extends ComplexTag
    */
   public IfTag(Matcher start, Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
   {
-    super(remaining, delim, end, factory);
+    super(start, remaining, delim, end, factory);
     this.start = start;
   }
 
   @Override
   public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
   {
-    String leftSide = start.group(1).trim();
+    try{
+      String leftSide = start.group(1).trim();
     String operator = start.group(2);
     String rightSide = start.group(3).trim();
     Object left = data.get(leftSide);
@@ -57,6 +58,11 @@ public class IfTag extends ComplexTag
     else
     {
       resolveContent(otherContent, data, output);
+    }
+    } catch (ResolverException e)
+    {
+      e.addLocation(startTag);
+      throw e;
     }
   }
 }

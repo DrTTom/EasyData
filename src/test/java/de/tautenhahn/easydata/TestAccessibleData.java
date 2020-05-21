@@ -1,11 +1,11 @@
 package de.tautenhahn.easydata;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import de.tautenhahn.easydata.AccessibleData.ListMode;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,117 +16,113 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import de.tautenhahn.easydata.AccessibleData.ListMode;
-
-
 /**
- * Some unit tests for accessing data elements. Note that this class misses several tests which could be
- * written as exercise.
+ * Some unit tests for accessing data elements. Note that this class misses several tests which could be written as
+ * exercise.
  *
  * @author TT
  */
 public class TestAccessibleData
 {
 
-  private static AccessibleData systemUnderTest;
+    private static AccessibleData systemUnderTest;
 
-  /**
-   * Provides some data to create documents with.
-   *
-   * @throws IOException
-   */
-  @BeforeClass
-  public static void provideData() throws IOException
-  {
-    try (InputStream jsonRes = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
-      Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
+    /**
+     * Provides some data to create documents with.
+     *
+     * @throws IOException
+     */
+    @BeforeAll
+    public static void provideData() throws IOException
     {
-      systemUnderTest = AccessibleData.byJsonReader(reader);
+        try (InputStream jsonRes = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
+             Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
+        {
+            systemUnderTest = AccessibleData.byJsonReader(reader);
+        }
     }
-  }
 
-  /**
-   * Assert that values can be addressed and sorted properly.
-   */
-  @Test
-  public void sort()
-  {
-    Collection<Object> result = systemUnderTest.getCollection("Hobbys", ListMode.DEFAULT);
-    result = systemUnderTest.sort(result, null, true);
-    assertThat("sorted", result, contains("Feuerschlucken", "Schlafen", "Tanzen"));
-    result = systemUnderTest.getCollection("Hobbys", ListMode.KEYS);
-    result = systemUnderTest.sort(result, null, false);
-    assertThat("sorted", result, contains("2", "1", "0"));
-  }
+    /**
+     * Assert that values can be addressed and sorted properly.
+     */
+    @Test
+    public void sort()
+    {
+        Collection<Object> result = systemUnderTest.getCollection("Hobbys", ListMode.DEFAULT);
+        result = systemUnderTest.sort(result, null, true);
 
-  /**
-   * Assert that bean attributes can be accessed.
-   */
-  @Test
-  public void bean()
-  {
-    Map<String, Calendar> bean = Map.of("bean", Calendar.getInstance());
-    AccessibleData byBean = AccessibleData.byBean(bean);
-    assertThat("bean keys", byBean.getCollection("bean", ListMode.KEYS), hasItem("timeZone"));
-    assertThat("bean value", byBean.getString("bean.timeZone"), notNullValue());
-  }
+        assertThat(result).containsExactly("Feuerschlucken", "Schlafen", "Tanzen");
+        result = systemUnderTest.getCollection("Hobbys", ListMode.KEYS);
+        result = systemUnderTest.sort(result, null, false);
+        assertThat(result).containsExactly("2", "1", "0");
+    }
 
-  /**
-   * Asserts that the size of collections can be obtained. Because all data is treated as String, the size
-   * comes as String as well.
-   */
-  @Test
-  public void size()
-  {
-    assertThat("size", systemUnderTest.getString("SIZE(Hobbys)"), equalTo("3"));
-  }
+    /**
+     * Assert that bean attributes can be accessed.
+     */
+    @Test
+    public void bean()
+    {
+        Map<String, Calendar> bean = Map.of("bean", Calendar.getInstance());
+        AccessibleData byBean = AccessibleData.byBean(bean);
+        assertThat(byBean.getCollection("bean", ListMode.KEYS).contains("timeZone"));
+        assertThat(byBean.getString("bean.timeZone")).isNotEmpty();
+    }
 
-  /**
-   * Assert that path selecting wrong target type produces a comprehensive error message.
-   */
-  @Test
-  public void wrongTarget()
-  {
-    assertThrows("expected String but Hobbys is of type java.util.ArrayList",
-                 IllegalArgumentException.class,
-                 () -> systemUnderTest.getString("Hobbys"));
-  }
+    /**
+     * Asserts that the size of collections can be obtained. Because all data is treated as String, the size comes as
+     * String as well.
+     */
+    @Test
+    public void size()
+    {
+        assertThat(systemUnderTest.getString("SIZE(Hobbys)")).isEqualTo("3");
+    }
 
-  /**
-   * Assert that path selecting wrong target type produces a comprehensive error message.
-   */
-  @Test
-  public void wrongTarget2()
-  {
-    assertThrows("expected complex object but Hobbys.0 is a java.lang.String",
-                 IllegalArgumentException.class,
-                 () -> systemUnderTest.getCollection("Hobbys.0", ListMode.DEFAULT));
-  }
+    /**
+     * Assert that path selecting wrong target type produces a comprehensive error message.
+     */
+    @Test
+    public void wrongTarget()
+    {
+        assertThatThrownBy(() -> systemUnderTest.getString("Hobbys"))
+            .isInstanceOf(ResolverException.class)
+            .hasMessageContaining("expected String but Hobbys is of type java.util.ArrayList");
+    }
 
-  /**
-   * Assert that path selecting wrong target type produces a comprehensive error message.
-   */
-  @Test
-  public void attributeOfPrimitive()
-  {
-    assertThrows("No property 'shortName' supported for element of type java.lang.String",
-                 IllegalArgumentException.class,
-                 () -> systemUnderTest.getString("Name.shortName"));
-  }
+    /**
+     * Assert that path selecting wrong target type produces a comprehensive error message.
+     */
+    @Test
+    public void wrongTarget2()
+    {
+        assertThatThrownBy(() -> systemUnderTest.getCollection("Hobbys.0", ListMode.DEFAULT))
+            .isInstanceOf(ResolverException.class)
+            .hasMessageContaining("expected complex object but Hobbys.0 is a java.lang.String");
+    }
 
-  /**
-   * Assert that overwriting an existing attribute produces a comprehensive error message.
-   */
-  @Test
-  public void duplicateDefinition()
-  {
-    assertThrows("cannot re-define existing key Name",
-                 IllegalArgumentException.class,
-                 () -> systemUnderTest.define("Name", "Ludmilla"));
-  }
+    /**
+     * Assert that path selecting wrong target type produces a comprehensive error message.
+     */
+    @Test
+    public void attributeOfPrimitive()
+    {
+        assertThatThrownBy(() -> systemUnderTest.getString("Name.shortName"))
+            .isInstanceOf(ResolverException.class)
+            .hasMessageContaining("No property 'shortName' supported for element of type java.lang.String");
+    }
 
-
+    /**
+     * Assert that overwriting an existing attribute can be done and un-defining it restores the original value.
+     * Overwriting attributes is necessary to enable recursions.
+     */
+    @Test
+    public void duplicateDefinition()
+    {
+        String oldValue = systemUnderTest.getString("Name");
+        systemUnderTest.define("Name", "Ludmilla");
+        assertThat(systemUnderTest.getString("Name")).isEqualTo("Ludmilla");
+        systemUnderTest.undefine("Name");
+        assertThat(systemUnderTest.getString("Name")).isEqualTo(oldValue);
+    }
 }

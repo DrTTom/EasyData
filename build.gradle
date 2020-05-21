@@ -1,12 +1,7 @@
-buildscript {
-   repositories {
-      jcenter()
-   }
-}
 
 plugins {
   id 'application'
-  id 'com.github.spotbugs' version '4.0.8'
+  id 'com.github.spotbugs' version '4.2.1'
   id 'com.github.ben-manes.versions' version '0.28.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'
@@ -20,7 +15,7 @@ pmd {
 }
 
 spotbugs {
-   toolVersion ='4.0.2'
+   toolVersion ='4.0.3'
    effort = "max"
    reportLevel = "low"
    excludeFilter = file("findbugs-exclude.xml")
@@ -38,13 +33,14 @@ check.dependsOn jacocoTestReport
 
 dependencies {
    implementation "com.google.code.gson:gson:2.8.6"
-   runtime 'org.slf4j:slf4j-simple:2.0.0-alpha1'
-   
-   testImplementation ("junit:junit:4.13")
-   {
-      exclude module: "hamcrest-core"
-   }
-   testImplementation 'org.hamcrest:hamcrest-all:1.3'
-   testRuntime 'org.slf4j:slf4j-api:2.0.0-alpha1'
+   runtimeOnly 'org.slf4j:slf4j-simple:2.0.0-alpha1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0-M1'
+    testImplementation 'org.assertj:assertj-core:3.16.1'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1'
 }
 
+test {
+    useJUnitPlatform()
+}

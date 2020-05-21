@@ -22,7 +22,7 @@ public class DataIntoTemplateBase
   /**
    * Reads some data from a JSON file from test resources.
    *
-   * @throws IOException
+   * @throws IOException in case of streaming problems
    */
   protected static AccessibleData getData(String path) throws IOException
   {
@@ -36,12 +36,12 @@ public class DataIntoTemplateBase
   /**
    * Returns expanded template.
    *
-   * @param template
-   * @param data
-   * @param beginning
-   * @param marker
-   * @param ending
-   * @throws IOException
+   * @param template contains the tags to expand
+   * @param data values to insert
+   * @param beginning character opening the special tags
+   * @param marker second character opening the special tags
+   * @param ending closing the special tags
+   * @throws IOException in case of streaming problems
    */
   protected String doExpand(String template, AccessibleData data, char beginning, char marker, char ending)
     throws IOException

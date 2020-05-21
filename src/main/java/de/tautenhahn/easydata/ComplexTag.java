@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.regex.Matcher;
 
 /**
  * Base class for tags containing some content. Two kinds of content (3 Tags) supported here.
@@ -29,12 +29,13 @@ public abstract class ComplexTag implements Resolver
   /**
    * Creates new instance
    *
+   * @param startTag only usd for error message if end is missing
    * @param remaining further text to read until end tag is found
    * @param delim content of tag starting the alternative content.
    * @param end content of end tag
    * @param factory provides the resolvers for nested tags
    */
-  protected ComplexTag(Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
+  protected ComplexTag(Matcher startTag, Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
   {
     Map<Token, Resolver> tokens = content;
 
@@ -52,7 +53,7 @@ public abstract class ComplexTag implements Resolver
       }
       tokens.put(token, factory.getResolver(token, remaining));
     }
-    throw new IllegalArgumentException("unexpected end of input, missing " + end);
+    throw new IllegalArgumentException("unexpected end of input, pending "+startTag.group(0)+", missing " + end);
   }
 
   /**
