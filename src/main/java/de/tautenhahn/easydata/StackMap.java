@@ -26,7 +26,7 @@ public class StackMap extends HashMap<String, Object>
     @Override
     public Object put(String key, Object value)
     {
-        ((Deque) super.computeIfAbsent(key, k -> new ArrayDeque<>())).push(value);
+        ((Deque<Object>) super.computeIfAbsent(key, k -> new ArrayDeque<>())).push(value);
         return null;
     }
 

@@ -49,9 +49,11 @@ public class ResolverException extends RuntimeException
      * Adds additional context information
      *
      * @param src token which is currently resolved
+     * @return this
      */
-    void addLocation(Token src)
+    ResolverException addLocation(Token src)
     {
         locationInTemplate.add(src);
+        return this;
     }
 }

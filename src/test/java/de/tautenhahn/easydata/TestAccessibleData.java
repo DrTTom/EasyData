@@ -65,7 +65,7 @@ public class TestAccessibleData
     {
         Map<String, Calendar> bean = Map.of("bean", Calendar.getInstance());
         AccessibleData byBean = AccessibleData.byBean(bean);
-        assertThat(byBean.getCollection("bean", ListMode.KEYS).contains("timeZone"));
+        assertThat(byBean.getCollection("bean", ListMode.KEYS)).contains("timeZone");
         assertThat(byBean.getString("bean.timeZone")).isNotEmpty();
     }
 

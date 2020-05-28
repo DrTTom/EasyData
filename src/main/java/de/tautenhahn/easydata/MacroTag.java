@@ -41,7 +41,12 @@ public class MacroTag implements Resolver
             m.matches();
             for (int i = 0; i < paramNames.size(); i++)
             {
-                data.define(paramNames.get(i), data.get(m.group(i + 1)));
+                final Object value = data.get(m.group(i + 1));
+                if (value==null)
+                {
+                    throw new ResolverException("parameter value "+m.group(i + 1)+" undefined").addLocation(start);
+                }
+                data.define(paramNames.get(i), value);
             }
             for (Entry<Token, Resolver> entry : content.entrySet())
             {

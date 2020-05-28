@@ -42,12 +42,15 @@ public final class EasyTagFactory implements ResolverFactory
     String op = String.valueOf(new char[]{opening, marker});
 
     resolvers.put(InsertValueTag.PATTERN, (s, r) -> new InsertValueTag(s));
+    resolvers.put(SkipTag.PATTERN, (s, r) -> new SkipTag(r));
     resolvers.put(ForTag.PATTERN,
                   (s, r) -> new ForTag(s, r, op + "DELIM" + closing, op + "END" + closing, this));
     resolvers.put(IfTag.PATTERN,
                   (s, r) -> new IfTag(s, r, op + "ELSE" + closing, op + "END" + closing, this));
     resolvers.put(DefineTag.PATTERN,
-                  (s, r) -> new DefineTag(s, r, op + "COMMENT" + closing, op + "END" + closing, this));
+        (s, r) -> new DefineTag(s, r, op + "COMMENT" + closing, op + "END" + closing, this));
+    resolvers.put(IndentTag.PATTERN,
+        (s, r) -> new IndentTag(s, r, op + "VALUE" + closing, op + "END" + closing, this));
     Resolver useTag = new UseTag(opening, marker, closing, this);
     resolvers.put(UseTag.PATTERN, (s, r) -> useTag);
     resolvers.put(SetTag.PATTERN, (s, r) -> new SetTag(s));

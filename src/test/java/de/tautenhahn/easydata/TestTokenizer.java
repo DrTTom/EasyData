@@ -78,4 +78,23 @@ public class TestTokenizer
             assertThatThrownBy(() -> new Tokenizer(s, '[', '#', ']')).isInstanceOf(IllegalArgumentException.class);
         }
     }
+
+    /**
+     * Asserts that concatenation of tokens returns original content.
+     */
+    @Test
+    public void retainOriginalContent()
+    {
+        String source = "this text \n has different line breaks \r\n and a special tag {$EOL}\n";
+        try (Scanner sRes = new Scanner(source); Scanner inputRes = sRes.useDelimiter("\n"))
+        {
+            Tokenizer systemUnderTest = new Tokenizer(inputRes, '{', '$', '}');
+            StringBuffer result = new StringBuffer();
+            while (systemUnderTest.hasNext())
+            {
+                result.append(systemUnderTest.next().getContent());
+            }
+            assertThat(result.toString()).isEqualTo(source);
+        }
+    }
 }
