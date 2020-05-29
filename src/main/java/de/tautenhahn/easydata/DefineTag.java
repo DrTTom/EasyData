@@ -28,13 +28,9 @@ public class DefineTag extends ComplexTag
   private final ResolverFactory factory;
 
 
-  DefineTag(Matcher startMatcher,
-            Iterator<Token> remaining,
-            String delim,
-            String end,
-            ResolverFactory factory)
+  DefineTag(Matcher startMatcher, Iterator<Token> remaining, ResolverFactory factory)
   {
-    super(startMatcher, remaining, delim, end, factory);
+    super(startMatcher, remaining, factory, "COMMENT", "/DEFINE");
     this.startMatcher = startMatcher;
     this.factory = factory;
   }

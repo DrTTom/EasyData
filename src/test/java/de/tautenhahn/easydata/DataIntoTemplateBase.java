@@ -21,7 +21,9 @@ public class DataIntoTemplateBase
 
   /**
    * Reads some data from a JSON file from test resources.
-   *
+   * 
+   * @param path points to JSON file within class path
+   * @return parsed data
    * @throws IOException in case of streaming problems
    */
   protected static AccessibleData getData(String path) throws IOException
@@ -34,8 +36,7 @@ public class DataIntoTemplateBase
   }
 
   /**
-   * Returns expanded template.
-   *
+   * @return expanded template.
    * @param template contains the tags to expand
    * @param data values to insert
    * @param beginning character opening the special tags

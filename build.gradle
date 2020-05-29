@@ -1,7 +1,7 @@
 
 plugins {
   id 'application'
-  id 'com.github.spotbugs' version '4.2.1'
+  id 'com.github.spotbugs' version '4.2.4'
   id 'com.github.ben-manes.versions' version '0.28.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'

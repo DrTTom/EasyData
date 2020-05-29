@@ -43,8 +43,8 @@ public class DataIntoTemplate
   }
 
   /**
-   * Re-create resolver factory so that only default tags are supported. More precisely, all tags defined by @DEFINE
-   * are forgotten.
+   * Re-create resolver factory so that only default tags are supported. More precisely, all tags defined
+   * by @DEFINE are forgotten.
    */
   public final void resetFactory()
   {

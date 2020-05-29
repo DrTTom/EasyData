@@ -38,7 +38,8 @@ public class InsertValueTag implements Resolver
     try
     {
       output.write(data.getString(name));
-    } catch (ResolverException e)
+    }
+    catch (ResolverException e)
     {
       e.addLocation(start);
       throw e;

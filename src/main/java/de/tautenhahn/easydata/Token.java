@@ -2,6 +2,7 @@ package de.tautenhahn.easydata;
 
 import java.io.Serializable;
 
+
 /**
  * Wraps some part of the template file together with its position in the original template.
  *
@@ -9,6 +10,7 @@ import java.io.Serializable;
  */
 public class Token implements Serializable
 {
+
   private static final long serialVersionUID = 1L;
 
   private final String content;

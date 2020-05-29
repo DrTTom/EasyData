@@ -28,4 +28,10 @@ public interface ResolverFactory
    * @param value the resolver object
    */
   void register(Pattern pattern, Resolver value);
+
+  /**
+   * @param name tag content
+   * @return tag including braces and marker
+   */
+  String nameToTag(String name);
 }

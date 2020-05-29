@@ -25,6 +25,10 @@ public final class EasyTagFactory implements ResolverFactory
 
   private final Pattern specialTag;
 
+  private final String tagStart;
+
+  private final char tagEnd;
+
   /**
    * Creates a factory with specified tag syntax.
    *
@@ -34,23 +38,17 @@ public final class EasyTagFactory implements ResolverFactory
    */
   public EasyTagFactory(char opening, char marker, char closing)
   {
-    String open = RegexHelper.mask(opening);
-    String close = RegexHelper.mask(closing);
-    String mmarker = RegexHelper.mask(marker);
-    // easy because input is already a token:
-    specialTag = Pattern.compile(open + mmarker + " *(.*) *" + close);
-    String op = String.valueOf(new char[]{opening, marker});
+    specialTag = Pattern.compile(RegexHelper.mask(opening) + RegexHelper.mask(marker) + " *(.*) *"
+                                 + RegexHelper.mask(closing));
+    tagStart = String.valueOf(new char[]{opening, marker});
+    tagEnd = closing;
 
     resolvers.put(InsertValueTag.PATTERN, (s, r) -> new InsertValueTag(s));
     resolvers.put(SkipTag.PATTERN, (s, r) -> new SkipTag(r));
-    resolvers.put(ForTag.PATTERN,
-                  (s, r) -> new ForTag(s, r, op + "DELIM" + closing, op + "END" + closing, this));
-    resolvers.put(IfTag.PATTERN,
-                  (s, r) -> new IfTag(s, r, op + "ELSE" + closing, op + "END" + closing, this));
-    resolvers.put(DefineTag.PATTERN,
-        (s, r) -> new DefineTag(s, r, op + "COMMENT" + closing, op + "END" + closing, this));
-    resolvers.put(IndentTag.PATTERN,
-        (s, r) -> new IndentTag(s, r, op + "VALUE" + closing, op + "END" + closing, this));
+    resolvers.put(ForTag.PATTERN, (s, r) -> new ForTag(s, r, this));
+    resolvers.put(IfTag.PATTERN, (s, r) -> new IfTag(s, r, this));
+    resolvers.put(DefineTag.PATTERN, (s, r) -> new DefineTag(s, r, this));
+    resolvers.put(IndentTag.PATTERN, (s, r) -> new IndentTag(s, r, this));
     Resolver useTag = new UseTag(opening, marker, closing, this);
     resolvers.put(UseTag.PATTERN, (s, r) -> useTag);
     resolvers.put(SetTag.PATTERN, (s, r) -> new SetTag(s));
@@ -92,5 +90,11 @@ public final class EasyTagFactory implements ResolverFactory
   public void register(Pattern pattern, Resolver tag)
   {
     resolvers.put(pattern, (r, s) -> tag);
+  }
+
+  @Override
+  public String nameToTag(String name)
+  {
+    return tagStart + name + tagEnd;
   }
 }

@@ -1,13 +1,14 @@
 package de.tautenhahn.easydata;
 
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Unit test for main class.
@@ -17,29 +18,32 @@ import java.nio.file.Paths;
 public class TestMain
 {
 
-    private final Path sourceDir = Paths.get("src", "test", "resources");
+  private final Path sourceDir = Paths.get("src", "test", "resources");
 
-    /**
-     * just a smoke test
-     *
-     * @throws IOException
-     */
-    @Test
-    public void createDocx() throws Exception
+  /**
+   * just a smoke test
+   *
+   * @throws IOException to appear in test protocol
+   */
+  @Test
+  public void createDocx() throws IOException
+  {
+    try (PrintStream out = new PrintStream(new ByteArrayOutputStream(), true, StandardCharsets.UTF_8))
     {
-        try (PrintStream out = new PrintStream(new ByteArrayOutputStream(), true, StandardCharsets.UTF_8))
-        {
-            setOut(out);
-            Main.main(sourceDir.resolve("data.json").toString(), sourceDir.resolve("example.docx").toString(),
-                Paths.get("build", "example.docx").toString(), "(@)");
-            Main.main();
-            Main.main(sourceDir.resolve("cv.json").toString(), sourceDir.resolve("cv_template.tex").toString(),
+      setOut(out);
+      Main.main(sourceDir.resolve("data.json").toString(),
+                sourceDir.resolve("example.docx").toString(),
+                Paths.get("build", "example.docx").toString(),
+                "(@)");
+      Main.main();
+      Main.main(sourceDir.resolve("cv.json").toString(),
+                sourceDir.resolve("cv_template.tex").toString(),
                 Paths.get("build", "cv.tex").toString());
-        }
     }
+  }
 
-    private static void setOut(PrintStream out)
-    {
-        Main.out = out;
-    }
+  private static void setOut(PrintStream out)
+  {
+    Main.out = out;
+  }
 }

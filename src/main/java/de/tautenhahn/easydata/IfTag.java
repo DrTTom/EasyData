@@ -28,38 +28,38 @@ public class IfTag extends ComplexTag
    *
    * @param start matched first token
    * @param remaining remaining tokens, should be read until end tag is found
-   * @param delim content of the else tag
-   * @param end content of the end tag
    * @param factory provides the objects to resolve nested tags with
    */
-  public IfTag(Matcher start, Iterator<Token> remaining, String delim, String end, ResolverFactory factory)
+  public IfTag(Matcher start, Iterator<Token> remaining, ResolverFactory factory)
   {
-    super(start, remaining, delim, end, factory);
+    super(start, remaining, factory, "ELSE", "/IF");
     this.start = start;
   }
 
   @Override
   public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
   {
-    try{
+    try
+    {
       String leftSide = start.group(1).trim();
-    String operator = start.group(2);
-    String rightSide = start.group(3).trim();
-    Object left = data.get(leftSide);
-    Object right = data.get(rightSide);
+      String operator = start.group(2);
+      String rightSide = start.group(3).trim();
+      Object left = data.get(leftSide);
+      Object right = data.get(rightSide);
 
-    if ("==".equals(operator) && Objects.equals(left, right)
-        || "!=".equals(operator) && !Objects.equals(left, right)
-        || "<".equals(operator) && data.compare(left.toString(), right.toString(), true) < 0
-        || ">".equals(operator) && data.compare(left.toString(), right.toString(), true) > 0)
-    {
-      resolveContent(content, data, output);
+      if ("==".equals(operator) && Objects.equals(left, right)
+          || "!=".equals(operator) && !Objects.equals(left, right)
+          || "<".equals(operator) && data.compare(left.toString(), right.toString(), true) < 0
+          || ">".equals(operator) && data.compare(left.toString(), right.toString(), true) > 0)
+      {
+        resolveContent(content, data, output);
+      }
+      else
+      {
+        resolveContent(otherContent, data, output);
+      }
     }
-    else
-    {
-      resolveContent(otherContent, data, output);
-    }
-    } catch (ResolverException e)
+    catch (ResolverException e)
     {
       e.addLocation(startTag);
       throw e;

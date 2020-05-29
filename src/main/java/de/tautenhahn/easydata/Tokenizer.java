@@ -33,6 +33,9 @@ public class Tokenizer implements Iterator<Token>
    * Creates instance.
    *
    * @param data must use an delimiter matching a fixed line ending ("\n" or "\r\n")so we can re-insert it.
+   * @param opening character opening a special tag
+   * @param marker a second character to open the special tag
+   * @param closing character terminating a special tag
    */
   Tokenizer(Scanner data, char opening, char marker, char closing)
   {
@@ -60,7 +63,7 @@ public class Tokenizer implements Iterator<Token>
   @Override
   public Token next()
   {
-    if (pending==null)
+    if (pending == null)
     {
       throw new NoSuchElementException();
     }
