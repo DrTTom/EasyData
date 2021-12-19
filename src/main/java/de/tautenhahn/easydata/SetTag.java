@@ -1,6 +1,5 @@
 package de.tautenhahn.easydata;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +27,7 @@ public class SetTag implements Resolver
   }
 
   @Override
-  public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
+  public void resolve(Token startTag, AccessibleData data, Writer output)
   {
     data.define(start.group(1), data.get(start.group(2)));
   }

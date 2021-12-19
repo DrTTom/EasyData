@@ -1,6 +1,5 @@
 package de.tautenhahn.easydata;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +26,6 @@ public class DefineTag extends ComplexTag
 
   private final ResolverFactory factory;
 
-
   DefineTag(Matcher startMatcher, Iterator<Token> remaining, ResolverFactory factory)
   {
     super(startMatcher, remaining, factory, "COMMENT", "/DEFINE");
@@ -36,7 +34,7 @@ public class DefineTag extends ComplexTag
   }
 
   @Override
-  public void resolve(Token start, AccessibleData data, Writer output) throws IOException
+  public void resolve(Token start, AccessibleData data, Writer output)
   {
     String name = startMatcher.group(1);
     List<String> paramNames = Optional.ofNullable(startMatcher.group(3))

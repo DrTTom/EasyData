@@ -40,7 +40,7 @@ public class FormattingWriter extends FilterWriter
   }
 
   @Override
-  public void close() throws IOException
+  public void close()
   {
     // nothing on purpose
   }

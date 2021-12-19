@@ -30,12 +30,12 @@ public class TestPracticalUse
   /**
    * Prove that the tool is suitable for creating a LaTeX document. Test data is all fake stuff, obviously.
    *
-   * @throws IOException
+   * @throws IOException to appear in test protocol
    */
   @Test
   public void cvAsLatex() throws IOException
   {
-    AccessibleData cv = null;
+    AccessibleData cv;
     try (InputStream jsonRes = TestPracticalUse.class.getResourceAsStream("/cv.json");
       Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
     {
@@ -56,7 +56,7 @@ public class TestPracticalUse
    * template. This time, use data from a java object.<br>
    * Note that iteration over the top level object is not supported because syntax needs a name of the object.
    *
-   * @throws IOException
+   * @throws IOException to appear in test protocol
    */
   @Test
   public void errors() throws IOException

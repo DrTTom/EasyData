@@ -46,7 +46,7 @@ public class AccessibleData
 
   private final Object data;
 
-  private final Map<String, Object> additionals = new StackMap();
+  private final Map<String, Object> additionals = new StackMap<>();
 
   /**
    * Defines how to iterate over a complex type.

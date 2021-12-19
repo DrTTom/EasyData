@@ -12,44 +12,51 @@ import java.util.stream.Collectors;
 
 /**
  * Map where the values are kept in stacks. Several values can be added for the same key shadowing each other,
- * upon removal the previous value appears again. This supports recursively called macros. * @author tt
+ * upon removal the previous value appears again. This supports recursively called macros.
+ * 
+ * @author tt
+ * @param <K> key type
+ * @param <V> value type
  */
-public class StackMap extends HashMap<String, Object>
+public class StackMap<K, V> implements Map<K, V>
 {
 
   private static final long serialVersionUID = 1L;
 
+  private final Map<K, Deque<V>> content = new HashMap<>();
+
+
   @Override
-  public Object get(Object key)
+  public V get(Object key)
   {
-    return Optional.ofNullable(super.get(key)).map(e -> ((Deque)e).peek()).orElse(null);
+    return Optional.ofNullable(content.get(key)).map(Deque::peek).orElse(null);
   }
 
   @Override
-  public Object put(String key, Object value)
+  public V put(K key, V value)
   {
-    ((Deque<Object>)super.computeIfAbsent(key, k -> new ArrayDeque<>())).push(value);
+    content.computeIfAbsent(key, k -> new ArrayDeque<>()).push(value);
     return null;
   }
 
   @Override
-  public void putAll(Map<? extends String, ?> m)
+  public void putAll(Map<? extends K, ? extends V> m)
   {
     m.forEach(this::put);
   }
 
   @Override
-  public Object remove(Object key)
+  public V remove(Object key)
   {
-    Deque<Object> stack = (Deque<Object>)super.get(key);
+    Deque<V> stack = content.get(key);
     if (stack == null)
     {
       return null;
     }
-    Object result = stack.pop();
+    V result = stack.pop();
     if (stack.isEmpty())
     {
-      super.remove(key);
+      content.remove(key);
     }
     return result;
   }
@@ -61,14 +68,44 @@ public class StackMap extends HashMap<String, Object>
   }
 
   @Override
-  public Collection<Object> values()
+  public Collection<V> values()
   {
-    return super.values().stream().map(e -> ((Deque)e).peek()).collect(Collectors.toList());
+    return content.values().stream().map(Deque::peek).collect(Collectors.toList());
   }
 
   @Override
-  public Set<Entry<String, Object>> entrySet()
+  public Set<Entry<K, V>> entrySet()
   {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int size()
+  {
+    return content.size();
+  }
+
+  @Override
+  public boolean isEmpty()
+  {
+    return content.isEmpty();
+  }
+
+  @Override
+  public boolean containsKey(Object key)
+  {
+    return content.containsKey(key);
+  }
+
+  @Override
+  public void clear()
+  {
+    content.clear();
+  }
+
+  @Override
+  public Set<K> keySet()
+  {
+    return content.keySet();
   }
 }

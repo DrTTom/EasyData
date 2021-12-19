@@ -1,6 +1,5 @@
 package de.tautenhahn.easydata;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -25,7 +24,7 @@ public class SkipTag implements Resolver
   }
 
   @Override
-  public void resolve(Token start, AccessibleData data, Writer output) throws IOException
+  public void resolve(Token start, AccessibleData data, Writer output)
   {
     // nothing on purpose
   }

@@ -34,7 +34,9 @@ public class TestTokenizer
     try (Scanner sRes = new Scanner(source); Scanner inputRes = sRes.useDelimiter("\n"))
     {
       StringBuilder copy = new StringBuilder();
-      for ( Tokenizer systemUnderTest = new Tokenizer(inputRes, '[', '#', ']') ; systemUnderTest.hasNext() ; )
+      // Iterator is not Iterable!
+      for ( Tokenizer systemUnderTest = new Tokenizer(inputRes, '[', '#', ']') ; systemUnderTest.hasNext() ; ) // NOPMD
+
       {
         Token token = systemUnderTest.next();
         if (tag.equals(token.getContent()))

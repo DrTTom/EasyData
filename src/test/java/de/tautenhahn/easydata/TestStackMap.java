@@ -21,7 +21,7 @@ public class TestStackMap
   @Test
   public void check()
   {
-    Map<String, Object> systemUnderTest = new StackMap();
+    Map<String, Object> systemUnderTest = new StackMap<>();
     final String key = "key";
     systemUnderTest.put(key, "value1");
     systemUnderTest.putAll(Map.of(key, "value2"));

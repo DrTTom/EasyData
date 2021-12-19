@@ -82,7 +82,10 @@ public class MediaProvider
     for ( Entry<String, Supplier<InputStream>> file : contents.entrySet() )
     {
       out.putNextEntry(new ZipEntry("word/media/" + file.getKey()));
-      file.getValue().get().transferTo(out);
+      try (InputStream mediaRes = file.getValue().get())
+      {
+        mediaRes.transferTo(out);
+      }
     }
   }
 }

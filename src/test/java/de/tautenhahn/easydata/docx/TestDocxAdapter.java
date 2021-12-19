@@ -73,8 +73,11 @@ public class TestDocxAdapter extends DataIntoTemplateBase
 
   private int getCX(String path, int cy) throws IOException
   {
-    BufferedImage img = ImageIO.read(getRes(path));
-    return cy * img.getWidth() / img.getHeight();
+    try (InputStream res = getRes(path))
+    {
+      BufferedImage img = ImageIO.read(res);
+      return cy * img.getWidth() / img.getHeight();
+    }
   }
 
   private InputStream getRes(String path)
