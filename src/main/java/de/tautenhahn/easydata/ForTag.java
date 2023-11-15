@@ -47,7 +47,7 @@ public class ForTag extends ComplexTag
 
   static final int GROUP_ORDER = 7;
 
-  static final int GROUP_ORDERATTR = 9;
+  static final int GROUP_ORDER_ATTR = 9;
 
   private final Matcher start;
 
@@ -115,7 +115,7 @@ public class ForTag extends ComplexTag
     String orderOperator = start.group(GROUP_ORDER);
     if (orderOperator != null)
     {
-      col = data.sort(col, start.group(GROUP_ORDERATTR), "ASCENDING".equals(orderOperator));
+      col = data.sort(col, start.group(GROUP_ORDER_ATTR), "ASCENDING".equals(orderOperator));
     }
     if (start.group(GROUP_UNIQUE) != null)
     {

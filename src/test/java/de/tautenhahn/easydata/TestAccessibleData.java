@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ import de.tautenhahn.easydata.AccessibleData.ListMode;
  *
  * @author TT
  */
-public class TestAccessibleData
+class TestAccessibleData
 {
 
   private static AccessibleData systemUnderTest;
@@ -35,10 +36,10 @@ public class TestAccessibleData
    * @throws IOException in case of streaming problems
    */
   @BeforeAll
-  public static void provideData() throws IOException
+  static void provideData() throws IOException
   {
     try (InputStream jsonRes = TestDataIntoTemplate.class.getResourceAsStream("/data.json");
-      Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
+      Reader reader = new InputStreamReader(Objects.requireNonNull(jsonRes), StandardCharsets.UTF_8))
     {
       systemUnderTest = AccessibleData.byJsonReader(reader);
     }
@@ -48,7 +49,7 @@ public class TestAccessibleData
    * Assert that values can be addressed and sorted properly.
    */
   @Test
-  public void sort()
+  void sort()
   {
     Collection<Object> result = systemUnderTest.getCollection("Hobbys", ListMode.DEFAULT);
     result = systemUnderTest.sort(result, null, true);
@@ -63,7 +64,7 @@ public class TestAccessibleData
    * Assert that bean attributes can be accessed.
    */
   @Test
-  public void bean()
+  void bean()
   {
     Map<String, Calendar> bean = Map.of("bean", Calendar.getInstance());
     AccessibleData byBean = AccessibleData.byBean(bean);
@@ -76,16 +77,17 @@ public class TestAccessibleData
    * comes as String as well.
    */
   @Test
-  public void size()
+  void size()
   {
     assertThat(systemUnderTest.getString("SIZE(Hobbys)")).isEqualTo("3");
+    assertThat(systemUnderTest.getString("SIZE{Hobbys}")).isEqualTo("3");
   }
 
   /**
    * Assert that path selecting wrong target type produces a comprehensive error message.
    */
   @Test
-  public void wrongTarget()
+  void wrongTarget()
   {
     assertThatThrownBy(() -> systemUnderTest.getString("Hobbys")).isInstanceOf(ResolverException.class)
                                                                  .hasMessageContaining("expected String but Hobbys is of type java.util.ArrayList");
@@ -95,7 +97,7 @@ public class TestAccessibleData
    * Assert that path selecting wrong target type produces a comprehensive error message.
    */
   @Test
-  public void wrongTarget2()
+  void wrongTarget2()
   {
     assertThatThrownBy(() -> systemUnderTest.getCollection("Hobbys.0",
                                                            ListMode.DEFAULT)).isInstanceOf(ResolverException.class)
@@ -106,7 +108,7 @@ public class TestAccessibleData
    * Assert that path selecting wrong target type produces a comprehensive error message.
    */
   @Test
-  public void attributeOfPrimitive()
+  void attributeOfPrimitive()
   {
     assertThatThrownBy(() -> systemUnderTest.getString("Name.shortName")).isInstanceOf(ResolverException.class)
                                                                          .hasMessageContaining("No property 'shortName' supported for element of type java.lang.String");
@@ -117,7 +119,7 @@ public class TestAccessibleData
    * Overwriting attributes is necessary to enable recursions.
    */
   @Test
-  public void duplicateDefinition()
+  void duplicateDefinition()
   {
     String oldValue = systemUnderTest.getString("Name");
     systemUnderTest.define("Name", "Ludmilla");

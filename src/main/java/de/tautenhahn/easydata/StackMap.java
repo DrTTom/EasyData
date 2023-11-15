@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 public class StackMap<K, V> implements Map<K, V>
 {
 
-  private static final long serialVersionUID = 1L;
-
   private final Map<K, Deque<V>> content = new HashMap<>();
 
 

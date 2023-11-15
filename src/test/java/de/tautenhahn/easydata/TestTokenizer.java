@@ -19,14 +19,14 @@ import org.junit.jupiter.api.Test;
  *
  * @author TT
  */
-public class TestTokenizer
+class TestTokenizer
 {
 
   /**
    * Checks that targeted tokens will be found and that input can be restored.
    */
   @Test
-  public void splitInput()
+  void splitInput()
   {
     String tag = "[#=Name]";
     boolean found = false;
@@ -57,7 +57,7 @@ public class TestTokenizer
    * Asserts that tokens can be found even if markers are used which appear inside the tag.
    */
   @Test
-  public void collisionWithInnerStuff()
+  void collisionWithInnerStuff()
   {
     String tag = "{$= element.${i} }";
     String source = "i-th element is " + tag + ".\n";
@@ -74,7 +74,7 @@ public class TestTokenizer
    * Asserts that scanners delimiter is checked.
    */
   @Test
-  public void wrongScanner()
+  void wrongScanner()
   {
     try (Scanner s = new Scanner("whatever"))
     {
@@ -86,13 +86,13 @@ public class TestTokenizer
    * Asserts that concatenation of tokens returns original content.
    */
   @Test
-  public void retainOriginalContent()
+  void retainOriginalContent()
   {
     String source = "this text \n has different line breaks \r\n and a special tag {$EOL}\n";
     try (Scanner sRes = new Scanner(source); Scanner inputRes = sRes.useDelimiter("\n"))
     {
       Tokenizer systemUnderTest = new Tokenizer(inputRes, '{', '$', '}');
-      StringBuffer result = new StringBuffer();
+      StringBuilder result = new StringBuilder();
       while (systemUnderTest.hasNext())
       {
         result.append(systemUnderTest.next().getContent());

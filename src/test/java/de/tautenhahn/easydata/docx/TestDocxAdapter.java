@@ -1,19 +1,15 @@
 package de.tautenhahn.easydata.docx;
 
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
-import org.junit.jupiter.api.Test;
 
 import de.tautenhahn.easydata.AccessibleData;
 import de.tautenhahn.easydata.DataIntoTemplateBase;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -22,7 +18,7 @@ import de.tautenhahn.easydata.DataIntoTemplateBase;
  *
  * @author TT
  */
-public class TestDocxAdapter extends DataIntoTemplateBase
+class TestDocxAdapter extends DataIntoTemplateBase
 {
 
   /**
@@ -33,7 +29,7 @@ public class TestDocxAdapter extends DataIntoTemplateBase
    * @throws FileNotFoundException to appear in test protocol
    */
   @Test
-  public void createDocument() throws FileNotFoundException, IOException
+  void createDocument() throws FileNotFoundException, IOException
   {
     try (InputStream source = getRes("/example.docx");
       OutputStream destination = new FileOutputStream(Paths.get("build", "example.docx").toFile()))
@@ -53,13 +49,13 @@ public class TestDocxAdapter extends DataIntoTemplateBase
    * @throws Exception to appear in the test protocol
    */
   @Test
-  public void embedImages() throws Exception
+  void embedImages() throws Exception
   {
     MediaProvider media = new MediaProvider();
     String data = "{images: [{name:\"Erwin\", id:\"id1\", cx:\"cx1\"}, {name:\"Knusperinchen\", id:\"id2\", cx:\"cx2\"}]}";
     data = data.replace("id1", media.addImage("Mustermann.png", () -> getRes("/Mustermann.png")));
     data = data.replace("cx1", Integer.toString(getCX("/Mustermann.png", 949_960)));
-    data = data.replace("id2", media.addImage("hamster.jpg", () -> getRes("/hamster.jpg")));
+    data = data.replace("id2", media.addImage(new File("src/test/resources/hamster.jpg")));
     data = data.replace("cx2", Integer.toString(getCX("/hamster.jpg", 949_960)));
     AccessibleData ad = AccessibleData.byJsonContent(data);
 

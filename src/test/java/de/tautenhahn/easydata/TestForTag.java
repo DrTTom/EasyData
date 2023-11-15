@@ -13,23 +13,23 @@ import org.junit.jupiter.api.Test;
  *
  * @author TT
  */
-public class TestForTag
+class TestForTag
 {
 
   /**
-   * Makes sure pattern fits intended syntax.
+   * Makes sure regex pattern fits intended syntax.
    */
   @Test
-  public void pattern()
+  void pattern()
   {
     Matcher m = ForTag.PATTERN.matcher("FOR x: customers SELECT address.city DESCENDING distance");
     assertThat(m.matches()).isTrue();
     checkValues(m, "x", "customers", "address.city", "DESCENDING", "distance");
     assertThat(m.group(ForTag.GROUP_UNIQUE)).isNull();
 
-    m = ForTag.PATTERN.matcher("FOR x: customers.${targetField}  UNIQUE DESCENDING");
+    m = ForTag.PATTERN.matcher("FOR z: customers.${targetField}  UNIQUE DESCENDING");
     assertThat(m.matches()).isTrue();
-    checkValues(m, "x", "customers.${targetField}", null, "DESCENDING", null);
+    checkValues(m, "z", "customers.${targetField}", null, "DESCENDING", null);
     assertThat(m.group(ForTag.GROUP_UNIQUE)).isNotEmpty();
   }
 
@@ -44,6 +44,6 @@ public class TestForTag
     assertThat(m.group(ForTag.GROUP_COLLECTION)).isEqualTo(collection);
     assertThat(m.group(ForTag.GROUP_SELECT)).isEqualTo(select);
     assertThat(m.group(ForTag.GROUP_ORDER)).isEqualTo(order);
-    assertThat(m.group(ForTag.GROUP_ORDERATTR)).isEqualTo(attribute);
+    assertThat(m.group(ForTag.GROUP_ORDER_ATTR)).isEqualTo(attribute);
   }
 }

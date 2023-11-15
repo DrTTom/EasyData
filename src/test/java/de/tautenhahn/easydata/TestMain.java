@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author TT
  */
-public class TestMain
+class TestMain
 {
 
   private final Path sourceDir = Paths.get("src", "test", "resources");
@@ -26,11 +26,11 @@ public class TestMain
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void createDocx() throws IOException
+  void createDocx() throws IOException
   {
     try (PrintStream out = new PrintStream(new ByteArrayOutputStream(), true, StandardCharsets.UTF_8))
     {
-      setOut(out);
+      Main.setOut(out);
       Main.main(sourceDir.resolve("data.json").toString(),
                 sourceDir.resolve("example.docx").toString(),
                 Paths.get("build", "example.docx").toString(),
@@ -42,8 +42,4 @@ public class TestMain
     }
   }
 
-  private static void setOut(PrintStream out)
-  {
-    Main.out = out;
-  }
 }

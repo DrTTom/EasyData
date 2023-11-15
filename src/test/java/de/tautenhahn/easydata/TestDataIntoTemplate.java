@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author TT
  */
-public class TestDataIntoTemplate extends DataIntoTemplateBase
+class TestDataIntoTemplate extends DataIntoTemplateBase
 {
 
   /**
@@ -35,7 +35,7 @@ public class TestDataIntoTemplate extends DataIntoTemplateBase
    * @throws IOException in case of streaming problems
    */
   @BeforeAll
-  public static void provideData() throws IOException
+  static void provideData() throws IOException
   {
     exampleData = getData("/data.json");
   }
@@ -49,7 +49,7 @@ public class TestDataIntoTemplate extends DataIntoTemplateBase
    * @throws IOException in case of streaming problems
    */
   @Test
-  public void insertSingleValues() throws IOException
+  void insertSingleValues() throws IOException
   {
     String result = doExpand("[@=Name] wohnt in [@=Address.City].");
     assertThat(result).isEqualTo("Horst wohnt in Wolkenkuckuksheim.\n");
@@ -64,7 +64,7 @@ public class TestDataIntoTemplate extends DataIntoTemplateBase
    * @throws IOException in case of streaming problems
    */
   @Test
-  public void useReference() throws IOException
+  void useReference() throws IOException
   {
     String result = doExpand("Sein liebstes Hobby ist [@=Hobbys.${index}].");
     assertThat(result).isEqualTo("Sein liebstes Hobby ist Feuerschlucken.\n");
@@ -78,7 +78,7 @@ public class TestDataIntoTemplate extends DataIntoTemplateBase
    * @throws IOException in case of streaming problems
    */
   @Test
-  public void repeatElements() throws IOException
+  void repeatElements() throws IOException
   {
     String result = doExpand("Seine Freunde sind [@FOR name:friends.keys][@=name][@DELIM], [@END].");
     assertThat(result).isEqualTo("Seine Freunde sind Emil, Oskar, Heinz, Franz.\n");
@@ -98,7 +98,7 @@ public class TestDataIntoTemplate extends DataIntoTemplateBase
    * @throws IOException in case of streaming problems
    */
   @Test
-  public void conditional() throws IOException
+  void conditional() throws IOException
   {
     String result = doExpand("[@IF index==\"2\"]Index ist 2.[@ELSE]Index ist anders.[@END]");
     assertThat(result).isEqualTo("Index ist 2.\n");

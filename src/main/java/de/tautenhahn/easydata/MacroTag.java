@@ -39,7 +39,9 @@ public class MacroTag implements Resolver
     {
       String str = start.getContent();
       Matcher m = pattern.matcher(str.substring(2, str.length() - 1).trim());
-      m.matches();
+      if (!m.matches()) {
+        throw new IllegalArgumentException("Unsupported token '"+str+"'");
+      }
       for ( int i = 0 ; i < paramNames.size() ; i++ )
       {
         final Object value = data.get(m.group(i + 1));

@@ -24,7 +24,7 @@ import de.tautenhahn.easydata.docx.DocxAdapter;
 public final class Main
 {
 
-  static PrintStream out = System.out;
+  private static PrintStream out = System.out;
 
   private Main()
   {
@@ -43,11 +43,13 @@ public final class Main
   {
     if (args.length < 3)
     {
-      out.println("Usage: Main <data> <template> <output> [markers] \nwhere"
-                  + "\n   data is path of a JSON file"
-                  + "\n   template is a document template file containing special tags to be replaced"
-                  + "\n   output is the destination file name"
-                  + "\n   markers consists of 3 characters marking the special tags, for instance \"<@>\"");
+      out.println("""
+              Usage: Main <data> <template> <output> [markers]\s
+              where
+                 data is path of a JSON file
+                 template is a document template file containing special tags to be replaced
+                 output is the destination file name
+                 markers consists of 3 characters marking the special tags, for instance "<@>\"""");
       return;
     }
     AccessibleData data = AccessibleData.byJsonPath(args[0]);
@@ -96,4 +98,7 @@ public final class Main
     throw new IllegalArgumentException("markers must have 3 characters: opening, marking, closing");
   }
 
+  static void setOut(PrintStream out) {
+    Main.out = out;
+  }
 }

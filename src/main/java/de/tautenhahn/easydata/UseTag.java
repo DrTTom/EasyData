@@ -26,7 +26,7 @@ public class UseTag implements Resolver
   {
     this.factory = factory;
     this.op = String.valueOf(new char[]{opening, marker});
-    this.close = String.valueOf(new char[]{closing});
+    this.close = String.valueOf(closing);
   }
 
   @Override
@@ -35,7 +35,9 @@ public class UseTag implements Resolver
 
     String str = start.getContent();
     Matcher m = PATTERN.matcher(str.substring(2, str.length() - 1).trim());
-    m.matches();
+    if (!m.matches()) {
+      throw new IllegalArgumentException("Unsupported token '"+str+"'");
+    }
     String translated = op + data.getString(m.group(1)) + m.group(2) + close;
     Token eventualStartToken = new Token(translated, start.getRow(), start.getCol());
     factory.getResolver(eventualStartToken, null).resolve(eventualStartToken, data, output);

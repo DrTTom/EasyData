@@ -15,6 +15,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author TT
  */
-public class TestPracticalUse
+class TestPracticalUse
 {
 
   /**
@@ -33,18 +34,18 @@ public class TestPracticalUse
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void cvAsLatex() throws IOException
+  void cvAsLatex() throws IOException
   {
     AccessibleData cv;
     try (InputStream jsonRes = TestPracticalUse.class.getResourceAsStream("/cv.json");
-      Reader reader = new InputStreamReader(jsonRes, StandardCharsets.UTF_8))
+      Reader reader = new InputStreamReader(Objects.requireNonNull(jsonRes), StandardCharsets.UTF_8))
     {
       cv = AccessibleData.byJsonReader(reader);
     }
     try (InputStream tiRes = TestPracticalUse.class.getResourceAsStream("/cv_template.tex");
-      Reader template = new InputStreamReader(tiRes, StandardCharsets.UTF_8);
-      OutputStream outRes = new FileOutputStream("cv.tex");
-      Writer document = new OutputStreamWriter(outRes, StandardCharsets.UTF_8))
+         Reader template = new InputStreamReader(Objects.requireNonNull(tiRes), StandardCharsets.UTF_8);
+         OutputStream outRes = new FileOutputStream("cv.tex");
+         Writer document = new OutputStreamWriter(outRes, StandardCharsets.UTF_8))
     {
       DataIntoTemplate systemUnderTest = new DataIntoTemplate(cv, '<', '@', '>');
       systemUnderTest.fillData(template, document);
@@ -59,7 +60,7 @@ public class TestPracticalUse
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void errors() throws IOException
+  void errors() throws IOException
   {
     Object data = List.of(Map.of("header", "first block", "lines", List.of("bla", "bla")),
                           Map.of("header", "second block", "lines", List.of("one", "two")));
@@ -69,10 +70,10 @@ public class TestPracticalUse
     {
       DataIntoTemplate systemUnderTest = new DataIntoTemplate(AccessibleData.byBean(data), '(', '@', ')');
 
-      assertThatThrownBy(() -> systemUnderTest.fillData(reader,
-                                                        writer)).isInstanceOf(ResolverException.class)
-                                                                .hasMessageContaining("Invalid index 'items', addressed object has elements 0-1")
-                                                                .hasMessageContaining("1:  8 (@FOR label:items)");
+      assertThatThrownBy(() -> systemUnderTest.fillData(reader, writer))
+              .isInstanceOf(ResolverException.class)
+              .hasMessageContaining("Invalid index 'items', addressed object has elements 0-1")
+              .hasMessageContaining("1:  8 (@FOR label:items)");
     }
   }
 }

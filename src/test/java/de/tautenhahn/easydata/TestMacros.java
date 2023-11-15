@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 
 
 /**
- * Unit tests for using the macro tags. Being able do define and use macros opens a whole new dimension of
+ * Unit tests for using the macro tags. Being able to define and use macros opens a whole new dimension of
  * possibilities.
  *
  * @author TT
  */
-public class TestMacros extends DataIntoTemplateBase
+class TestMacros extends DataIntoTemplateBase
 {
 
   /**
@@ -22,7 +22,7 @@ public class TestMacros extends DataIntoTemplateBase
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void useMacro() throws IOException
+  void useMacro() throws IOException
   {
     AccessibleData data = getData("/data.json");
     String template = "{@DEFINE Oskar}my best friend{@END}{@DEFINE Emil(_data)}the guy from {@=_data.city}{@END}"
@@ -33,13 +33,13 @@ public class TestMacros extends DataIntoTemplateBase
   }
 
   /**
-   * Take the name of a macro to use from data content. That function is necessary to expand key words in the
+   * Take the name of a macro to use from data content. That function is necessary to expand keywords in the
    * data into pre-defined text paragraphs.
    *
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void useMacroFreeName() throws IOException
+  void useMacroFreeName() throws IOException
   {
     AccessibleData data = getData("/data.json");
     String template = "{@DEFINE Gera (_attribute, _distance)}A {@=_attribute} place {@=_distance} km away{@END}"
@@ -55,7 +55,7 @@ public class TestMacros extends DataIntoTemplateBase
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void defineValue() throws IOException
+  void defineValue() throws IOException
   {
     AccessibleData data = getData("/data.json");
     String template = "{@SET myValue=friends.Emil.city}{@=myValue}";

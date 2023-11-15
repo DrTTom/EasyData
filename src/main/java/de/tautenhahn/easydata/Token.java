@@ -1,5 +1,6 @@
 package de.tautenhahn.easydata;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
 public class Token implements Serializable
 {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private final String content;
@@ -60,6 +62,6 @@ public class Token implements Serializable
   @Override
   public String toString()
   {
-    return String.format("%3d:%3d %s", Integer.valueOf(row), Integer.valueOf(col), content);
+    return String.format("%3d:%3d %s", row, col, content);
   }
 }

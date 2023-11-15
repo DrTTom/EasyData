@@ -23,7 +23,7 @@ import de.tautenhahn.easydata.DataIntoTemplate;
  * Can expand macros in Microsoft Word documents. Microsoft Words format DOCX is a ZIP file containing XML
  * contents. It turned out that manipulating the XML file which contains the text content goes a far way to
  * creating the wanted DOCX result. Be aware that complicated manipulations still may break the consistency of
- * the word document. <br>
+ * the Word document. <br>
  * When creating DOCX templates with LibreOffice, load and safe the created document a second time. For some
  * reason unknown to me the data content, especially the coding of the special tags, is completely different
  * in the version saved first.
@@ -114,9 +114,9 @@ public class DocxAdapter
     if (SPECIAL_ENTRY_NAME.equals(name))
     {
       try (InputStream safe = new SafeInputStream(ins);
-        Reader reader = new InputStreamReader(safe, StandardCharsets.UTF_8);
-        OutputStream nonclosing = new NonclosingOutputStream(out);
-        Writer writer = new OutputStreamWriter(nonclosing, StandardCharsets.UTF_8))
+           Reader reader = new InputStreamReader(safe, StandardCharsets.UTF_8);
+           OutputStream nonClosing = new NonClosingOutputStream(out);
+           Writer writer = new OutputStreamWriter(nonClosing, StandardCharsets.UTF_8))
       {
         expander.fillData(reader, writer);
       }
@@ -159,10 +159,10 @@ public class DocxAdapter
   /**
    * Just to avoid closing the output ZIP before ready,
    */
-  private static class NonclosingOutputStream extends FilterOutputStream
+  private static class NonClosingOutputStream extends FilterOutputStream
   {
 
-    NonclosingOutputStream(OutputStream out)
+    NonClosingOutputStream(OutputStream out)
     {
       super(out);
     }

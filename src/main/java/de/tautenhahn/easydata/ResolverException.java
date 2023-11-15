@@ -1,5 +1,6 @@
 package de.tautenhahn.easydata;
 
+import java.io.Serial;
 import java.util.ArrayList;
 
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 public class ResolverException extends RuntimeException
 {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private final ArrayList<Token> locationInTemplate = new ArrayList<>(); // NOPMD need serializable field type

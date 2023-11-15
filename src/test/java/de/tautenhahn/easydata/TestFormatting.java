@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author tt
  */
-public class TestFormatting extends DataIntoTemplateBase
+class TestFormatting extends DataIntoTemplateBase
 {
 
   @Test
@@ -33,8 +33,13 @@ public class TestFormatting extends DataIntoTemplateBase
       other.write("hu");
       other.write("hu\n");
       systemUnderTest.write("Oh!");
-      assertThat(data.toString()).isEqualTo("   bla bla\n" + "   blub\n" + "   hi\n" + "   ___huhu\n"
-                                            + "   Oh!");
+      assertThat(data.toString()).isEqualTo("""
+                 bla bla
+                 blub
+                 hi
+                 ___huhu
+                 Oh!\
+              """);
     }
   }
 
@@ -47,9 +52,11 @@ public class TestFormatting extends DataIntoTemplateBase
   @Test
   void indentTag() throws IOException
   {
-    String template = "<@DEFINE GROUP(group)><@= group.name>: {\n"
-                      + "<@INDENT><@FOR element: group.children><@USE \"GROUP\" element><@/FOR><@VALUE>   <@/INDENT>}\n<@/DEFINE><@SKIP>\n"
-                      + "<@GROUP root>";
+    String template = """
+            <@DEFINE GROUP(group)><@= group.name>: {
+            <@INDENT><@FOR element: group.children><@USE "GROUP" element><@/FOR><@VALUE>   <@/INDENT>}
+            <@/DEFINE><@SKIP>
+            <@GROUP root>""";
     AccessibleData data = AccessibleData.byBean(Map.of("root",
                                                        Map.of("name",
                                                               "ROOT",

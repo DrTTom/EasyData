@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author TT
  */
-public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
+class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
 {
 
   private static AccessibleData exampleData;
@@ -26,18 +26,16 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
    * @throws IOException to appear in test protocol
    */
   @BeforeAll
-  public static void provideData() throws IOException
+  static void provideData() throws IOException
   {
     exampleData = getData("/data.json");
   }
 
   /**
    * Asserts that wrong attribute references are reported.
-   *
-   * @throws IOException to appear in test protocol
    */
   @Test
-  public void wrongAttribute() throws IOException
+  void wrongAttribute()
   {
     assertThatThrownBy(() -> doExpand("Wrong reference [@=Hobies.wrongAttribute]")).isInstanceOf(ResolverException.class)
                                                                                    .hasMessageContaining("no object to resolve wrongAttribute with");
@@ -45,11 +43,9 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
 
   /**
    * Asserts that misspelled special tag produces a comprehensive error message.
-   *
-   * @throws IOException to appear in test protocol
    */
-  @Test
-  public void unsupportedTag() throws IOException
+   @Test
+  void unsupportedTag()
   {
     assertThatThrownBy(() -> doExpand("no such Tag [@WHILE true] haha [@END]")).isInstanceOf(IllegalArgumentException.class)
                                                                                .hasMessage("unrecognized token   1: 12 [@WHILE true]");
@@ -57,11 +53,9 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
 
   /**
    * Asserts that missing end tag produces a comprehensive error message.
-   *
-   * @throws IOException to appear in test protocol
    */
   @Test
-  public void missingEnd() throws IOException
+  void missingEnd()
   {
     assertThatThrownBy(() -> doExpand("no such Tag [@IF Name==\"Friedbert\"] Was für ein altmodischer Name!")).isInstanceOf(IllegalArgumentException.class)
                                                                                                               .hasMessageContaining("unexpected end of input, pending IF Name==\"Friedbert\", missing [[@END], [@/IF]]");
@@ -74,7 +68,7 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void sortElementsByAttribute() throws IOException
+  void sortElementsByAttribute() throws IOException
   {
     String result = doExpand("Städte alphabetisch: [@FOR friend:friends.values UNIQUE DESCENDING city][@= friend.city] [@END]");
     assertThat(result).isEqualTo("Städte alphabetisch: Rom Gera Berlin \n");
@@ -91,7 +85,7 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void groupElementsByAttribute() throws IOException
+  void groupElementsByAttribute() throws IOException
   {
     String result = doExpand("Freunde nach Stadt: [@FOR city:friends.values SELECT city UNIQUE] [@= city]:"
                              + "[@FOR name:friends][@IF city==friends[name].city] [@=name][@END][@END][@DELIM], [@END]");
@@ -104,7 +98,7 @@ public class TestDataIntoTemplateSpecialCases extends DataIntoTemplateBase
    * @throws IOException to appear in test protocol
    */
   @Test
-  public void size() throws IOException
+  void size() throws IOException
   {
     String result = doExpand("Kinder: [@IF SIZE(children)>0]JA![@ELSE]nein.[@END]");
     assertThat(result).isEqualTo("Kinder: nein.\n");
