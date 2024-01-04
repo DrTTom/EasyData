@@ -13,12 +13,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,11 +39,13 @@ public class AccessibleData {
 
     private static final Pattern SIZE2 = Pattern.compile("SIZE\\{([^}]+)\\}");
 
-    private static final Pattern LITERAL = Pattern.compile("\"[^\"]*\"");
+    private static final Pattern LITERAL = Pattern.compile("\"[^\"]*\"|'[^']*'|#[^#]*#");
 
     private final Object data;
 
     private final Map<String, Object> additionalValues = new StackMap<>();
+
+    protected final List<BiFunction<Object, String, Object>> formatters = new ArrayList<>();
 
     /**
      * Defines how to iterate over a complex type.
@@ -116,8 +114,29 @@ public class AccessibleData {
      *
      * @param data given data
      */
-    public AccessibleData(Object data) {
+    private AccessibleData(Object data) {
         this.data = data;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param original shares formatters and bean with new object: both are supposed not to change
+     */
+    protected AccessibleData(AccessibleData original) {
+        data = original.data;
+        formatters.addAll(original.formatters);
+    }
+
+    /**
+     * Adds a formatter to be used by the {@link #getString(String)} method.
+     *
+     * @param formatter Parameters are the Object to format and the path where that object was obtained from.
+     *                  Return value should either be a formatted String representation of the given object or the
+     *                  given object itself, if the formatter is not applicable.
+     */
+    public void addFormatter(BiFunction<Object, String, Object> formatter) {
+        this.formatters.add(formatter);
     }
 
     /**
@@ -129,6 +148,12 @@ public class AccessibleData {
     public Object get(String attrName) {
         if ("NULL".equals(attrName)) {
             return null;
+        }
+        if ("true".equalsIgnoreCase(attrName)) {
+            return Boolean.TRUE;
+        }
+        if ("false".equalsIgnoreCase(attrName)) {
+            return Boolean.FALSE;
         }
         if (LITERAL.matcher(attrName).matches()) {
             return attrName.substring(1, attrName.length() - 1);
@@ -163,6 +188,9 @@ public class AccessibleData {
         if (result != null && (result instanceof Map || result instanceof List || result.getClass().isArray())) {
             throw new ResolverException("expected String but " + attrName + " is of type "
                     + result.getClass().getName());
+        }
+        for (BiFunction<Object, String, Object> formatter: formatters) {
+            result = formatter.apply(result, attrName);
         }
         return Optional.ofNullable(result).map(Object::toString).orElse("null");
     }
@@ -242,11 +270,23 @@ public class AccessibleData {
         if (element.getClass().isArray()) {
             return Array.get(element, getIndex(first, Array.getLength(element)));
         }
+        return callGetMethod(first, element);
+
+    }
+
+    private Object callGetMethod(String attrName, Object element) {
         try {
-            return new PropertyDescriptor(first, element.getClass()).getReadMethod().invoke(element);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                 | IntrospectionException e) {
-            throw new ResolverException("No property '" + first + "' supported for element of type "
+            String upperName = Character.toUpperCase(attrName.charAt(0)) + attrName.substring(1);
+            Method method;
+            try {
+                method = element.getClass().getMethod("get" + upperName);
+            } catch (NoSuchMethodException e) {
+                method = element.getClass().getMethod("is" + upperName);
+            }
+            return method.invoke(element);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new ResolverException("No property '" + attrName + "' supported for element of type "
                     + element.getClass().getName(), e);
         }
     }

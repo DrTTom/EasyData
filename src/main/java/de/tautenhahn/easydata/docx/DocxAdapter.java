@@ -214,7 +214,7 @@ public class DocxAdapter
 
     SanitizingData(AccessibleData original)
     {
-      super(original.getData());
+      super(original);
     }
 
     @Override

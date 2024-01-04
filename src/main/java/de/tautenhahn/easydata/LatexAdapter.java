@@ -56,7 +56,7 @@ public class LatexAdapter
 
     SanitizingData(AccessibleData original)
     {
-      super(original.getData());
+      super(original);
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public final class EasyTagFactory implements ResolverFactory
 {
 
-  private static final Resolver IDENTITY = new Identity();
+  public static final Resolver IDENTITY = new Identity();
 
   private final Map<Pattern, BiFunction<Matcher, Iterator<Token>, Resolver>> resolvers = new HashMap<>();
 
@@ -52,6 +52,7 @@ public final class EasyTagFactory implements ResolverFactory
     Resolver useTag = new UseTag(opening, marker, closing, this);
     resolvers.put(UseTag.PATTERN, (s, r) -> useTag);
     resolvers.put(SetTag.PATTERN, (s, r) -> new SetTag(s));
+    resolvers.put(MarkupOnlyTag.PATTERN, (s, r) -> new MarkupOnlyTag(s, r, this));
   }
 
   /**
@@ -64,6 +65,11 @@ public final class EasyTagFactory implements ResolverFactory
     public void resolve(Token start, AccessibleData data, Writer output) throws IOException
     {
       output.write(start.getContent());
+    }
+
+    @Override
+    public boolean resolvesSpecialMarkup() {
+      return false;
     }
   }
 

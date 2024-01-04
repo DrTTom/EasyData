@@ -8,10 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -126,5 +124,50 @@ class TestAccessibleData
     assertThat(systemUnderTest.getString("Name")).isEqualTo("Ludmilla");
     systemUnderTest.undefine("Name");
     assertThat(systemUnderTest.getString("Name")).isEqualTo(oldValue);
+  }
+
+  /**
+   * Assert that getting attributes works with read-only objects.
+   */
+  @Test
+  void accessReadOnlyContent()
+  {
+    assertThat(AccessibleData.byBean(new ExampleData()).get("value")).isEqualTo("egal");
+  }
+
+  /**
+   * Assert that getting attributes works with read-only objects.
+   */
+  @Test
+  void formatContent()
+  {
+    AccessibleData testee = AccessibleData.byBean(Map.of("date", new Date(0)));
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.GERMAN);
+    testee.addFormatter((content, path)-> content instanceof Date date ? sdf.format(date): content );
+    assertThat(testee.getString("date")).isEqualTo("1970.01.01");
+  }
+
+  /**
+   * Assert that String literals are just returned, not resolved.
+   */
+  @Test
+  void literalsAreReturend()
+  {
+    AccessibleData testee = AccessibleData.byBean(Map.of("date", new Date(0)));
+    assertThat(testee.getString("\"date\"")).isEqualTo("date");
+    assertThat(testee.getString("'date'")).isEqualTo("date");
+    assertThat(testee.getString("#date#")).isEqualTo("date");
+  }
+
+  /**
+   * Example for a class wich has a getter but no setter to match it.
+   */
+  public static class ExampleData {
+    /**
+     * @return some value
+     */
+    public String getValue() {
+      return "egal";
+    }
   }
 }
