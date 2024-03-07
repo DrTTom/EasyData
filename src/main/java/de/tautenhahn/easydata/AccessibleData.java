@@ -159,12 +159,12 @@ public class AccessibleData {
             return attrName.substring(1, attrName.length() - 1);
         }
         if (attrName.matches("\\d+")) {
-            return attrName;
+            return Integer.valueOf(attrName);
         }
         for (Pattern p : new Pattern[]{SIZE, SIZE2}) {
             Matcher m = p.matcher(attrName);
             if (m.matches()) {
-                return Integer.toString(getCollection(m.group(1), ListMode.DEFAULT).size());
+                return getCollection(m.group(1), ListMode.DEFAULT).size();
             }
         }
 
@@ -314,7 +314,7 @@ public class AccessibleData {
      * @return see {@link Comparator}
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public int compare(Object a, Object b, boolean ascending) {
+    public static int compare(Object a, Object b, boolean ascending) {
         int direction = ascending ? 1 : -1;
         if (isNumericString(a) && isNumericString(b)) {
             return Double.valueOf((String) a).compareTo(Double.valueOf((String) b)) * direction;

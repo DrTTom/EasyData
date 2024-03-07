@@ -13,56 +13,79 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class IfTag extends ComplexTag
-{
+public class IfTag extends ComplexTag {
 
-  private final Matcher start;
+    private static final String VALUE_KEY = "VALUE";
 
-  /**
-   * How to recognize this tag.
-   */
-  public static final Pattern PATTERN = Pattern.compile("IF +(.+) *(==|!=|>|<) *(.+)");
+    private final Matcher start;
 
-  /**
-   * Creates new instance.
-   *
-   * @param start matched first token
-   * @param remaining remaining tokens, should be read until end tag is found
-   * @param factory provides the objects to resolve nested tags with
-   */
-  public IfTag(Matcher start, Iterator<Token> remaining, ResolverFactory factory)
-  {
-    super(start, remaining, factory, "ELSE", "/IF");
-    this.start = start;
-  }
+    /**
+     * How to recognize this tag.
+     */
+    public static final Pattern PATTERN = Pattern.compile("IF +([^=><!]+) *((==|!=|>|<|<=|>=) *(.+))?");
 
-  @Override
-  public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException
-  {
-    try
-    {
-      String leftSide = start.group(1).trim();
-      String operator = start.group(2);
-      String rightSide = start.group(3).trim();
-      Object left = data.get(leftSide);
-      Object right = data.get(rightSide);
-
-      if ("==".equals(operator) && Objects.equals(left, right)
-          || "!=".equals(operator) && !Objects.equals(left, right)
-          || "<".equals(operator) && data.compare(left.toString(), right.toString(), true) < 0
-          || ">".equals(operator) && data.compare(left.toString(), right.toString(), true) > 0)
-      {
-        resolveContent(content, data, output);
-      }
-      else
-      {
-        resolveContent(otherContent, data, output);
-      }
+    /**
+     * Creates new instance.
+     *
+     * @param start     matched first token
+     * @param remaining remaining tokens, should be read until end tag is found
+     * @param factory   provides the objects to resolve nested tags with
+     */
+    public IfTag(Matcher start, Iterator<Token> remaining, ResolverFactory factory) {
+        super(start, remaining, factory, "ELSE", "/IF");
+        this.start = start;
     }
-    catch (ResolverException e)
-    {
-      e.addLocation(startTag);
-      throw e;
+
+    @Override
+    public void resolve(Token startTag, AccessibleData data, Writer output) throws IOException {
+        try {
+            if (conditionSatisfied(data)) {
+                resolveContent(content, data, output);
+            } else {
+                resolveContent(otherContent, data, output);
+            }
+        } catch (ResolverException e) {
+            e.addLocation(startTag);
+            throw e;
+        }
+        data.undefine(VALUE_KEY);
     }
-  }
+
+
+    private boolean conditionSatisfied(AccessibleData data) {
+        String leftSide = start.group(1).trim();
+        Object left = data.get(leftSide);
+
+        if (start.group(2) == null) {
+            if (isTruthy(left)) {
+                data.define(VALUE_KEY, left);
+                return true;
+            }
+            return false;
+        }
+
+        String operator = start.group(3);
+        String rightSide = start.group(4).trim();
+
+        Object right = data.get(rightSide);
+
+        return switch (operator) {
+            case "==" -> Objects.equals(left, right);
+            case "!=" -> !Objects.equals(left, right);
+            case "<" -> data.compare(left, right, true) < 0;
+            case ">" -> data.compare(left, right, true) > 0;
+            default -> throw new IllegalArgumentException("Unsupported operator " + operator);
+        };
+    }
+
+    private static boolean isTruthy(Object left) {
+        if (left instanceof String ls) {
+            return !ls.isEmpty();
+        }
+        if (left instanceof Number n) {
+            return n.floatValue() != 0;
+        }
+        return left != null && !Boolean.FALSE.equals(left);
+    }
+
 }

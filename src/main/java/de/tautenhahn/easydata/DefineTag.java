@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class DefineTag extends ComplexTag
 {
 
-  static final Pattern PATTERN = Pattern.compile("DEFINE +([^\\( ]+)( *\\(([^,]+(,[^,]+)*)\\))?");
+  static final Pattern PATTERN = Pattern.compile("DEFINE +([^\\(\\{ ]+)( *[\\(\\{]([^,]+(,[^,]+)*)[\\)\\}])?");
 
   private final Matcher startMatcher;
 

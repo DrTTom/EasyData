@@ -151,12 +151,15 @@ class TestAccessibleData
    * Assert that String literals are just returned, not resolved.
    */
   @Test
-  void literalsAreReturend()
+  void literalsAreReturned()
   {
     AccessibleData testee = AccessibleData.byBean(Map.of("date", new Date(0)));
     assertThat(testee.getString("\"date\"")).isEqualTo("date");
     assertThat(testee.getString("'date'")).isEqualTo("date");
     assertThat(testee.getString("#date#")).isEqualTo("date");
+    assertThat(testee.getString("#date#")).isEqualTo("date");
+    assertThat(testee.get("true")).isEqualTo(Boolean.TRUE);
+    assertThat(testee.get("5")).isEqualTo(5);
   }
 
   /**

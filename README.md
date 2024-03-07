@@ -27,7 +27,15 @@ specifying data file, template file and output file.
 
 Data must be provided as JSON.
 
-Freely choose beginning, ending and marking character for the special tags to include into the document template. For instance, '(', ')' and '@' will work inside most documents. In that case, all special tags are of form "(@&lt;content&gt;)" which are used in the following explanations. The following special tags are supported:
+Freely choose beginning, ending and marking character for the special tags to include into the document template. 
+For instance, `(`, `)` and `@` will work inside most documents. In that case, all special tags are of form 
+`(@<content>)` which are used in the following explanations. 
+
+Within the markup of the special tags, the characters `"`, `(` and `)` appear. The braces may be replaced by `{` and `}`
+to avoid collision with special tag markers. The character `"` can be replaced by DOCX processors, you may use `#` instead.
+Instead of `(@END)`, it is always possible to use a more specific form as for example `(@/IF)` or `(@/FOR)`.    
+
+The following special tags are supported:
 
 **(@= &lt;expression&gt;)**
 
@@ -35,12 +43,15 @@ Is replaced by the value specified by expression, where expression may be
 
 - an attribute name, attributes of attributes are written as names separated by dot. Arrays are handled like objects with attribute names "0", "1" and so on.
 - expressions containing inner expressions, i.e. if `name` resolves to "Franz", then `element.Franz` can be addressed as `element.${name}` or `element[name]`, alternatively.
-- the function `SIZE(&lt;expression&gt;)` is supported as well 
+- the function `SIZE(<expression>)` is supported as well 
 
 **(@IF &lt;expression1&gt; &lt;operator&gt; &lt;expression2&gt;)&lt;content&gt;(@ELSE)&lt;alternativeContent&gt;(@END)** 
 
 Is replaced by content or alternative content, respectively. Operators may be `==`,`!=`, `&lt;` or `&gt;`, expressions may be as
 above or literals surrounded by `"`. The ELSE tag is optional.
+
+Instead of the frequent expression of form `(@IF my.data.label!=##)The label is (@=my.data.label).(@/IF)`
+the shorthand version `(@IF my.data.label)The label is (@=VALUE).(@/IF)` is supported. 
  
 **(@FOR &lt;name&gt; : &lt;expression&gt; &lt;modifiers&gt; )&lt;content&gt;(@DELIM)&lt;alternativeContent&gt;(@END)**
 
@@ -75,7 +86,7 @@ followed by comments without cluttering the document output.
 
 ## Usage as library
 
-Read JavaDoc of class `de.tautenhahn.easydata.DataIntoTemplate`.
+Read JavaDoc of class `de.tautenhahn.easydata.DataIntoTemplate`. See previous section for use of special tags.
 
 ## Separate programming tasks for teaching
 

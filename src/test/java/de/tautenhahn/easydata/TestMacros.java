@@ -42,8 +42,24 @@ class TestMacros extends DataIntoTemplateBase
   void useMacroFreeName() throws IOException
   {
     AccessibleData data = getData("/data.json");
+    String template = "(@DEFINE Gera {_attribute, _distance})A (@=_attribute) place (@=_distance) km away(@/DEFINE)"
+            + "(@USE friends.Emil.city \"nice\" friends.Emil.distance)";
+
+    String result = doExpand(template, data, '(', '@', ')');
+    assertThat(result).isEqualTo("A nice place 90 km away\n");
+  }
+
+  /**
+   * Define a Macro with parameters when special tags use braces as it is done by the DOCX adapter.
+   *
+   * @throws IOException to appear in test protocol
+   */
+  @Test
+  void useMacroBraces() throws IOException
+  {
+    AccessibleData data = getData("/data.json");
     String template = "{@DEFINE Gera (_attribute, _distance)}A {@=_attribute} place {@=_distance} km away{@END}"
-                      + "{@USE friends.Emil.city \"nice\" friends.Emil.distance}";
+            + "{@USE friends.Emil.city \"nice\" friends.Emil.distance}";
 
     String result = doExpand(template, data, '{', '@', '}');
     assertThat(result).isEqualTo("A nice place 90 km away\n");
