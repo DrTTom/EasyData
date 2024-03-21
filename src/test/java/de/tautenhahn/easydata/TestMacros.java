@@ -26,11 +26,33 @@ class TestMacros extends DataIntoTemplateBase
   {
     AccessibleData data = getData("/data.json");
     String template = "{@DEFINE Oskar}my best friend{@END}{@DEFINE Emil(_data)}the guy from {@=_data.city}{@END}"
-                      + "{@Oskar}, {@Emil friends.Emil}";
+            + "{@Oskar}, {@Emil friends.Emil}";
 
     String result = doExpand(template, data, '{', '@', '}');
     assertThat(result).isEqualTo("my best friend, the guy from Gera\n");
   }
+
+  /**
+   * Defines a macro and uses while defining another macro.
+   *
+   * @throws IOException to appear in test protocol
+   */
+  @Test
+  void nestedDefinitions() throws IOException
+  {
+    AccessibleData data = getData("/data.json");
+    String template = """
+            {@MARKUP_ONLY}
+                 {@DEFINE Emil(_data)}the guy from {@=_data.city}{@/DEFINE}
+                 {@DEFINE ironic(_data2)}"{@Emil _data2}"{@/DEFINE}
+            {@/MARKUP_ONLY}{@SKIP}
+            {@ironic friends.Emil}
+            """;
+    String result = doExpand(template, data, '{', '@', '}');
+    assertThat(result).isEqualTo("\"the guy from Gera\"\n");
+  }
+
+
 
   /**
    * Take the name of a macro to use from data content. That function is necessary to expand keywords in the
@@ -42,10 +64,10 @@ class TestMacros extends DataIntoTemplateBase
   void useMacroFreeName() throws IOException
   {
     AccessibleData data = getData("/data.json");
-    String template = "(@DEFINE Gera {_attribute, _distance})A (@=_attribute) place (@=_distance) km away(@/DEFINE)"
-            + "(@USE friends.Emil.city \"nice\" friends.Emil.distance)";
+    String template = "{@DEFINE Gera (_attribute, _distance)}A {@=_attribute} place {@=_distance} km away{@END}"
+            + "{@USE friends.Emil.city \"nice\" friends.Emil.distance}";
 
-    String result = doExpand(template, data, '(', '@', ')');
+    String result = doExpand(template, data, '{', '@', '}');
     assertThat(result).isEqualTo("A nice place 90 km away\n");
   }
 
@@ -58,10 +80,10 @@ class TestMacros extends DataIntoTemplateBase
   void useMacroBraces() throws IOException
   {
     AccessibleData data = getData("/data.json");
-    String template = "{@DEFINE Gera (_attribute, _distance)}A {@=_attribute} place {@=_distance} km away{@END}"
-            + "{@USE friends.Emil.city \"nice\" friends.Emil.distance}";
+    String template = "(@DEFINE Gera {_attribute, _distance})A (@=_attribute) place (@=_distance) km away(@/DEFINE)"
+            + "(@USE friends.Emil.city \"nice\" friends.Emil.distance)";
 
-    String result = doExpand(template, data, '{', '@', '}');
+    String result = doExpand(template, data, '(', '@', ')');
     assertThat(result).isEqualTo("A nice place 90 km away\n");
   }
 

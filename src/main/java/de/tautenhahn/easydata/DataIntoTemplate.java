@@ -40,6 +40,7 @@ public class DataIntoTemplate
     this.closing = closing;
     this.marker = marker;
     resetFactory();
+    data.clearReplacements();
   }
 
   /**

@@ -45,6 +45,8 @@ public class AccessibleData {
 
     private final Map<String, Object> additionalValues = new StackMap<>();
 
+    private final Map<String, String> replacements = new HashMap<>();
+
     protected final List<BiFunction<Object, String, Object>> formatters = new ArrayList<>();
 
     /**
@@ -192,7 +194,15 @@ public class AccessibleData {
         for (BiFunction<Object, String, Object> formatter: formatters) {
             result = formatter.apply(result, attrName);
         }
-        return Optional.ofNullable(result).map(Object::toString).orElse("null");
+        return Optional.ofNullable(result).map(Object::toString).map(this::applyReplacements).orElse("null");
+    }
+
+    private String applyReplacements(String value) {
+        String result = value;
+        for (Map.Entry<String, String> entry:replacements.entrySet()) {
+            result = result.replace(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
     /**
@@ -239,6 +249,25 @@ public class AccessibleData {
      */
     public void undefine(String name) {
         additionalValues.remove(name);
+    }
+
+    /**
+     * Defines a string replacement to be applied to all results of {@link #getString(String)}. That allows
+     * to use content defined in the template document within the data strings. Reason for that feature was an
+     * application which builds large String items and inserts them into a Word document. Those String item should
+     * contain paragraphs.
+     * @param key String to be replaced
+     * @param value replacement value
+     */
+    public void defineReplacement(String key, String value) {
+        replacements.put(key, value);
+    }
+
+    /**
+     * Undefines all replacements from {@link #defineReplacement(String, String)}
+     */
+    public void clearReplacements() {
+        replacements.clear();
     }
 
     /**

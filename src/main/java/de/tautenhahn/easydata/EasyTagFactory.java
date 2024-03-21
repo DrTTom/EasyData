@@ -53,6 +53,7 @@ public final class EasyTagFactory implements ResolverFactory
     resolvers.put(UseTag.PATTERN, (s, r) -> useTag);
     resolvers.put(SetTag.PATTERN, (s, r) -> new SetTag(s));
     resolvers.put(MarkupOnlyTag.PATTERN, (s, r) -> new MarkupOnlyTag(s, r, this));
+    resolvers.put(ReplacementTag.PATTERN, (s, r) -> new ReplacementTag(s, r, this));
   }
 
   /**

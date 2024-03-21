@@ -22,28 +22,29 @@ public class DefineTag extends ComplexTag
 
   static final Pattern PATTERN = Pattern.compile("DEFINE +([^\\(\\{ ]+)( *[\\(\\{]([^,]+(,[^,]+)*)[\\)\\}])?");
 
-  private final Matcher startMatcher;
-
-  private final ResolverFactory factory;
-
   DefineTag(Matcher startMatcher, Iterator<Token> remaining, ResolverFactory factory)
   {
     super(startMatcher, remaining, factory, "COMMENT", "/DEFINE");
-    this.startMatcher = startMatcher;
-    this.factory = factory;
+
+    // Registering the new tag is done immediately so the new tag is available before some surrounding tag will be resolved.
+    registerNewTag(startMatcher, factory);
+  }
+
+  private void registerNewTag(Matcher startMatcher, ResolverFactory factory) {
+    String name = startMatcher.group(1);
+    List<String> paramNames = Optional.ofNullable(startMatcher.group(3))
+            .map(a -> Arrays.stream(a.split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toList()))
+            .orElseGet(Collections::emptyList);
+    MacroTag macro = new MacroTag(name, paramNames, content);
+    factory.register(macro.getPattern(), macro);
   }
 
   @Override
   public void resolve(Token start, AccessibleData data, Writer output)
   {
-    String name = startMatcher.group(1);
-    List<String> paramNames = Optional.ofNullable(startMatcher.group(3))
-                                      .map(a -> Arrays.stream(a.split(","))
-                                                      .map(String::trim)
-                                                      .collect(Collectors.toList()))
-                                      .orElseGet(Collections::emptyList);
-    MacroTag macro = new MacroTag(name, paramNames, content);
-    factory.register(macro.getPattern(), macro);
+    // empty on purpose
   }
 
 }

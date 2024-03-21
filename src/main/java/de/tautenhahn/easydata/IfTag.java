@@ -72,8 +72,8 @@ public class IfTag extends ComplexTag {
         return switch (operator) {
             case "==" -> Objects.equals(left, right);
             case "!=" -> !Objects.equals(left, right);
-            case "<" -> data.compare(left, right, true) < 0;
-            case ">" -> data.compare(left, right, true) > 0;
+            case "<" -> AccessibleData.compare(left, right, true) < 0;
+            case ">" -> AccessibleData.compare(left, right, true) > 0;
             default -> throw new IllegalArgumentException("Unsupported operator " + operator);
         };
     }
