@@ -218,9 +218,9 @@ public class DocxAdapter
     }
 
     @Override
-    public String getString(String attrName)
+    protected String sanitize(String value)
     {
-      return super.getString(attrName).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+      return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
   }
 }

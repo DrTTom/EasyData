@@ -194,7 +194,11 @@ public class AccessibleData {
         for (BiFunction<Object, String, Object> formatter: formatters) {
             result = formatter.apply(result, attrName);
         }
-        return Optional.ofNullable(result).map(Object::toString).map(this::applyReplacements).orElse("null");
+        return Optional.ofNullable(result).map(Object::toString).map(this::sanitize).map(this::applyReplacements).orElse("null");
+    }
+
+    protected String sanitize(String s) {
+        return s;
     }
 
     private String applyReplacements(String value) {
