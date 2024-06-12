@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ public class AccessibleData {
 
     private static final Pattern LITERAL = Pattern.compile("\"[^\"]*\"|'[^']*'|#[^#]*#");
 
+    public static final String VALUE_READ_MISSES = "VALUE_READ_MISSES";
+
     private final Object data;
 
     private final Map<String, Object> additionalValues = new StackMap<>();
@@ -48,6 +51,8 @@ public class AccessibleData {
     private final Map<String, String> replacements = new HashMap<>();
 
     protected final List<BiFunction<Object, String, Object>> formatters = new ArrayList<>();
+
+    private boolean throwOnValueReadMiss;
 
     /**
      * Defines how to iterate over a complex type.
@@ -90,12 +95,12 @@ public class AccessibleData {
     /**
      * Returns new instance wrapping data specified by JSON file.
      *
-     * @param data given data
+     * @param file path to a JSON file
      * @return new instance
      * @throws IOException in case of streaming problems
      */
-    public static AccessibleData byJsonPath(String data) throws IOException {
-        try (InputStream json = new FileInputStream(data);
+    public static AccessibleData byJsonPath(String file) throws IOException {
+        try (InputStream json = new FileInputStream(file);
              Reader reader = new InputStreamReader(json, StandardCharsets.UTF_8)) {
             return byJsonReader(reader);
         }
@@ -127,6 +132,7 @@ public class AccessibleData {
      */
     protected AccessibleData(AccessibleData original) {
         data = original.data;
+        throwOnValueReadMiss = original.throwOnValueReadMiss;
         formatters.addAll(original.formatters);
     }
 
@@ -171,12 +177,8 @@ public class AccessibleData {
         }
 
         String attr = resolveInnerExpressions(attrName);
-        return get(attr, additionalValues.containsKey(getFirstPart(attr)) ? additionalValues : data);
-    }
-
-    private String getFirstPart(String path) {
-        int pos = path.indexOf('.');
-        return pos > 0 ? path.substring(0, pos) : path;
+        String[] path = attr.split("\\.");
+        return get(path, 0, additionalValues.containsKey(path[0]) ? additionalValues : data);
     }
 
     /**
@@ -186,24 +188,33 @@ public class AccessibleData {
      * @return string value
      */
     public String getString(String attrName) {
+        if (VALUE_READ_MISSES.equals(attrName)) {
+            return Optional.ofNullable(additionalValues.get(attrName)).map(Object::toString).orElse("");
+        }
         Object result = get(attrName);
         if (result != null && (result instanceof Map || result instanceof List || result.getClass().isArray())) {
             throw new ResolverException("expected String but " + attrName + " is of type "
                     + result.getClass().getName());
         }
-        for (BiFunction<Object, String, Object> formatter: formatters) {
+        for (BiFunction<Object, String, Object> formatter : formatters) {
             result = formatter.apply(result, attrName);
         }
         return Optional.ofNullable(result).map(Object::toString).map(this::sanitize).map(this::applyReplacements).orElse("null");
     }
 
+    /**
+     * Sanitizes the string. Default implementation does nothing.
+     *
+     * @param s input string
+     * @return same as s but without elements which may cause problems in the target document.
+     */
     protected String sanitize(String s) {
         return s;
     }
 
     private String applyReplacements(String value) {
         String result = value;
-        for (Map.Entry<String, String> entry:replacements.entrySet()) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
             result = result.replace(entry.getKey(), entry.getValue());
         }
         return result;
@@ -217,11 +228,11 @@ public class AccessibleData {
      * @return new collection
      */
     public Collection<Object> map(Collection<Object> original, String attrName) {
-        return original.stream().map(o -> get(attrName, o)).collect(Collectors.toList());
+        return original.stream().map(o -> get(attrName.split("\\."), 0, o)).collect(Collectors.toList());
     }
 
     /**
-     * Returns a list of sorted elements. This method calls {@link #get(String, Object)} too frequently,
+     * Returns a list of sorted elements. This method calls {@link #get(String[], int, Object)} too frequently,
      * optimize in case of performance problems.
      *
      * @param original  content to sort
@@ -231,7 +242,12 @@ public class AccessibleData {
      */
     public List<Object> sort(Collection<Object> original, String attrName, boolean ascending) {
         List<Object> result = new ArrayList<>(original);
-        result.sort((a, b) -> compare(get(attrName, a), get(attrName, b), ascending));
+        if (attrName == null) {
+            result.sort((a, b) -> compare(a, b, ascending));
+        } else {
+            String[] path = attrName.split("\\.");
+            result.sort((a, b) -> compare(get(path, 0, a), get(path, 0, b), ascending));
+        }
         return result;
     }
 
@@ -260,7 +276,8 @@ public class AccessibleData {
      * to use content defined in the template document within the data strings. Reason for that feature was an
      * application which builds large String items and inserts them into a Word document. Those String item should
      * contain paragraphs.
-     * @param key String to be replaced
+     *
+     * @param key   String to be replaced
      * @param value replacement value
      */
     public void defineReplacement(String key, String value) {
@@ -281,33 +298,48 @@ public class AccessibleData {
         return data;
     }
 
-    private Object get(String attrName, Object element) {
-        if (attrName == null) {
+    private Object get(String[] path, int alreadyResolved, Object element) {
+        if (alreadyResolved == path.length) {
             return element;
         }
         if (element == null) {
-            throw new ResolverException("no object to resolve " + attrName + " with");
+            recordValueReadMiss(path, alreadyResolved, "null");
+            return null;
         }
-        String first = getFirstPart(attrName);
-        Object attr = getAttribute(element, first);
-        return first.equals(attrName) ? attr : get(attrName.substring(first.length() + 1), attr);
+        Object attr = getAttribute(element, path, alreadyResolved);
+        return get(path, alreadyResolved + 1, attr);
     }
 
-    private Object getAttribute(Object element, String first) {
+    private Object getAttribute(Object element, String[] path, int alreadyResolved) {
+        String attrName = path[alreadyResolved];
         if (element instanceof Map map) {
-            return map.get(first);
+            return map.get(attrName);
         }
         if (element instanceof List list) {
-            return list.get(getIndex(first, ((List<?>) element).size()));
+            return selectByIndex(path, alreadyResolved, list.size(), list::get);
         }
         if (element.getClass().isArray()) {
-            return Array.get(element, getIndex(first, Array.getLength(element)));
+            return selectByIndex(path, alreadyResolved, Array.getLength(element), i -> Array.get(element, i));
         }
-        return callGetMethod(first, element);
-
+        return callGetMethod(path, alreadyResolved, element);
     }
 
-    private Object callGetMethod(String attrName, Object element) {
+    private Object selectByIndex(String[] path, int alreadyResolved, int size, IntFunction<Object> getter) {
+        try {
+            int result = Integer.parseInt(path[alreadyResolved]);
+            if (result >= 0 || result < size) {
+                return getter.apply(result);
+            }
+        } catch (NumberFormatException e) // NOPMD same handling needed as in case without Exception
+        {
+            // empty on purpose
+        }
+        recordValueReadMiss(path, alreadyResolved, "a Collection with " + size + " elements");
+        return null;
+    }
+
+    private Object callGetMethod(String[] path, int alreadyResolved, Object element) {
+        String attrName = path[alreadyResolved];
         try {
             String upperName = Character.toUpperCase(attrName.charAt(0)) + attrName.substring(1);
             Method method;
@@ -319,23 +351,9 @@ public class AccessibleData {
             return method.invoke(element);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new ResolverException("No property '" + attrName + "' supported for element of type "
-                    + element.getClass().getName(), e);
+            recordValueReadMiss(path, alreadyResolved, element.getClass().getSimpleName());
+            return null;
         }
-    }
-
-    private int getIndex(String index, int length) {
-        try {
-            int result = Integer.parseInt(index);
-            if (result >= 0 || result < length) {
-                return result;
-            }
-        } catch (NumberFormatException e) // NOPMD same handling needed as in case without Exception
-        {
-            // error handling below
-        }
-        throw new ResolverException("Invalid index '" + index + "', addressed object has elements 0-"
-                + (length - 1));
     }
 
     /**
@@ -389,7 +407,11 @@ public class AccessibleData {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<Object> getCollection(String attrName, ListMode mode) {
         Object target = get(attrName);
-        checkComplex(attrName, target);
+        if (target == null || target instanceof String || target.getClass().isPrimitive()) {
+            String className = Optional.ofNullable(target).map(Object::getClass).map(Class::getName).orElse("null value");
+            recordValueReadMiss(new String[]{attrName, "to collection"}, 1, className);
+            return Collections.emptyList();
+        }
         if (target instanceof Map) {
             return mode == ListMode.VALUES ? ((Map) target).values() : ((Map) target).keySet();
         }
@@ -397,12 +419,26 @@ public class AccessibleData {
             return mode == ListMode.KEYS ? indexList(((List<?>) target).size()) : (List) target;
         }
         if (target.getClass().isArray()) {
-            return mode == ListMode.KEYS ? indexList(Array.getLength(target)) : toList(target);
+            return mode == ListMode.KEYS ? indexList(Array.getLength(target)) : Arrays.asList(target);
         }
         return beanToList(attrName, mode, target);
     }
 
+    /**
+     * Make the object throw an exception when trying to resolve non-existing data. That allows other classes to add
+     * more information to that exception, for instance which tag is currently being resolved. Activate that mode
+     * for debugging.
+     *
+     * @param throwOnValueReadMiss default is false
+     */
+    public void setThrowOnValueReadMiss(boolean throwOnValueReadMiss) {
+        this.throwOnValueReadMiss = throwOnValueReadMiss;
+    }
+
     private Collection<Object> beanToList(String attrName, ListMode mode, Object target) {
+        if (target == null) {
+            return Collections.emptyList();
+        }
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(target.getClass());
             PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
@@ -415,27 +451,21 @@ public class AccessibleData {
             }
             return result;
         } catch (IntrospectionException | ReflectiveOperationException | IllegalArgumentException e) {
-            throw new ResolverException("expected complex object but " + attrName + " is a "
-                    + target.getClass().getName(), e);
+            recordValueReadMiss(new String[]{attrName, "to collection"}, 1, target.getClass().getName());
+            return Collections.emptyList();
         }
     }
 
-    private void checkComplex(String attrName, Object target) {
-        if (target == null || target instanceof String || target.getClass().isPrimitive()) {
-            throw new ResolverException("expected complex object but " + attrName + " is a "
-                    + Optional.ofNullable(target)
-                    .map(Object::getClass)
-                    .map(Class::getName)
-                    .orElse("null value"));
+    private void recordValueReadMiss(String[] path, int alreadyResolved, String msg) {
+        String resolvedPath = String.join(".", Arrays.copyOfRange(path, 0, alreadyResolved));
+        String remainingPath = String.join(".", Arrays.copyOfRange(path, alreadyResolved, path.length));
+        String message = "cannot resolve '" + remainingPath + "' because value of '" + resolvedPath + "' is " + msg;
+        if (throwOnValueReadMiss) {
+            throw new ResolverException(message);
         }
+        List<String> misses = (List<String>) additionalValues.getOrDefault(VALUE_READ_MISSES, new ArrayList<>());
+        misses.add(message);
+        additionalValues.put(VALUE_READ_MISSES, misses);
     }
 
-    private List<Object> toList(Object target) {
-        int length = Array.getLength(target);
-        List<Object> result = new ArrayList<>(length);
-        for (int i = 0; i < length; i++) {
-            result.add(Array.get(target, i));
-        }
-        return result;
-    }
 }

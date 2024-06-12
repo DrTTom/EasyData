@@ -17,73 +17,66 @@ import java.util.regex.Matcher;
  *
  * @author TT
  */
-public abstract class ComplexTag implements Resolver
-{
+public abstract class ComplexTag implements Resolver {
 
-  /**
-   * Main content.
-   */
-  protected final Map<Token, Resolver> content = new LinkedHashMap<>();
+    /**
+     * Main content.
+     */
+    protected final Map<Token, Resolver> content = new LinkedHashMap<>();
 
-  /**
-   * Alternative content.
-   */
-  protected final Map<Token, Resolver> otherContent = new LinkedHashMap<>();
+    /**
+     * Alternative content.
+     */
+    protected final Map<Token, Resolver> otherContent = new LinkedHashMap<>();
 
-  /**
-   * Creates new instance
-   *
-   * @param startTag only used for error message if end is missing
-   * @param remaining further text to read until end tag is found
-   * @param factory provides the resolvers for nested tags
-   * @param delimName content excluding brace and markers of tag starting the alternative content.
-   * @param endName names of end tags. "END" is always supported.
-   */
-  protected ComplexTag(Matcher startTag,
-                       Iterator<Token> remaining,
-                       ResolverFactory factory,
-                       String delimName,
-                       String... endName)
-  {
-    String delim = factory.nameToTag(delimName);
-    List<String> end = new ArrayList<>();
-    end.add(factory.nameToTag("END"));
-    Arrays.stream(endName).map(factory::nameToTag).forEach(end::add);
+    /**
+     * Creates new instance
+     *
+     * @param startTag  only used for error message if end is missing
+     * @param remaining further text to read until end tag is found
+     * @param factory   provides the resolvers for nested tags
+     * @param delimName content excluding brace and markers of tag starting the alternative content.
+     * @param endName   names of end tags. "END" is always supported.
+     */
+    protected ComplexTag(Matcher startTag,
+                         Iterator<Token> remaining,
+                         ResolverFactory factory,
+                         String delimName,
+                         String... endName) {
+        String delim = factory.nameToTag(delimName);
+        List<String> end = new ArrayList<>();
+        end.add(factory.nameToTag("END"));
+        Arrays.stream(endName).map(factory::nameToTag).forEach(end::add);
 
-    Map<Token, Resolver> tokens = content;
+        Map<Token, Resolver> tokens = content;
 
-    while (remaining.hasNext())
-    {
-      Token token = remaining.next();
-      if (delim.equals(token.getContent()))
-      {
-        tokens = otherContent;
-        continue;
-      }
-      if (end.contains(token.getContent()))
-      {
-        return;
-      }
-      tokens.put(token, factory.getResolver(token, remaining));
+        while (remaining.hasNext()) {
+            Token token = remaining.next();
+            if (delim.equals(token.getContent())) {
+                tokens = otherContent;
+                continue;
+            }
+            if (end.contains(token.getContent())) {
+                return;
+            }
+            tokens.put(token, factory.getResolver(token, remaining));
+        }
+        throw new IllegalArgumentException("unexpected end of input, pending " + startTag.group(0) + ", missing "
+                + end);
     }
-    throw new IllegalArgumentException("unexpected end of input, pending " + startTag.group(0) + ", missing "
-                                       + end);
-  }
 
-  /**
-   * Resolves the content.
-   *
-   * @param subTags content with respective resolvers
-   * @param data original data enhanced by attributes defined in start tag
-   * @param output where the result is written to
-   * @throws IOException in case of streaming problems
-   */
-  protected void resolveContent(Map<Token, Resolver> subTags, AccessibleData data, Writer output)
-    throws IOException
-  {
-    for ( Entry<Token, Resolver> entry : subTags.entrySet() )
-    {
-      entry.getValue().resolve(entry.getKey(), data, output);
+    /**
+     * Resolves the content.
+     *
+     * @param subTags content with respective resolvers
+     * @param data    original data enhanced by attributes defined in start tag
+     * @param output  where the result is written to
+     * @throws IOException in case of streaming problems
+     */
+    protected void resolveContent(Map<Token, Resolver> subTags, AccessibleData data, Writer output)
+            throws IOException {
+        for (Entry<Token, Resolver> entry : subTags.entrySet()) {
+            entry.getValue().resolve(entry.getKey(), data, output);
+        }
     }
-  }
 }

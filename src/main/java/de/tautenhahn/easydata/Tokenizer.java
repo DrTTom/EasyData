@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class Tokenizer implements Iterator<Token> {
+public final class Tokenizer implements Iterator<Token> {
 
     private final Scanner data;
 

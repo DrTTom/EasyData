@@ -68,11 +68,13 @@ class TestPracticalUse
 
     try (Reader reader = new StringReader(template); Writer writer = new StringWriter())
     {
-      DataIntoTemplate systemUnderTest = new DataIntoTemplate(AccessibleData.byBean(data), '(', '@', ')');
+      AccessibleData accessibleData = AccessibleData.byBean(data);
+      accessibleData.setThrowOnValueReadMiss(true);
+      DataIntoTemplate systemUnderTest = new DataIntoTemplate(accessibleData, '(', '@', ')');
 
       assertThatThrownBy(() -> systemUnderTest.fillData(reader, writer))
               .isInstanceOf(ResolverException.class)
-              .hasMessageContaining("Invalid index 'items', addressed object has elements 0-1")
+              .hasMessageContaining("cannot resolve 'items' because value of '' is a Collection with 2 elements")
               .hasMessageContaining("1:  8 (@FOR label:items)");
     }
   }

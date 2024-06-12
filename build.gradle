@@ -1,15 +1,14 @@
 plugins {
     id 'application'
     id 'java-library'
-    // id "com.github.spotbugs" version "6.0.0-rc.2" // current version is broken, no error message and no output with or without configuration
+    id "com.github.spotbugs" version "6.0.16"
     id 'com.github.ben-manes.versions' version '0.51.0'
     id 'pmd'
     id 'jacoco'
     id 'maven-publish'
 }
 
-
-version = '1.1.3'
+version = '1.1.5'
 group = 'de.tautenhahn.easydata'
 
 repositories {
@@ -17,14 +16,15 @@ repositories {
 }
 
 dependencies {
-    implementation "com.google.code.gson:gson:2.10.1"
+    implementation "com.google.code.gson:gson:2.11.0"
     implementation "org.apache.poi:poi-ooxml:5.2.5"
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.12'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testImplementation 'org.assertj:assertj-core:3.25.3'
-    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.assertj:assertj-core:3.26.0'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 application {
@@ -51,8 +51,8 @@ publishing {
     }
 }
 
-/*spotbugs {
-   toolVersion ='4.8.1'
+spotbugs {
+   toolVersion ='4.8.5'
    effort = com.github.spotbugs.snom.Effort.MAX
    excludeFilter.set(file("findbugs-exclude.xml"))
-} */
+}
