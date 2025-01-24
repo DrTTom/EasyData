@@ -75,6 +75,13 @@ class TestAccessibleData {
         assertThat(systemUnderTest.getString("SIZE{Hobbys}")).isEqualTo("3");
     }
 
+    @Test
+    void returnArrayAsCollection() {
+        AccessibleData data = AccessibleData.byBean(Map.of("array", new String[] { "a", "b", "c" }));
+        assertThat(data.getCollection("array", ListMode.DEFAULT)).containsExactly("a", "b", "c");
+        assertThat(data.getCollection("array", ListMode.KEYS)).containsExactly("0", "1", "2");
+    }
+
     /**
      * Assert that path selecting wrong target type produces a comprehensive error message.
      */

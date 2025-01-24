@@ -419,7 +419,7 @@ public class AccessibleData {
             return mode == ListMode.KEYS ? indexList(((List<?>) target).size()) : (List) target;
         }
         if (target.getClass().isArray()) {
-            return mode == ListMode.KEYS ? indexList(Array.getLength(target)) : Arrays.asList(target);
+            return mode == ListMode.KEYS ? indexList(Array.getLength(target)) : Arrays.asList((Object[]) target);
         }
         return beanToList(attrName, mode, target);
     }
