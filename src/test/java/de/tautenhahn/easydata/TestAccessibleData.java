@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -137,10 +139,11 @@ class TestAccessibleData {
      */
     @Test
     void formatContent() {
-        AccessibleData testee = AccessibleData.byBean(Map.of("date", new Date(0)));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.GERMAN);
-        testee.addFormatter((content, path) -> content instanceof Date date ? sdf.format(date) : content);
-        assertThat(testee.getString("date")).isEqualTo("1970.01.01");
+        AccessibleData testee = AccessibleData.byBean(Map.of("date", Instant.EPOCH));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
+        testee.addFormatter((content, path) -> content instanceof Instant instant ? formatter.format(instant) : content);
+        assertThat(testee.getString("date")).isEqualTo("1970-01-01 01:00:00");
     }
 
     /**
@@ -148,10 +151,9 @@ class TestAccessibleData {
      */
     @Test
     void literalsAreReturned() {
-        AccessibleData testee = AccessibleData.byBean(Map.of("date", new Date(0)));
+        AccessibleData testee = AccessibleData.byBean(Map.of("date", Instant.EPOCH));
         assertThat(testee.getString("\"date\"")).isEqualTo("date");
         assertThat(testee.getString("'date'")).isEqualTo("date");
-        assertThat(testee.getString("#date#")).isEqualTo("date");
         assertThat(testee.getString("#date#")).isEqualTo("date");
         assertThat(testee.get("true")).isEqualTo(Boolean.TRUE);
         assertThat(testee.get("5")).isEqualTo(5);

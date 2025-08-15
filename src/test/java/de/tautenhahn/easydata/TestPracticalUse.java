@@ -1,5 +1,6 @@
 package de.tautenhahn.easydata;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.FileOutputStream;
@@ -13,6 +14,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +53,7 @@ class TestPracticalUse
       DataIntoTemplate systemUnderTest = new DataIntoTemplate(cv, '<', '@', '>');
       systemUnderTest.fillData(template, document);
     }
+    assertThat(Files.readString(Path.of("cv.tex"))).contains("Hobbies: & Programmierung, Briefmarken sammeln, Walzer tanzen");
   }
 
   /**

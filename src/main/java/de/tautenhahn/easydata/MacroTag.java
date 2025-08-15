@@ -47,7 +47,7 @@ public class MacroTag implements Resolver
         final Object value = data.get(m.group(i + 1));
         if (value == null)
         {
-          throw new ResolverException("parameter value " + m.group(i + 1) + " undefined").addLocation(start);
+          throw new ResolverException("parameter value " + m.group(i + 1) + " undefined");
         }
         data.define(paramNames.get(i), value);
       }
@@ -57,7 +57,7 @@ public class MacroTag implements Resolver
       }
       paramNames.forEach(data::undefine);
     }
-    catch (ResolverException e)
+    catch (ResolverException e) // NOPMD want to add location
     {
       e.addLocation(start);
       throw e;

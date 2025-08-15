@@ -35,7 +35,7 @@ class TestTokenizer
     {
       StringBuilder copy = new StringBuilder();
       // Iterator is not Iterable!
-      for ( Tokenizer systemUnderTest = new Tokenizer(inputRes, '[', '#', ']') ; systemUnderTest.hasNext() ; ) // NOPMD
+      for ( Tokenizer systemUnderTest = new Tokenizer(inputRes, '[', '#', ']') ; systemUnderTest.hasNext() ; )
 
       {
         Token token = systemUnderTest.next();

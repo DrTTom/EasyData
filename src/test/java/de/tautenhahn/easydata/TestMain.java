@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Unit test for main class.
@@ -28,7 +30,8 @@ class TestMain
   @Test
   void createDocx() throws IOException
   {
-    try (PrintStream out = new PrintStream(new ByteArrayOutputStream(), true, StandardCharsets.UTF_8))
+    try (ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            PrintStream out = new PrintStream(bout, true, StandardCharsets.UTF_8))
     {
       Main.setOut(out);
       Main.main(sourceDir.resolve("data.json").toString(),
@@ -39,6 +42,8 @@ class TestMain
       Main.main(sourceDir.resolve("cv.json").toString(),
                 sourceDir.resolve("cv_template.tex").toString(),
                 Paths.get("build", "cv.tex").toString());
+
+      assertThat(bout.toString(StandardCharsets.UTF_8)).contains("Usage: Main ");
     }
   }
 

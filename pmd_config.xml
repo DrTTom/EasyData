@@ -5,31 +5,28 @@
    </description>
 
    <rule ref="category/java/bestpractices.xml">
-      <exclude name="JUnitTestsShouldIncludeAssert" /> <!-- contradicts usage of private check methods -->
       <exclude name="MethodReturnsInternalArray" /> <!-- we decide if we want that -->
       <exclude name="AccessorClassGeneration" /> <!-- singleton -->
       <exclude name="ArrayIsStoredDirectly" /> <!-- different opinion -->
+      <exclude name="ImplicitFunctionalInterface" />
       <exclude name="AbstractClassWithoutAbstractMethod" /> <!-- we want more explicit naming -->
       <exclude name="AvoidStringBufferField" /> <!-- some classes need to build a text report -->
    </rule>
    <rule
-      ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+      ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
       <properties>
          <property name="maximumAsserts" value="15" />
       </properties>
    </rule>
 
    <rule ref="category/java/codestyle.xml">
-      <exclude name="DefaultPackage" />
       <exclude name="CommentDefaultAccessModifier" />
       <exclude name="MethodArgumentCouldBeFinal" />
       <exclude name="LocalVariableCouldBeFinal" />
       <exclude name="OnlyOneReturn" />
       <exclude name="AtLeastOneConstructor" />
       <exclude name="CallSuperInConstructor" /> <!-- no information gained by it -->
-      <exclude name="AbstractNaming" /> <!-- ugly to speak about this AbstractRule in this AbstractCategory -->
       <exclude name="ShortVariable" /> <!-- want those in lambdas -->
-      <exclude name="AvoidFinalLocalVariable" /> <!-- contradicts "define everything in the minimal scope" -->
       <exclude name="GenericsNaming" /> <!-- understanding complex generics requires speaking names -->
       <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" /> <!--optional callback methods -->
       <exclude name="ShortMethodName" /> <!-- fluent API might want methods like "of" -->
@@ -109,8 +106,6 @@
       <exclude name="AvoidLiteralsInIfCondition" /> <!-- magic number check done with other rules, false positives -->
       <exclude name="AvoidCatchingThrowable" /> <!-- at system boundaries, we want to send a code to the client or die trying -->
       <exclude name="NullAssignment" /> <!-- nulling object might be wanted -->
-      <exclude name="ReturnEmptyArrayRatherThanNull" /> <!-- that's a semantic question -->
-      <exclude name="CloneThrowsCloneNotSupportedException" /> <!-- declare only exceptions which are really thrown -->
       <exclude name="ProperCloneImplementation" /> <!-- too many false positives -->
    </rule>
    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
