@@ -1,1 +1,30 @@
+include 'core'
+include 'cli'
+
 rootProject.name = 'EasyData'
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        libs {
+            version('easydata', '2.0.0')
+
+            plugin('versions', 'com.github.ben-manes.versions').version('0.53.0')
+            plugin('spotbugs', 'com.github.spotbugs').version('6.4.8')
+            version('pmd', '7.17.0')
+            version('spotbugs', '4.9.8')
+
+            library('gson', 'com.google.code.gson:gson:2.13.2')
+            library('poi.ooxml', 'org.apache.poi:poi-ooxml:5.5.1')
+            library('slf4j', 'org.slf4j:slf4j-simple:2.0.12')
+
+            library('jupiter-api', 'org.junit.jupiter:junit-jupiter-api:5.13.1')
+            library('assertj', 'org.assertj:assertj-core:3.27.3')
+            library('mockito', 'org.mockito:mockito-core:5.21.0')
+            library('jupiter.engine', 'org.junit.jupiter:junit-jupiter-engine:5.13.1')
+            library('jupiter.launcher', 'org.junit.platform:junit-platform-launcher:6.0.1')
+        }
+    }
+}

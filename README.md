@@ -1,5 +1,12 @@
 # EasyData
 
+This is a library for creating documents from a template and separately prepared data. It can be applied to a variety
+of formats like LaTeX, DOCX, XML, HTML or anything which is somehow text-based and does not rely on to many absolute
+references (like for instance Excel does). Originally, it was written to support teaching. However, it has now been
+successfully used for years as light-weight and cost-free Template expander for DOCX documents.
+
+The original implementation startet with the following thoughts:
+
 Creating some kind of document by inserting data into an appropriate template is a recurring task. There
 are many implementations, for instance XSLT for XML, luatex for LaTeX, lots of frameworks for HTML.
 
@@ -7,7 +14,8 @@ Just how much functionality do we need to create a useful document? What do we h
 target language? How complicated will it get?
 
 This is a simple example which targets creation of arbitrary documents using data from a JSON file.
-It assumes that there is some template for the documents which contains special expressions to be replaced by data elements.
+It assumes that there is some template for the documents which contains special expressions to be replaced by data
+elements.
 To be of practical use, the tool should be able to
 
 - stream the document
@@ -15,25 +23,28 @@ To be of practical use, the tool should be able to
 - insert data elements at specified positions
 - create recurring elements by expanding a FOR-expression
 - support conditional elements.
-- support definition of macros and values to keep the structure complex templates simple 
+- support definition of macros and values to keep the structure complex templates simple
 
-Although this project has been created as example for teaching,
-first tests show that creation of LaTeX or DOCX documents already works well enough to be of practical use.
+Although this project has been created as example for teaching, it has been proven useful as library for other projects
+as well.
 
 ## Usage as application
-The application can handle any kind of text based files (for instance HTML, XML, LateX source codes) as well as DOCX documents.
-It will not work with documents using lots of internal references (Excel files) or relying on length of elements (ASN.1). Call script
-specifying data file, template file and output file.
+
+The application can handle any kind of text based files (for instance HTML, XML, LateX source codes) as well as DOCX
+documents.
+It will not work with documents using lots of internal references (Excel files) or relying on length of elements (
+ASN.1). Call script specifying data file, template file and output file.
 
 Data must be provided as JSON.
 
-Freely choose beginning, ending and marking character for the special tags to include into the document template. 
-For instance, `(`, `)` and `@` will work inside most documents. In that case, all special tags are of form 
-`(@<content>)` which are used in the following explanations. 
+Freely choose beginning, ending and marking character for the special tags to include into the document template.
+For instance, `(`, `)` and `@` will work inside most documents. In that case, all special tags are of form
+`(@<content>)` which are used in the following explanations.
 
 Within the markup of the special tags, the characters `"`, `(` and `)` appear. The braces may be replaced by `{` and `}`
-to avoid collision with special tag markers. The character `"` can be replaced by DOCX processors, you may use `#` instead.
-Instead of `(@END)`, it is always possible to use a more specific form as for example `(@/IF)` or `(@/FOR)`.    
+to avoid collision with special tag markers. The character `"` can be replaced by DOCX processors, you may use `#`
+instead.
+Instead of `(@END)`, it is always possible to use a more specific form as for example `(@/IF)` or `(@/FOR)`.
 
 The following special tags are supported:
 
@@ -41,34 +52,44 @@ The following special tags are supported:
 
 Is replaced by the value specified by expression, where expression may be
 
-- an attribute name, attributes of attributes are written as names separated by dot. Arrays are handled like objects with attribute names "0", "1" and so on.
-- expressions containing inner expressions, i.e. if `name` resolves to "Franz", then `element.Franz` can be addressed as `element.${name}` or `element[name]`, alternatively.
-- the function `SIZE(<expression>)` is supported as well 
+- an attribute name, attributes of attributes are written as names separated by dot. Arrays are handled like objects
+  with attribute names "0", "1" and so on.
+- expressions containing inner expressions, i.e. if `name` resolves to "Franz", then `element.Franz` can be addressed as
+  `element.${name}` or `element[name]`, alternatively.
+- the function `SIZE(<expression>)` is supported as well
 
-**(@IF &lt;expression1&gt; &lt;operator&gt; &lt;expression2&gt;)&lt;content&gt;(@ELSE)&lt;alternativeContent&gt;(@END)** 
+**(@IF &lt;expression1&gt; &lt;operator&gt; &lt;expression2&gt;)&lt;content&gt;(@ELSE)&lt;alternativeContent&gt;(@END)**
 
-Is replaced by content or alternative content, respectively. Operators may be `==`,`!=`, `&lt;` or `&gt;`, expressions may be as
+Is replaced by content or alternative content, respectively. Operators may be `==`,`!=`, `&lt;` or `&gt;`, expressions
+may be as
 above or literals surrounded by `"`. The ELSE tag is optional.
 
 Instead of the frequent expression of form `(@IF my.data.label!=##)The label is (@=my.data.label).(@/IF)`
-the shorthand version `(@IF my.data.label)The label is (@=VALUE).(@/IF)` is supported. 
- 
+the shorthand version `(@IF my.data.label)The label is (@=VALUE).(@/IF)` is supported.
+
 **(@FOR &lt;name&gt; : &lt;expression&gt; &lt;modifiers&gt; )&lt;content&gt;(@DELIM)&lt;alternativeContent&gt;(@END)**
 
-Is replaced by one copy of content for each value in expression where attribute name is set to that value. Between these contents, alternativeContent 
-is inserted. DELIM tag is optional. Expression is as in the "=" tag but must resolve to some array or object and supports the pseudo-attributes `values` and `keys`. Both are optional. For arrays, by default the elements are iterated, for objects by default the keys.
+Is replaced by one copy of content for each value in expression where attribute name is set to that value. Between these
+contents, alternativeContent
+is inserted. DELIM tag is optional. Expression is as in the "=" tag but must resolve to some array or object and
+supports the pseudo-attributes `values` and `keys`. Both are optional. For arrays, by default the elements are iterated,
+for objects by default the keys.
 The following modifiers are supported:
+
 - ASCENDING / DESCENDING sort the iterated elements
 - UNIQUE removes duplicate elements
 - SELECT &lt;expression&gt; replaces each iterated element by some attribute of it.
 
 **(@DEFINE &lt;name&gt; (&lt;params&gt;))&lt;content&gt;(@END)**
 
-Defines a macro of specified name for later use. Params is the comma-separated list of parameter names which should not collide with the data keys. Content may be an arbitrary but well-formed template which can access the global data keys as well as the given parameters.
+Defines a macro of specified name for later use. Params is the comma-separated list of parameter names which should not
+collide with the data keys. Content may be an arbitrary but well-formed template which can access the global data keys
+as well as the given parameters.
 
 **(@&lt;name&gt; &lt;params&gt;)**
 
-Is replaced by the resolved content of the macro defined by name. Params is the blank-separated list of expressions which are resolved to the parameter values. That list must have same length as defined in @DEFINE tag.
+Is replaced by the resolved content of the macro defined by name. Params is the blank-separated list of expressions
+which are resolved to the parameter values. That list must have same length as defined in @DEFINE tag.
 
 **(@USE &lt;name&gt; &lt;params&gt;)**
 
@@ -81,7 +102,7 @@ Defines an additional data object addressed by name. Make sure name does not col
 **(@MARPUP_ONLY)&lt;content&gt;(@END)**
 
 Renders only such parts of the content which are generated by some special tag. All plain content is skipped. This tag
-comes handy when defining a lot of @SET, @DEFINE or @IF tags: they can all be written into separate lines and even be 
+comes handy when defining a lot of @SET, @DEFINE or @IF tags: they can all be written into separate lines and even be
 followed by comments without cluttering the document output.
 
 ## Usage as library
@@ -90,28 +111,44 @@ Read JavaDoc of class `de.tautenhahn.easydata.DataIntoTemplate`. See previous se
 
 ## Separate programming tasks for teaching
 
-Following tasks can be given to students or applicants as exercise or test. Do not give the example implementation, obviously.
+Following tasks can be given to students or applicants as exercise or test. Do not give the example implementation,
+obviously.
 
 **Tokenizer (Iterator, Scanner, regular expressions)**
 
-Provide  class 'de.tautenhahn.easydata.TestTokenizer', let the student write a class 'Tokenizer' which passes that test.
-An experienced programmer should be able to develop a good idea how to do that in less than an hour or write the class in about two hours.
+Provide class 'de.tautenhahn.easydata.tokenizer.TestTokenizer', let the student write a class 'Tokenizer' which passes
+that test.
+An experienced programmer should be able to develop a good idea how to do that in less than an hour or write the class
+in about two hours.
 
 **Data Access (recursion, generic types, data structures, Stream)**
 
 Discuss the task of accessing parts of a data structure to include into a document. The student shall
 
 - define which data types to support
-- write appropriate unit tests in class 'de.tautenhahn.easydata.TestAccessibleData'
+- write appropriate unit tests in class 'de.tautenhahn.easydata.engine.TestAccessibleData'
 - write a class which is able to access collections and String values by attribute path in a complex data structure
 
 **Parsing (reading source code, design pattern, class hierarchy)**
 
-Provide whole project except ResolverFactory and *Tag-Classes. Focus on test 'de.tautenhahn.easydata.TestDataIntoTemplate'.
+Provide whole project except ResolverFactory and *Tag-Classes. Focus on test '
+de.tautenhahn.easydata.TestDataIntoTemplate'.
 This is a more complex task which is useful to access the programming and communication skills of an applicant. Discuss
 possible classes, do not expect an implemented working solution in a few hours.
 
 **DOCX (ZIP handling, integration, DOCX specification)**
 
-Provide whole project except DocxAdapter. The student shall find out what file inside the DOCX must be handled and how to
-unpack and pack the ZIP. Discuss security issues with ZIP handling. 
+Provide whole project except DocxAdapter. The student shall find out what file inside the DOCX must be handled and how
+to
+unpack and pack the ZIP. Discuss security issues with ZIP handling.
+
+# Version History
+
+## 2.0.0
+
+- divided core and cli project
+- re-organized packaging
+- core project no longer depend on GSON
+
+When migrating from 1.x.x, change package of AccessibleData. To instanciate AccessibleDate form a JSON content, use
+whatever JSON parser your project already has.    

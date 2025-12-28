@@ -1,0 +1,54 @@
+plugins {
+    id 'java-library'
+    alias(libs.plugins.spotbugs)
+    alias(libs.plugins.versions)
+    id 'pmd'
+    id 'jacoco'
+    id 'maven-publish'
+}
+
+version = libs.versions.easydata.get()
+group = 'de.tautenhahn.easydata'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation libs.poi.ooxml
+    runtimeOnly libs.slf4j
+
+    testImplementation libs.jupiter.api
+    testImplementation libs.assertj
+    testImplementation libs.mockito
+    testImplementation libs.gson
+    testRuntimeOnly libs.jupiter.engine
+    testRuntimeOnly libs.jupiter.launcher
+}
+
+test {
+    useJUnitPlatform()
+}
+
+check.dependsOn jacocoTestReport
+
+pmd {
+    toolVersion = libs.versions.pmd.get()
+    ruleSets = []
+    ruleSetFiles = files("../pmd_config.xml")
+}
+
+publishing {
+    publications {
+        EasyData(MavenPublication) {
+            from components.java
+            artifactId = 'easydata'
+        }
+    }
+}
+
+spotbugs {
+    toolVersion = libs.versions.spotbugs.get()
+    effort = com.github.spotbugs.snom.Effort.MAX
+    excludeFilter.set(file("../findbugs-exclude.xml"))
+}

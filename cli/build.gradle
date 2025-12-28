@@ -1,0 +1,43 @@
+plugins {
+    id 'application'
+    alias(libs.plugins.spotbugs)
+    alias(libs.plugins.versions)
+    id 'pmd'
+    id 'jacoco'
+}
+
+version = '1.1.7'
+group = 'de.tautenhahn.easydata'
+
+dependencies {
+    implementation project(':core')
+    implementation libs.gson
+
+    testImplementation libs.jupiter.api
+    testImplementation libs.assertj
+    testImplementation libs.mockito
+    testRuntimeOnly libs.jupiter.engine
+    testRuntimeOnly libs.jupiter.launcher
+}
+
+application {
+    mainClass.set('de.tautenhahn.easydata.Main')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+check.dependsOn jacocoTestReport
+
+pmd {
+    toolVersion = toolVersion = libs.versions.pmd.get()
+    ruleSets = []
+    ruleSetFiles = files("../pmd_config.xml")
+}
+
+spotbugs {
+    toolVersion = toolVersion = libs.versions.spotbugs.get()
+    effort = com.github.spotbugs.snom.Effort.MAX
+    excludeFilter.set(file("../findbugs-exclude.xml"))
+}

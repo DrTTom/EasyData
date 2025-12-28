@@ -1,11 +1,10 @@
 /.gradle/
-/bin/
+cli/build/
+core/build/
 /build/
 .project
 .settings
 .classpath
 *~
-/cv.*
-Mustermann.png
-*.tex.swp
+**/*.tex.swp
 .idea
