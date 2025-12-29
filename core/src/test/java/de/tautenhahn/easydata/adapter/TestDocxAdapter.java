@@ -3,6 +3,7 @@ package de.tautenhahn.easydata.adapter;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
@@ -30,12 +31,13 @@ class TestDocxAdapter  {
      */
     @Test
     void createDocument() throws IOException {
+        Path outputPath = Paths.get("build", "example.docx");
         try (InputStream source = getRes("/example.docx");
-             OutputStream destination = Files.newOutputStream(Paths.get("build", "example.docx"))) {
+             OutputStream destination = Files.newOutputStream(outputPath)) {
             DocxAdapter systemUnderTest = new DocxAdapter(DataTestHelper.getData("/data.json"));
             systemUnderTest.convert(source, destination);
         }
-        assertThat(Files.exists(Paths.get("build", "example.docx"))).isTrue();
+        assertThat(Files.exists(outputPath)).isTrue();
     }
 
     /**
@@ -57,12 +59,13 @@ class TestDocxAdapter  {
         data = data.replace("cx2", Integer.toString(getCX("/hamster.jpg", 949_960)));
         AccessibleData ad = DataTestHelper.getDataFromJsonContent(data);
 
+        Path outputPath = Paths.get("build", "images.docx");
         try (InputStream source = getRes("/images.docx");
-             OutputStream destination = Files.newOutputStream(Paths.get("build", "images.docx"))) {
+             OutputStream destination = Files.newOutputStream(outputPath)) {
             DocxAdapter systemUnderTest = new DocxAdapter(ad, media);
             systemUnderTest.convert(source, destination);
         }
-        assertThat(Files.exists(Paths.get("build", "images.docx"))).isTrue();
+        assertThat(Files.exists(outputPath)).isTrue();
     }
 
     private int getCX(String path, int cy) throws IOException {

@@ -17,38 +17,28 @@ import java.util.regex.Pattern;
  *
  * @author TT
  */
-public class IndentTag extends ComplexTag
-{
+public class IndentTag extends ComplexTag {
 
-  static final Pattern PATTERN = Pattern.compile("INDENT");
+    static final Pattern PATTERN = Pattern.compile("INDENT");
 
-  IndentTag(Matcher startMatcher, Iterator<Token> remaining, ResolverFactory factory)
-  {
-    super(startMatcher, remaining, factory, "VALUE", "/INDENT");
-  }
-
-  @Override
-  public void resolve(Token start, AccessibleData data, Writer output) throws IOException
-  {
-    if (otherContent.isEmpty())
-    {
-      resolveContent(data, output);
+    IndentTag(Matcher startMatcher, Iterator<Token> remaining, ResolverFactory factory) {
+        super(startMatcher, remaining, factory, "VALUE", "/INDENT");
     }
-    else
-    {
-      try (
-        Writer formatter = new FormattingWriter(output, otherContent.keySet().iterator().next().getContent()))
-      {
-        resolveContent(data, formatter);
-      }
-    }
-  }
 
-  private void resolveContent(AccessibleData data, Writer output) throws IOException
-  {
-    for ( Map.Entry<Token, Resolver> entry : content.entrySet() )
-    {
-      entry.getValue().resolve(entry.getKey(), data, output);
+    @Override
+    public void resolve(Token start, AccessibleData data, Writer output) throws IOException {
+        if (otherContent.isEmpty()) {
+            resolveContent(data, output);
+        } else {
+            try (Writer formatter = new FormattingWriter(output, otherContent.keySet().iterator().next().content())) {
+                resolveContent(data, formatter);
+            }
+        }
     }
-  }
+
+    private void resolveContent(AccessibleData data, Writer output) throws IOException {
+        for (Map.Entry<Token, Resolver> entry : content.entrySet()) {
+            entry.getValue().resolve(entry.getKey(), data, output);
+        }
+    }
 }

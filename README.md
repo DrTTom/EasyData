@@ -131,8 +131,8 @@ Discuss the task of accessing parts of a data structure to include into a docume
 
 **Parsing (reading source code, design pattern, class hierarchy)**
 
-Provide whole project except ResolverFactory and *Tag-Classes. Focus on test '
-de.tautenhahn.easydata.TestDataIntoTemplate'.
+Provide whole project except ResolverFactory and *Tag-Classes. Focus on test 
+'de.tautenhahn.easydata.TestDataIntoTemplate'.
 This is a more complex task which is useful to access the programming and communication skills of an applicant. Discuss
 possible classes, do not expect an implemented working solution in a few hours.
 

@@ -81,7 +81,7 @@ class TestDocDefragmenter {
         testee.reorganizeParagraph(paragraph);
 
         Assertions.assertThat(testee.changes).isEqualTo(2);
-        Assertions.assertThat(content.get(0)).contains("(@=x.y)");
+        Assertions.assertThat(content.getFirst()).contains("(@=x.y)");
         Assertions.assertThat(String.join("", content)).isEqualTo(originalContent);
     }
 }

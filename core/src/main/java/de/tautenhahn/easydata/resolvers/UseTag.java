@@ -36,13 +36,13 @@ public class UseTag implements Resolver
   public void resolve(Token start, AccessibleData data, Writer output) throws IOException
   {
 
-    String str = start.getContent();
+      String str = start.content();
     Matcher m = PATTERN.matcher(str.substring(2, str.length() - 1).trim());
     if (!m.matches()) {
       throw new IllegalArgumentException("Unsupported token '"+str+"'");
     }
     String translated = op + data.getString(m.group(1)) + m.group(2) + close;
-    Token eventualStartToken = new Token(translated, start.getRow(), start.getCol());
+    Token eventualStartToken = new Token(translated, start.row(), start.col());
     factory.getResolver(eventualStartToken, null).resolve(eventualStartToken, data, output);
   }
 

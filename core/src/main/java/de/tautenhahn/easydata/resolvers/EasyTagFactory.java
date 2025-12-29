@@ -70,7 +70,7 @@ public final class EasyTagFactory implements ResolverFactory
     @Override
     public void resolve(Token start, AccessibleData data, Writer output) throws IOException
     {
-      output.write(start.getContent());
+      output.write(start.content());
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class EasyTagFactory implements ResolverFactory
   @Override
   public Resolver getResolver(Token token, Iterator<Token> remaining)
   {
-    Matcher tagMatcher = specialTag.matcher(token.getContent());
+    Matcher tagMatcher = specialTag.matcher(token.content());
     if (tagMatcher.matches())
     {
       for ( Entry<Pattern, BiFunction<Matcher, Iterator<Token>, Resolver>> entry : resolvers.entrySet() )

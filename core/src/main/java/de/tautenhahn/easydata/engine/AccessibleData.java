@@ -5,11 +5,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.IntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,10 +27,13 @@ public class AccessibleData {
 
     private static final Pattern SIZE = Pattern.compile("SIZE\\(([^)]+)\\)");
 
-    private static final Pattern SIZE2 = Pattern.compile("SIZE\\{([^}]+)\\}");
+    private static final Pattern SIZE2 = Pattern.compile("SIZE\\{([^}]+)}");
 
     private static final Pattern LITERAL = Pattern.compile("\"[^\"]*\"|'[^']*'|#[^#]*#");
 
+    /**
+     * Messages about value read misses are retrievable as additional values so at wish they can be included into the document.
+     */
     public static final String VALUE_READ_MISSES = "VALUE_READ_MISSES";
 
     private final Object data;
@@ -44,6 +45,10 @@ public class AccessibleData {
     protected final List<BiFunction<Object, String, Object>> formatters = new ArrayList<>();
 
     private boolean throwOnValueReadMiss;
+
+    private final List<String> valueReadMissMessages = new ArrayList<>();
+
+    private final ValueExtractor extractor;
 
     /**
      * Returns new instance wrapping a Map or Java Bean.
@@ -62,6 +67,7 @@ public class AccessibleData {
      */
     private AccessibleData(Object data) {
         this.data = data;
+        this.extractor = new ValueExtractor(this::handleValueReadMiss);
     }
 
     /**
@@ -73,6 +79,7 @@ public class AccessibleData {
         data = original.data;
         throwOnValueReadMiss = original.throwOnValueReadMiss;
         formatters.addAll(original.formatters);
+        this.extractor = new ValueExtractor(this::handleValueReadMiss);
     }
 
     /**
@@ -117,7 +124,7 @@ public class AccessibleData {
 
         String attr = resolveInnerExpressions(attrName);
         String[] path = attr.split("\\.");
-        return get(path, 0, additionalValues.containsKey(path[0]) ? additionalValues : data);
+        return extractor.get(path, 0, additionalValues.containsKey(path[0]) ? additionalValues : data);
     }
 
     /**
@@ -166,11 +173,11 @@ public class AccessibleData {
      * @return new collection
      */
     public Collection<Object> map(Collection<Object> original, String attrName) {
-        return original.stream().map(o -> get(attrName.split("\\."), 0, o)).collect(Collectors.toList());
+        return original.stream().map(o -> extractor.get(attrName.split("\\."), 0, o)).collect(Collectors.toList());
     }
 
     /**
-     * Returns a list of sorted elements. This method calls {@link #get(String[], int, Object)} too frequently,
+     * Returns a list of sorted elements. This method calls {@link ValueExtractor#get(String[], int, Object)} too frequently,
      * optimize in case of performance problems.
      *
      * @param original  content to sort
@@ -184,7 +191,7 @@ public class AccessibleData {
             result.sort((a, b) -> compare(a, b, ascending));
         } else {
             String[] path = attrName.split("\\.");
-            result.sort((a, b) -> compare(get(path, 0, a), get(path, 0, b), ascending));
+            result.sort((a, b) -> compare(extractor.get(path, 0, a), extractor.get(path, 0, b), ascending));
         }
         return result;
     }
@@ -236,63 +243,6 @@ public class AccessibleData {
         return data;
     }
 
-    private Object get(String[] path, int alreadyResolved, Object element) {
-        if (alreadyResolved == path.length) {
-            return element;
-        }
-        if (element == null) {
-            recordValueReadMiss(path, alreadyResolved, "null");
-            return null;
-        }
-        Object attr = getAttribute(element, path, alreadyResolved);
-        return get(path, alreadyResolved + 1, attr);
-    }
-
-    private Object getAttribute(Object element, String[] path, int alreadyResolved) {
-        String attrName = path[alreadyResolved];
-        if (element instanceof Map map) {
-            return map.get(attrName);
-        }
-        if (element instanceof List list) {
-            return selectByIndex(path, alreadyResolved, list.size(), list::get);
-        }
-        if (element.getClass().isArray()) {
-            return selectByIndex(path, alreadyResolved, Array.getLength(element), i -> Array.get(element, i));
-        }
-        return callGetMethod(path, alreadyResolved, element);
-    }
-
-    private Object selectByIndex(String[] path, int alreadyResolved, int size, IntFunction<Object> getter) {
-        try {
-            int result = Integer.parseInt(path[alreadyResolved]);
-            if (result >= 0 || result < size) {
-                return getter.apply(result);
-            }
-        } catch (NumberFormatException e) // NOPMD same handling needed as in case without Exception
-        {
-            // empty on purpose
-        }
-        recordValueReadMiss(path, alreadyResolved, "a Collection with " + size + " elements");
-        return null;
-    }
-
-    private Object callGetMethod(String[] path, int alreadyResolved, Object element) {
-        String attrName = path[alreadyResolved];
-        try {
-            String upperName = Character.toUpperCase(attrName.charAt(0)) + attrName.substring(1);
-            Method method;
-            try {
-                method = element.getClass().getMethod("get" + upperName);
-            } catch (NoSuchMethodException e) {
-                method = element.getClass().getMethod("is" + upperName);
-            }
-            return method.invoke(element);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            recordValueReadMiss(path, alreadyResolved, element.getClass().getSimpleName());
-            return null;
-        }
-    }
 
     /**
      * Compares two values, considering the case that both are numeric.
@@ -347,7 +297,7 @@ public class AccessibleData {
         Object target = get(attrName);
         if (target == null || target instanceof String || target.getClass().isPrimitive()) {
             String className = Optional.ofNullable(target).map(Object::getClass).map(Class::getName).orElse("null value");
-            recordValueReadMiss(new String[]{attrName, "to collection"}, 1, className);
+            handleValueReadMiss("cannot resolve 'to collection' because value of '" + attrName + "' is a " + className);
             return Collections.emptyList();
         }
         if (target instanceof Map) {
@@ -373,6 +323,14 @@ public class AccessibleData {
         this.throwOnValueReadMiss = throwOnValueReadMiss;
     }
 
+    /**
+     * Remove all recorded messages about read misses.
+     */
+    public void clearValueReadMessages() {
+        this.valueReadMissMessages.clear();
+        additionalValues.put(VALUE_READ_MISSES, valueReadMissMessages);
+    }
+
     private Collection<Object> beanToList(String attrName, ListMode mode, Object target) {
         if (target == null) {
             return Collections.emptyList();
@@ -389,21 +347,17 @@ public class AccessibleData {
             }
             return result;
         } catch (IntrospectionException | ReflectiveOperationException | IllegalArgumentException e) {
-            recordValueReadMiss(new String[]{attrName, "to collection"}, 1, target.getClass().getName());
+            handleValueReadMiss("cannot resolve 'to collection' because value of '" + attrName + "' is a " + target.getClass().getName());
             return Collections.emptyList();
         }
     }
 
-    private void recordValueReadMiss(String[] path, int alreadyResolved, String msg) {
-        String resolvedPath = String.join(".", Arrays.copyOfRange(path, 0, alreadyResolved));
-        String remainingPath = String.join(".", Arrays.copyOfRange(path, alreadyResolved, path.length));
-        String message = "cannot resolve '" + remainingPath + "' because value of '" + resolvedPath + "' is " + msg;
+
+    private void handleValueReadMiss(String message) {
         if (throwOnValueReadMiss) {
             throw new ResolverException(message);
         }
-        List<String> misses = (List<String>) additionalValues.getOrDefault(VALUE_READ_MISSES, new ArrayList<>());
-        misses.add(message);
-        additionalValues.put(VALUE_READ_MISSES, misses);
+        valueReadMissMessages.add(message);
+        additionalValues.put(VALUE_READ_MISSES, valueReadMissMessages);
     }
-
 }

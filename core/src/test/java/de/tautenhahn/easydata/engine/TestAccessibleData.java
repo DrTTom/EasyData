@@ -89,9 +89,9 @@ class TestAccessibleData {
      */
     @Test
     void wrongTarget2() {
-        systemUnderTest.undefine(AccessibleData.VALUE_READ_MISSES);
+        systemUnderTest.clearValueReadMessages();
         assertThat(systemUnderTest.getCollection("Hobbys.0", ListMode.DEFAULT)).isEmpty();
-        assertThat(systemUnderTest.getString(AccessibleData.VALUE_READ_MISSES)).isEqualTo("[cannot resolve 'to collection' because value of 'Hobbys.0' is java.lang.String]");
+        assertThat(systemUnderTest.getString(AccessibleData.VALUE_READ_MISSES)).isEqualTo("[cannot resolve 'to collection' because value of 'Hobbys.0' is a java.lang.String]");
     }
 
     /**
@@ -99,7 +99,7 @@ class TestAccessibleData {
      */
     @Test
     void attributeOfPrimitive() {
-        systemUnderTest.undefine(AccessibleData.VALUE_READ_MISSES);
+        systemUnderTest.clearValueReadMessages();
         assertThat(systemUnderTest.getString("Name.shortName")).isEqualTo("null");
         assertThat(systemUnderTest.getString(AccessibleData.VALUE_READ_MISSES)).isEqualTo("[cannot resolve 'shortName' because value of 'Name' is String]");
     }

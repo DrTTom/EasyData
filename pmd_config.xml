@@ -6,16 +6,12 @@
 
    <rule ref="category/java/bestpractices.xml">
       <exclude name="MethodReturnsInternalArray" /> <!-- we decide if we want that -->
-      <exclude name="AccessorClassGeneration" /> <!-- singleton -->
-      <exclude name="ArrayIsStoredDirectly" /> <!-- different opinion -->
-      <exclude name="ImplicitFunctionalInterface" />
-      <exclude name="AbstractClassWithoutAbstractMethod" /> <!-- we want more explicit naming -->
-      <exclude name="AvoidStringBufferField" /> <!-- some classes need to build a text report -->
+
    </rule>
    <rule
       ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
       <properties>
-         <property name="maximumAsserts" value="15" />
+         <property name="maximumAsserts" value="5" />
       </properties>
    </rule>
 
@@ -58,12 +54,7 @@
    <rule ref="category/java/design.xml">
       <exclude name="LawOfDemeter" /> <!-- fluent API -->
       <exclude name="LoosePackageCoupling" /> <!-- requires specific configuration -->
-      <exclude name="SignatureDeclareThrowsException" /> <!-- TODO: specify different rules for test and exclude it only there -->
-      <exclude name="AvoidCatchingGenericException" /> <!-- at system boundaries, we want to send a code to the client -->
-      <exclude name="UseObjectForClearerAPI" /> <!-- too restrictive, not configurable -->
-      <exclude name="DataClass" /> <!-- contradicts rule above -->
       <exclude name="GodClass" /> <!-- too restrictive, not configurable -->
-      <exclude name="AvoidRethrowingException" /> <!-- not compatible with some lambdas -->
    </rule>
    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
       <properties>
@@ -104,9 +95,7 @@
 
    <rule ref="category/java/errorprone.xml">
       <exclude name="AvoidLiteralsInIfCondition" /> <!-- magic number check done with other rules, false positives -->
-      <exclude name="AvoidCatchingThrowable" /> <!-- at system boundaries, we want to send a code to the client or die trying -->
       <exclude name="NullAssignment" /> <!-- nulling object might be wanted -->
-      <exclude name="ProperCloneImplementation" /> <!-- too many false positives -->
    </rule>
    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
       <properties>
@@ -117,15 +106,13 @@
    </rule>
 
    <rule ref="category/java/multithreading.xml">
-      <exclude name="UseConcurrentHashMap"></exclude> <!-- false positives -->
+      <exclude name="UseConcurrentHashMap" />
       <exclude name="AvoidSynchronizedAtMethodLevel" /> <!-- developer decides which block to synchronize -->
-      <exclude name="AvoidUsingVolatile" /> <!-- developer decides about the need -->
    </rule>
 
    <rule ref="category/java/performance.xml">
       <exclude name="AvoidFileStream" /> <!-- addresses an OpenJDK bug which is already fixed -->
       <exclude name="AvoidInstantiatingObjectsInLoops" /> <!-- too many false positives, sometimes we need n objects -->
-      <exclude name="InsufficientStringBufferDeclaration" /> <!-- false positives: does not recognize if statements -->
    </rule>
 
    <rule ref="category/java/security.xml" />

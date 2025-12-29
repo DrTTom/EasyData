@@ -12,6 +12,7 @@ import java.io.Writer;
  *
  * @author TT
  */
+@FunctionalInterface
 public interface Resolver {
 
     /**

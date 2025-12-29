@@ -49,7 +49,7 @@ class TestPracticalUse {
             DataIntoTemplate systemUnderTest = new DataIntoTemplate(cv, '<', '@', '>');
             systemUnderTest.fillData(template, document);
         }
-        assertThat(Files.readString(Path.of("cv.tex"))).contains("Hobbies: & Programmierung, Briefmarken sammeln, Walzer tanzen");
+        assertThat(Files.readString(Path.of("build","cv.tex"))).contains("Hobbies: & Programmierung, Briefmarken sammeln, Walzer tanzen");
     }
 
     /**

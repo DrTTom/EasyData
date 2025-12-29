@@ -55,11 +55,11 @@ public abstract class ComplexTag implements Resolver {
 
         while (remaining.hasNext()) {
             Token token = remaining.next();
-            if (delim.equals(token.getContent())) {
+            if (delim.equals(token.content())) {
                 tokens = otherContent;
                 continue;
             }
-            if (end.contains(token.getContent())) {
+            if (end.contains(token.content())) {
                 return;
             }
             tokens.put(token, factory.getResolver(token, remaining));
